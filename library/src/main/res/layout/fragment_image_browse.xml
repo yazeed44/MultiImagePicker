@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+    <GridView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/images_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="3"
+        android:columnWidth="@dimen/image_width"
+        android:horizontalSpacing="@dimen/horizontal_spacing"
+        android:verticalSpacing="@dimen/vertical_spacing"
+        />

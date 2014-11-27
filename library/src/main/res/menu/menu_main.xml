@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:photoSign="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
+
+    <item
+        android:id="@+id/menu_camera"
+        android:title="@string/take_photo"
+        android:icon="@drawable/ic_camera"
+        photoSign:showAsAction="always"
+        />
+</menu>
