@@ -12,19 +12,19 @@ Getting started
 
 It's easy
 
-```Java
+```java
 private void pickImages(){
         final Intent pickIntent = new Intent(this, PickerActivity.class); 
         pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit
 
         startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
     }
-    ```
+```
 
     
     Now you wait till user choose his wanted images , then retrieve it 
     
-    ```Java
+```java
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, requestCode, data);
@@ -35,5 +35,5 @@ private void pickImages(){
 
             //Do what you want with paths
             
-            ```
+```
 
