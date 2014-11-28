@@ -7,11 +7,12 @@ Sample App (On playstore) : Soon
 
 This library is built-in gallery to pick multiple images or capture new photos , and retrieve the path in the code
 
-<b>Getting started</b> <br />
+Getting started
+==========
 
 It's easy
 
-```java
+```Java
 private void pickImages(){
         final Intent pickIntent = new Intent(this, PickerActivity.class); 
         pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit
@@ -19,10 +20,11 @@ private void pickImages(){
         startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
     }
     ```
+
     
     Now you wait till user choose his wanted images , then retrieve it 
     
-    ```java
+    ```Java
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, requestCode, data);
