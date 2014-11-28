@@ -22,7 +22,6 @@ private void pickImages(){
 ```
 
     
-    Now you wait till user choose his wanted images , then retrieve it 
     
 ```java
     @Override
