@@ -9,5 +9,6 @@
     <string name="take_photo">Take a photo</string>
     <string name="all_photos">All Photos</string>
     <string name="image_check">Image check</string>
+    <string name="reach_limit">You have reached the limit</string>
 
 </resources>

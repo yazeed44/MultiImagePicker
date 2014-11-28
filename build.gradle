@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:0.14.4'
-        classpath 'com.novoda:bintray-release:0.2.4'
+        //classpath 'com.novoda:bintray-release:0.2.4'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -25,7 +25,7 @@ allprojects {
     }
 }
 
-publish {
+/*publish {
     userOrg = 'yazeed44'
     groupId = 'net.yazeed44.imagepicker.library'
     artifactId = 'image-picker'
@@ -36,4 +36,4 @@ publish {
     repository = "${website}.git"
     bintrayUser = 'yazeed44'
     bintrayKey = '4702d32c812974c168e9839e765b11d862148506'
-}
+}*/

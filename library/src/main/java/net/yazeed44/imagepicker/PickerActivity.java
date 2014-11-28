@@ -19,7 +19,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
-import net.yazeed44.library.R;
+import net.yazeed44.imagepicker.library.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,25 +35,18 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
     public static final String LIMIT_KEY = "limitKey";
 
     public static final int NO_LIMIT = -1;
-
+    private int limit = NO_LIMIT;
+    public static final int PICK_REQUEST = 100;
     private ArrayList<AlbumUtil.PhotoEntry> checkedPhotos = new ArrayList<AlbumUtil.PhotoEntry>();
-
     private TextView doneBadge , doneText;
-
     private View doneLayout;
-
-
     private ImagesFragment imagesFragment;
     private AlbumsFragment albumsFragment;
-
-    private int limit = 3;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_pick);
         initImageLoader();
 
         doneBadge = (TextView) findViewById(R.id.done_button_badge);
@@ -74,7 +67,11 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
 
         if (options != null) {
 
-      //            limit = options.getExtras().getInt(LIMIT_KEY);
+            try {
+                limit = options.getExtras().getInt(LIMIT_KEY);
+            } catch (NullPointerException ex) {
+                limit = NO_LIMIT;
+            }
         }
 
         AlbumUtil.initLimit(limit);
@@ -85,7 +82,6 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
         if (findViewById(R.id.container) != null) {
 
             if (savedInstanceState == null) {
-                final Intent i = null;
 
 
 
@@ -156,7 +152,7 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
     @Override
     public void finish(){
 
-        if (imagesFragment.isVisible()){
+        if (imagesFragment != null && imagesFragment.isVisible()) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container,albumsFragment)
                     .commit();
@@ -248,7 +244,9 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
     }
 
     public void onClickCancel(View view){
-        finish();
+        setResult(RESULT_CANCELED);
+        super.finish();
+
     }
 
 

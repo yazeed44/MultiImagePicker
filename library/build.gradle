@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'bintray-release'
-
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
@@ -11,12 +9,13 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "0.1"
+
     }
     buildTypes {
-    //    release {
+        //    release {
         //    minifyEnabled false
-          //  proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-     //   }
+        //  proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        //   }
     }
 
     lintOptions {
@@ -24,8 +23,23 @@ android {
     }
 }
 
+/*task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
 
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
 
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}*/
 
 
 dependencies {
@@ -34,5 +48,51 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
 }
+
+/*uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'ImagePickerLib'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'A library to multi choose images from phone'
+                url 'https://github.com/yazeed44/MultiImagePicker'
+
+                scm {
+                    connection 'scm:svn:https://foo.googlecode.com/svn/trunk/'
+                    developerConnection 'scm:svn:https://foo.googlecode.com/svn/trunk/'
+                    url 'http://foo.googlecode.com/svn/trunk/'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'manfred'
+                        name 'Manfred Moser'
+                        email 'manfred@sonatype.com'
+                    }
+                }
+            }
+        }
+    }
+}*/
+
 
 

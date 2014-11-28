@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import net.yazeed44.library.R;
+import net.yazeed44.imagepicker.library.R;
 
 
 /**
@@ -16,19 +16,14 @@ import net.yazeed44.library.R;
  */
 public class AlbumsFragment extends Fragment {
 
-    public OnClickAlbum listener;
-
-
-
-    private GridView mAlbums;
-
     public static final String TAG = "AlbumsFragmentTag";
+    public OnClickAlbum listener;
+    private GridView mAlbums;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mAlbums = (GridView)inflater.inflate(R.layout.fragment_album_browse, container, false);
-
+        mAlbums = (GridView) inflater.inflate(R.layout.fragment_album_browse, container, false);
 
 
         setupAdapter();
@@ -36,32 +31,21 @@ public class AlbumsFragment extends Fragment {
         return mAlbums;
     }
 
-    public void setupAdapter(){
-       net.yazeed44.imagepicker.AlbumUtil.loadAlbums(mAlbums, this);
+    public void setupAdapter() {
+        net.yazeed44.imagepicker.AlbumUtil.loadAlbums(mAlbums, this);
 
     }
-
-
-
-
-
-
 
 
     @Override
-    public void onAttach(Activity activity){
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof OnClickAlbum){
+        if (activity instanceof OnClickAlbum) {
             listener = (OnClickAlbum) activity;
-        }
-        else {
-         throw new ClassCastException(activity.toString() + "  Dosen't implement OnClickAlbum !!");
+        } else {
+            throw new ClassCastException(activity.toString() + "  Dosen't implement OnClickAlbum !!");
         }
     }
-
-
-
-
 
 
     public static interface OnClickAlbum {

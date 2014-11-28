@@ -6,7 +6,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.GridView;
 
-import net.yazeed44.library.R;
+import net.yazeed44.imagepicker.library.R;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,30 +18,28 @@ import java.util.HashMap;
 public final class AlbumUtil {
 
 
-
-    private AlbumUtil(){
-        throw new AssertionError();
-    }
-
     public static int mLimit;
     public static int mCount;
 
-    public static void initLimit(int limit){
-         mLimit = limit;
+    private AlbumUtil() {
+        throw new AssertionError();
     }
 
-    public static void initCount(int count){
-         mCount = count;
+    public static void initLimit(int limit) {
+        mLimit = limit;
     }
 
-    public static void loadAlbums(final GridView gridView , final AlbumsFragment fragment){
+    public static void initCount(int count) {
+        mCount = count;
+    }
+
+    public static void loadAlbums(final GridView gridView, final AlbumsFragment fragment) {
         new Thread(new Runnable() {
             @Override
             public void run() {
 
 
-
-                 final String[] projectionPhotos = {
+                final String[] projectionPhotos = {
                         MediaStore.Images.Media._ID,
                         MediaStore.Images.Media.BUCKET_ID,
                         MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
@@ -101,24 +99,12 @@ public final class AlbumUtil {
                             albumEntry.addPhoto(photoEntry);
                         }
 
-                        final AlbumsAdapter adapter = new AlbumsAdapter(albumsSorted,fragment);
-
-                        gridView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                gridView.setAdapter(adapter);
-                            }
-                        });
-
+                        setupAdapter(albumsSorted, gridView, fragment);
                     }
-                }
-
-                catch(Exception ex){
-                    Log.e("getAlbums",ex.getMessage());
-                }
-
-                finally {
-                    if (cursor != null){
+                } catch (Exception ex) {
+                    Log.e("getAlbums", ex.getMessage());
+                } finally {
+                    if (cursor != null) {
                         cursor.close();
                     }
                 }
@@ -129,18 +115,33 @@ public final class AlbumUtil {
 
     }
 
+    public static void setupAdapter(final ArrayList<AlbumEntry> albums, final GridView gridView, final AlbumsFragment fragment) {
 
 
-    public static class AlbumEntry implements Serializable{
+        final AlbumsAdapter adapter = new AlbumsAdapter(albums, fragment);
+
+        gridView.post(new Runnable() {
+            @Override
+            public void run() {
+                gridView.setAdapter(adapter);
+            }
+        });
+
+    }
+
+
+    public static class AlbumEntry implements Serializable {
         public int bucketId;
         public String bucketName;
         public PhotoEntry coverPhoto;
         public ArrayList<PhotoEntry> photos = new ArrayList<PhotoEntry>();
+
         public AlbumEntry(int bucketId, String bucketName, PhotoEntry coverPhoto) {
             this.bucketId = bucketId;
             this.bucketName = bucketName;
             this.coverPhoto = coverPhoto;
         }
+
         public void addPhoto(PhotoEntry photoEntry) {
             photos.add(photoEntry);
         }
@@ -153,6 +154,7 @@ public final class AlbumUtil {
         public String path;
         public int orientation;
         private boolean isPicked;
+
         public PhotoEntry(int bucketId, int imageId, long dateTaken, String path, int orientation) {
             this.bucketId = bucketId;
             this.imageId = imageId;
@@ -161,12 +163,12 @@ public final class AlbumUtil {
             this.orientation = orientation;
         }
 
-        public void setPicked(final boolean picked){
-            this.isPicked = picked;
+        public boolean isPicked() {
+            return isPicked;
         }
 
-        public boolean isPicked(){
-            return isPicked;
+        public void setPicked(final boolean picked) {
+            this.isPicked = picked;
         }
 
     }

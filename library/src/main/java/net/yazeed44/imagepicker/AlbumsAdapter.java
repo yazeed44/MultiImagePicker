@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import net.yazeed44.library.R;
+import net.yazeed44.imagepicker.library.R;
 
 import java.util.ArrayList;
 
@@ -18,10 +18,10 @@ import java.util.ArrayList;
  */
 public class AlbumsAdapter extends BaseAdapter {
 
+    private final ArrayList<AlbumUtil.AlbumEntry> albums;
     private AlbumsFragment fragment;
-    private final  ArrayList<AlbumUtil.AlbumEntry> albums;
 
-    public AlbumsAdapter(final ArrayList<AlbumUtil.AlbumEntry> albums,final AlbumsFragment fragment){
+    public AlbumsAdapter(final ArrayList<AlbumUtil.AlbumEntry> albums, final AlbumsFragment fragment) {
         this.albums = albums;
         this.fragment = fragment;
     }
@@ -51,31 +51,30 @@ public class AlbumsAdapter extends BaseAdapter {
         View grid = convertView;
 
         final ViewHolder holder;
-        if (convertView == null){
+        if (convertView == null) {
             holder = new ViewHolder();
-            grid = fragment.getActivity().getLayoutInflater().inflate(R.layout.album,parent,false);
+            grid = fragment.getActivity().getLayoutInflater().inflate(R.layout.album, parent, false);
 
             holder.thumbnail = (ImageView) grid.findViewById(R.id.album_thumbnail);
             holder.count = (TextView) grid.findViewById(R.id.album_count);
             holder.name = (TextView) grid.findViewById(R.id.album_name);
             grid.setTag(holder);
-        }
-
-        else {
-            holder = (ViewHolder)grid.getTag();
+        } else {
+            holder = (ViewHolder) grid.getTag();
         }
 
         setupGrid(grid, album);
-        setupAlbum(holder,album);
+        setupAlbum(holder, album);
 
         return grid;
 
     }
-    private void setupGrid(final View grid , final AlbumUtil.AlbumEntry album){
+
+    private void setupGrid(final View grid, final AlbumUtil.AlbumEntry album) {
 
         final int height = (int) (fragment.getResources().getDimensionPixelSize(R.dimen.album_width) * 1.5);
 
-        grid.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,height));
+        grid.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
 
 
         grid.setOnClickListener(new View.OnClickListener() {
@@ -86,11 +85,11 @@ public class AlbumsAdapter extends BaseAdapter {
         });
     }
 
-    private void setupAlbum(final ViewHolder holder,final AlbumUtil.AlbumEntry album){
-      holder.name.setText(album.bucketName);
-      holder.count.setText(album.photos.size() + "");
+    private void setupAlbum(final ViewHolder holder, final AlbumUtil.AlbumEntry album) {
+        holder.name.setText(album.bucketName);
+        holder.count.setText(album.photos.size() + "");
 
-        ImageLoader.getInstance().displayImage("file://" + album.coverPhoto.path,holder.thumbnail);
+        ImageLoader.getInstance().displayImage("file://" + album.coverPhoto.path, holder.thumbnail);
     }
 
     private static class ViewHolder {

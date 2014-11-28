@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import net.yazeed44.library.R;
+import net.yazeed44.imagepicker.library.R;
 
 /**
  * Created by yazeed44 on 11/23/14.
@@ -23,19 +23,9 @@ public class ImagesAdapter extends BaseAdapter {
     public ImagesAdapter(final AlbumUtil.AlbumEntry album , final ImagesFragment fragment){
         this.album = album;
         this.fragment = fragment;
-        init();
+        setupItemListener();
     }
 
-    private void init(){
-        fragment.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final AlbumUtil.PhotoEntry photo = album.photos.get(position);
-                final ViewHolder holder = createHolder(view);
-                pickImage(view,holder,photo);
-            }
-        });
-    }
 
     @Override
     public int getCount() {
@@ -73,7 +63,7 @@ public class ImagesAdapter extends BaseAdapter {
 
         }
 
-        setupGrid(convertView,holder,photo);
+        setHeight(convertView);
         loadImage(holder,photo);
         drawGrid(convertView,holder,photo);
 
@@ -97,10 +87,10 @@ public class ImagesAdapter extends BaseAdapter {
         }
     }
 
-    private void setupGrid(final View convertView,final ViewHolder holder , final AlbumUtil.PhotoEntry photo){
+    private void setHeight(final View convertView) {
 
 
-        final int height = (int)(fragment.getResources().getDimensionPixelSize(R.dimen.image_width) * 1.2);
+        final int height = (int) (fragment.getResources().getDimensionPixelSize(R.dimen.image_width) * 1.1);
 
         convertView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,height));
 
@@ -110,21 +100,18 @@ public class ImagesAdapter extends BaseAdapter {
     }
 
 
-
-
-
     private void pickImage(final View convertView,final ViewHolder holder, final AlbumUtil.PhotoEntry photo){
 
         if (photo.isPicked()){
             //Unpick
-            photo.setPicked(false);
+            album.photos.get(album.photos.indexOf(photo)).setPicked(false);
            drawGrid(convertView,holder,photo);
             fragment.pickListener.onUnpickImage(photo);
         }
 
         else if (AlbumUtil.mLimit > AlbumUtil.mCount) {
             //pick
-            photo.setPicked(true);
+            album.photos.get(album.photos.indexOf(photo)).setPicked(true);
             drawGrid(convertView,holder,photo);
             fragment.pickListener.onPickImage(photo);
         }
@@ -143,6 +130,17 @@ public class ImagesAdapter extends BaseAdapter {
     private void loadImage(final ViewHolder holder , final AlbumUtil.PhotoEntry photo){
 
         ImageLoader.getInstance().displayImage("file://" + photo.path ,holder.thumbnail);
+    }
+
+    private void setupItemListener() {
+        fragment.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final AlbumUtil.PhotoEntry photo = album.photos.get(position);
+                final ViewHolder holder = createHolder(view);
+                pickImage(view, holder, photo);
+            }
+        });
     }
 
     private static class ViewHolder{
