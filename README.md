@@ -10,6 +10,12 @@ This library is built-in gallery to pick multiple images or capture new photos ,
 
 This library is inspired by Telegram image picker
 
+Gradle Dependency (jCenter)
+==========================
+Soooon
+
+
+
 Getting started
 ==========
 
