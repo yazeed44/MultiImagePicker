@@ -16,7 +16,6 @@ import net.yazeed44.imagepicker.library.R;
  */
 public class ImagesFragment extends Fragment {
 
-    public static final String TAG = "ImagesFragmentTag";
     public GridView gridView;
     public OnPickImage pickListener;
 
@@ -32,7 +31,7 @@ public class ImagesFragment extends Fragment {
         return gridView;
     }
 
-    public void setupAdapter() {
+    void setupAdapter() {
         final AlbumUtil.AlbumEntry album = (AlbumUtil.AlbumEntry) getArguments().getSerializable(PickerActivity.ALBUM_KEY);
 
         final ImagesAdapter adapter = new ImagesAdapter(album, this);

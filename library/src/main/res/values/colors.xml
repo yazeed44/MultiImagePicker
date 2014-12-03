@@ -15,9 +15,7 @@
 
     <color name="check_default_color">#b457585b</color>
 
-
-
-    <color name="reached_limit">#ffff113b</color>
+    <color name="reached_limit_text">#ffff113b</color>
 
 
 </resources>

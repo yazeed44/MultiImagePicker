@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,37 +25,40 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 import net.yazeed44.imagepicker.library.R;
 
 import java.io.File;
-import java.util.ArrayList;
 
 
-public class PickerActivity extends BaseActivity implements AlbumsFragment.OnClickAlbum , ImagesFragment.OnPickImage  {
+public class PickerActivity extends ActionBarActivity implements AlbumsFragment.OnClickAlbum, ImagesFragment.OnPickImage {
 
 
     public static final String ALBUM_KEY = "albumKey";
 
     public static final String PICKED_IMAGES_KEY = "pickedImagesKey";
-
     public static final String LIMIT_KEY = "limitKey";
 
-    public static final int NO_LIMIT = -1;
-    private int limit = NO_LIMIT;
     public static final int PICK_REQUEST = 100;
-    private ArrayList<AlbumUtil.PhotoEntry> checkedPhotos = new ArrayList<AlbumUtil.PhotoEntry>();
-    private TextView doneBadge , doneText;
-    private View doneLayout;
-    private ImagesFragment imagesFragment;
-    private AlbumsFragment albumsFragment;
+    public static final int NO_LIMIT = -1;
+
+    private int mLimit = NO_LIMIT;
+
+    public static SparseArray<AlbumUtil.PhotoEntry> sCheckedImages = new SparseArray<AlbumUtil.PhotoEntry>();
+    private TextView mDoneBadge, mDoneText;
+    private View mDoneLayout;
+    private ImagesFragment mImagesFragment;
+    private AlbumsFragment mAlbumsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick);
+        getSupportActionBar().setTitle(R.string.albums_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         initImageLoader();
 
-        doneBadge = (TextView) findViewById(R.id.done_button_badge);
-        doneText = (TextView) findViewById(R.id.done_button_text);
-        doneLayout = findViewById(R.id.done_btn);
+
         initOptions();
+        mDoneBadge = (TextView) findViewById(R.id.done_button_badge);
+        mDoneText = (TextView) findViewById(R.id.done_button_text);
+        mDoneLayout = findViewById(R.id.done_btn);
         updateTextAndBadge();
 
 
@@ -63,33 +69,38 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
 
     private void initOptions(){
 
+
+        sCheckedImages.clear();
        final Intent options = getIntent();
 
         if (options != null) {
 
             try {
-                limit = options.getExtras().getInt(LIMIT_KEY);
+                mLimit = options.getExtras().getInt(LIMIT_KEY);
             } catch (NullPointerException ex) {
-                limit = NO_LIMIT;
+                mLimit = NO_LIMIT;
             }
+
+
         }
 
-        AlbumUtil.initLimit(limit);
+
+        AlbumUtil.initLimit(mLimit);
 
     }
 
+
     private void setupAlbums(Bundle savedInstanceState){
-        if (findViewById(R.id.container) != null) {
+        if (findViewById(R.id.fragment_container) != null) {
 
             if (savedInstanceState == null) {
 
 
-
-                albumsFragment = new AlbumsFragment();
-                albumsFragment.setArguments(getIntent().getExtras());
+                mAlbumsFragment = new AlbumsFragment();
+                mAlbumsFragment.setArguments(getIntent().getExtras());
 
                 getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, albumsFragment)
+                        .add(R.id.fragment_container, mAlbumsFragment)
                 .commit();
 
 
@@ -125,10 +136,55 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
     }
 
 
+    private void updateTextAndBadge() {
+
+        if (sCheckedImages.size() == 0) {
+            mDoneBadge.setVisibility(View.GONE);
+            mDoneLayout.setClickable(false);
+            mDoneText.setTextColor(getResources().getColor(R.color.no_checked_photos_text));
+
+        } else if (sCheckedImages.size() == mLimit) {
+            mDoneBadge.setText(sCheckedImages.size() + "");
+            mDoneBadge.setBackgroundColor(getResources().getColor(R.color.reached_limit_text));
+            Toast.makeText(this, R.string.reach_limit, Toast.LENGTH_SHORT).show();
+
+        } else {
+            mDoneText.setTextColor(Color.parseColor("#ffffff"));
+            mDoneLayout.setClickable(true);
+            mDoneBadge.setBackgroundColor(getResources().getColor(R.color.checked_photo));
+            mDoneBadge.setVisibility(View.VISIBLE);
+            mDoneBadge.setText(sCheckedImages.size() + "");
+        }
+
+    }
+
+    public void onClickDone(View view) {
+
+        final String[] paths = new String[sCheckedImages.size()];
+
+        for (int i = 0; i < sCheckedImages.size(); i++) {
+            paths[i] = sCheckedImages.valueAt(i).path;
+        }
+
+        final Intent data = new Intent().putExtra(PICKED_IMAGES_KEY, paths);
+        setResult(RESULT_OK, data);
+        super.finish();
+
+    }
+
+    public void onClickCancel(View view) {
+        setResult(RESULT_CANCELED);
+        super.finish();
+
+
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_capture, menu);
         return true;
     }
 
@@ -141,7 +197,7 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
 
 
         if (id == R.id.menu_camera) {
-            //TODO
+            //TODO implement taking a photo
             return true;
         }
 
@@ -152,10 +208,13 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
     @Override
     public void finish(){
 
-        if (imagesFragment != null && imagesFragment.isVisible()) {
+        if (mImagesFragment != null && mImagesFragment.isVisible()) {
+            mAlbumsFragment = new AlbumsFragment();
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container,albumsFragment)
+                    .replace(R.id.fragment_container, mAlbumsFragment)
                     .commit();
+            getSupportActionBar().setTitle(R.string.albums_title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
         else {
@@ -166,28 +225,29 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
 
     @Override
     public void onClickAlbum(AlbumUtil.AlbumEntry album) {
-      final Bundle albumBundle = new Bundle();
+        final Bundle albumBundle = new Bundle();
         albumBundle.putSerializable(ALBUM_KEY,album);
 
-         imagesFragment = new ImagesFragment();
-        imagesFragment.setArguments(albumBundle);
+        mImagesFragment = new ImagesFragment();
+        mImagesFragment.setArguments(albumBundle);
 
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, imagesFragment)
+                .replace(R.id.fragment_container, mImagesFragment)
                 .commit();
+
+        getSupportActionBar().setTitle(album.name);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override
     public void onPickImage(AlbumUtil.PhotoEntry photoEntry) {
-        if (limit == NO_LIMIT) {
-            checkedPhotos.add(photoEntry);
+        if (mLimit == NO_LIMIT || sCheckedImages.size() < mLimit) {
+            sCheckedImages.put(photoEntry.imageId, photoEntry);
+        } else {
+            Log.i("onPickImage", "You can't check more images");
         }
-
-        else if (checkedPhotos.size() < limit){
-            checkedPhotos.add(photoEntry);
-        }
-
 
 
 
@@ -196,57 +256,20 @@ public class PickerActivity extends BaseActivity implements AlbumsFragment.OnCli
 
     @Override
     public void onUnpickImage(AlbumUtil.PhotoEntry photo) {
-        checkedPhotos.remove(photo);
+        sCheckedImages.remove(photo.imageId);
+
         updateTextAndBadge();
-
     }
 
 
-    private void updateTextAndBadge(){
-        AlbumUtil.initCount(checkedPhotos.size());
-
-        if (checkedPhotos.isEmpty()){
-            doneBadge.setVisibility(View.GONE);
-            doneLayout.setClickable(false);
-            doneText.setTextColor(getResources().getColor(R.color.no_checked_photos_text));
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        if (mImagesFragment != null && mImagesFragment.isVisible()) {
+            finish();
+            return true;
         }
 
-        else if (checkedPhotos.size() == limit){
-            doneBadge.setText(checkedPhotos.size() + "");
-            doneBadge.setBackgroundColor(getResources().getColor(R.color.reached_limit));
-            Toast.makeText(this,R.string.reach_limit,Toast.LENGTH_SHORT).show();
-
-        }
-
-        else {
-            doneText.setTextColor(Color.parseColor("#ffffff"));
-            doneLayout.setClickable(true);
-            doneBadge.setBackgroundColor(getResources().getColor(R.color.checked_photo));
-            doneBadge.setVisibility(View.VISIBLE);
-            doneBadge.setText(checkedPhotos.size() + "");
-        }
-
-    }
-
-    public void onClickDone(View view){
-
-        final String[] paths = new String[checkedPhotos.size()];
-
-        for (int i = 0 ; i < checkedPhotos.size();i++){
-            paths[i] = checkedPhotos.get(i).path;
-        }
-
-        final Intent data = new Intent().putExtra(PICKED_IMAGES_KEY,paths);
-        setResult(RESULT_OK,data);
-        super.finish();
-
-    }
-
-    public void onClickCancel(View view){
-        setResult(RESULT_CANCELED);
-        super.finish();
-
+        return false;
     }
 
 

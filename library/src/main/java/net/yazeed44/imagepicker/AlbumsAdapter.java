@@ -3,6 +3,7 @@ package net.yazeed44.imagepicker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,14 +17,15 @@ import java.util.ArrayList;
 /**
  * Created by yazeed44 on 11/22/14.
  */
-public class AlbumsAdapter extends BaseAdapter {
+class AlbumsAdapter extends BaseAdapter {
 
     private final ArrayList<AlbumUtil.AlbumEntry> albums;
-    private AlbumsFragment fragment;
+    private final AlbumsFragment fragment;
 
     public AlbumsAdapter(final ArrayList<AlbumUtil.AlbumEntry> albums, final AlbumsFragment fragment) {
         this.albums = albums;
         this.fragment = fragment;
+        setupItemListener();
     }
 
 
@@ -52,44 +54,53 @@ public class AlbumsAdapter extends BaseAdapter {
 
         final ViewHolder holder;
         if (convertView == null) {
-            holder = new ViewHolder();
-            grid = fragment.getActivity().getLayoutInflater().inflate(R.layout.album, parent, false);
 
-            holder.thumbnail = (ImageView) grid.findViewById(R.id.album_thumbnail);
-            holder.count = (TextView) grid.findViewById(R.id.album_count);
-            holder.name = (TextView) grid.findViewById(R.id.album_name);
+            grid = fragment.getActivity().getLayoutInflater().inflate(R.layout.album, parent, false);
+            holder = createHolder(grid);
             grid.setTag(holder);
         } else {
             holder = (ViewHolder) grid.getTag();
         }
 
-        setupGrid(grid, album);
+        setHeight(grid);
         setupAlbum(holder, album);
 
         return grid;
 
     }
 
-    private void setupGrid(final View grid, final AlbumUtil.AlbumEntry album) {
+    private void setHeight(final View grid) {
 
         final int height = (int) (fragment.getResources().getDimensionPixelSize(R.dimen.album_width) * 1.5);
 
         grid.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
 
 
-        grid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragment.listener.onClickAlbum(album);
-            }
-        });
     }
 
     private void setupAlbum(final ViewHolder holder, final AlbumUtil.AlbumEntry album) {
-        holder.name.setText(album.bucketName);
+        holder.name.setText(album.name);
         holder.count.setText(album.photos.size() + "");
 
         ImageLoader.getInstance().displayImage("file://" + album.coverPhoto.path, holder.thumbnail);
+    }
+
+    private ViewHolder createHolder(View view) {
+        final ViewHolder holder = new ViewHolder();
+        holder.name = (TextView) view.findViewById(R.id.album_name);
+        holder.count = (TextView) view.findViewById(R.id.album_count);
+        holder.thumbnail = (ImageView) view.findViewById(R.id.album_thumbnail);
+        return holder;
+    }
+
+    private void setupItemListener() {
+        fragment.albumsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View itemView, int position, long id) {
+                final AlbumUtil.AlbumEntry album = albums.get(position);
+                fragment.listener.onClickAlbum(album);
+            }
+        });
     }
 
     private static class ViewHolder {

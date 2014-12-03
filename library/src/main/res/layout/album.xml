@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/album_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/album_thumbnail"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:scaleType="centerCrop"
 
         />
@@ -17,16 +22,20 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="#8e212121"
-        >
+        android:focusable="false"
+        android:focusableInTouchMode="false">
+
         <TextView
             android:id="@+id/album_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
-            android:text="Album name"
-            android:textSize="14sp"
-            android:textColor="#ffffff"
             android:layout_marginLeft="10dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="Album name"
+            android:textColor="#ffffff"
+            android:textSize="14sp"
 
             />
 
@@ -35,13 +44,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
-            android:text="100"
-            android:textSize="13sp"
-            android:textColor="#ff979797"
             android:layout_marginRight="5dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="100"
+            android:textColor="#ff979797"
+            android:textSize="13sp"
 
             />
-        </FrameLayout>
+    </FrameLayout>
 
 
 </FrameLayout>

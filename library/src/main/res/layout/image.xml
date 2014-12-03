@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/unchecked_photo"
+    android:background="@drawable/image_border"
     android:focusable="false"
     android:focusableInTouchMode="false"
-    >
+    android:orientation="vertical">
 
     <ImageView
-        android:padding="3dp"
+
         android:id="@+id/image_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/image_thumbnail"
-        android:scaleType="fitXY"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:scaleType="fitXY"
 
         />
 
@@ -24,11 +24,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
-        android:src="@drawable/ic_check"
         android:background="@color/check_default_color"
+        android:contentDescription="@string/image_check"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:contentDescription="@string/image_check"
-        />
+        android:src="@drawable/ic_check" />
 
 </FrameLayout>

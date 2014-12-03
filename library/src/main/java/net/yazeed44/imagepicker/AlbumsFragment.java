@@ -15,24 +15,22 @@ import net.yazeed44.imagepicker.library.R;
  * Created by yazeed44 on 11/22/14.
  */
 public class AlbumsFragment extends Fragment {
-
-    public static final String TAG = "AlbumsFragmentTag";
     public OnClickAlbum listener;
-    private GridView mAlbums;
+    GridView albumsGrid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mAlbums = (GridView) inflater.inflate(R.layout.fragment_album_browse, container, false);
+        albumsGrid = (GridView) inflater.inflate(R.layout.fragment_album_browse, container, false);
 
 
         setupAdapter();
 
-        return mAlbums;
+        return albumsGrid;
     }
 
-    public void setupAdapter() {
-        net.yazeed44.imagepicker.AlbumUtil.loadAlbums(mAlbums, this);
+    void setupAdapter() {
+        AlbumUtil.loadAlbums(albumsGrid, this);
 
     }
 
@@ -43,7 +41,7 @@ public class AlbumsFragment extends Fragment {
         if (activity instanceof OnClickAlbum) {
             listener = (OnClickAlbum) activity;
         } else {
-            throw new ClassCastException(activity.toString() + "  Dosen't implement OnClickAlbum !!");
+            throw new ClassCastException(activity.toString() + "  Dosen't implement AlbumsFragment.OnClickAlbum !!");
         }
     }
 

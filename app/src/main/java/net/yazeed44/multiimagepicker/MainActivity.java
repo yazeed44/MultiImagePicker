@@ -1,10 +1,15 @@
 package net.yazeed44.multiimagepicker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -29,18 +34,64 @@ public class MainActivity extends ActionBarActivity {
 
     public void onClickPick(View view) {
 
-        final Intent pick = new Intent(this, PickerActivity.class);
-        pick.putExtra(PickerActivity.LIMIT_KEY, 6);
-
-        startActivityForResult(pick, PickerActivity.PICK_REQUEST);
+        pickImages();
     }
+
+
+    private void pickImages() {
+        final Intent pickIntent = new Intent(this, PickerActivity.class);
+        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit
+
+        startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_about, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+
+        if (id == R.id.action_about) {
+            showAbout();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showAbout() {
+
+        final Spanned aboutBody = Html.fromHtml(getResources().getString(R.string.about_body_html));
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.about_title)
+                .setMessage(aboutBody)
+                .show();
+
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, requestCode, data);
         if (requestCode == PickerActivity.PICK_REQUEST && resultCode == RESULT_OK) {
-            final String[] paths = data.getStringArrayExtra(PickerActivity.PICKED_IMAGES_KEY);
-            setupImageSample(paths);
+            //No problemo
+
+            final String[] paths = data.getStringArrayExtra(PickerActivity.PICKED_IMAGES_KEY);//Paths for chosen images (Organized)
+
+            //Do what you want with paths
+
+            setupImageSamples(paths);
             for (String path : paths) {
                 Log.d("onActivityResult", path);
             }
@@ -49,7 +100,8 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void setupImageSample(final String[] paths) {
+
+    private void setupImageSamples(final String[] paths) {
         final GridView gridView = (GridView) findViewById(R.id.images_sample);
 
         gridView.setAdapter(new SamplesAdapter(paths, this));
