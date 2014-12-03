@@ -7,6 +7,15 @@ Sample App (On playstore) : Soon
 
 This library is built-in gallery to pick multiple images or capture new photos , and retrieve the path in the code
 
+
+This library is inspired by Telegram image picker
+
+Gradle Dependency (jCenter)
+==========================
+Soooon
+
+
+
 Getting started
 ==========
 
