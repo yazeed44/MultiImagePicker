@@ -3,8 +3,10 @@ package net.yazeed44.imagepicker;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -45,6 +47,9 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     private View mDoneLayout;
     private ImagesFragment mImagesFragment;
     private AlbumsFragment mAlbumsFragment;
+
+    private String mCapturedPhotoPath = Environment.getExternalStorageDirectory() + "/temp_tmp" + "capture_tmp.png";
+    private int mCaptureCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +184,37 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
     }
 
+    private void capturePhoto() {
+        mCapturedPhotoPath += mCaptureCount;
 
+        final File captureFolder = new File(mCapturedPhotoPath);
+
+        captureFolder.mkdir();
+
+        final Uri outputURI = Uri.fromFile(captureFolder);
+
+        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputURI);
+        startActivityForResult(captureIntent, 0);
+    }
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == RESULT_OK) {
+
+            Log.d("onActivityResult OK", "Captured photo exists  " + new File(mCapturedPhotoPath).exists());
+
+            sCheckedImages.put(mCaptureCount, new AlbumUtil.PhotoEntry.Builder(mCapturedPhotoPath).build());
+            mCaptureCount++;
+            updateTextAndBadge();
+
+        } else {
+            Log.i("onActivityResult", "User canceled the camera activity");
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -197,7 +232,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
 
         if (id == R.id.menu_camera) {
-            //TODO implement taking a photo
+            capturePhoto();
             return true;
         }
 
