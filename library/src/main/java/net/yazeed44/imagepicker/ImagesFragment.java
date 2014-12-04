@@ -31,7 +31,7 @@ public class ImagesFragment extends Fragment {
         return gridView;
     }
 
-    void setupAdapter() {
+    public void setupAdapter() {
         final AlbumUtil.AlbumEntry album = (AlbumUtil.AlbumEntry) getArguments().getSerializable(PickerActivity.ALBUM_KEY);
 
         final ImagesAdapter adapter = new ImagesAdapter(album, this);

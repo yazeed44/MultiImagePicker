@@ -17,7 +17,7 @@ import java.util.ArrayList;
 /**
  * Created by yazeed44 on 11/22/14.
  */
-class AlbumsAdapter extends BaseAdapter {
+public class AlbumsAdapter extends BaseAdapter {
 
     private final ArrayList<AlbumUtil.AlbumEntry> albums;
     private final AlbumsFragment fragment;
@@ -69,7 +69,7 @@ class AlbumsAdapter extends BaseAdapter {
 
     }
 
-    private void setHeight(final View grid) {
+    public void setHeight(final View grid) {
 
         final int height = (int) (fragment.getResources().getDimensionPixelSize(R.dimen.album_width) * 1.5);
 
@@ -78,14 +78,14 @@ class AlbumsAdapter extends BaseAdapter {
 
     }
 
-    private void setupAlbum(final ViewHolder holder, final AlbumUtil.AlbumEntry album) {
+    public void setupAlbum(final ViewHolder holder, final AlbumUtil.AlbumEntry album) {
         holder.name.setText(album.name);
         holder.count.setText(album.photos.size() + "");
 
         ImageLoader.getInstance().displayImage("file://" + album.coverPhoto.path, holder.thumbnail);
     }
 
-    private ViewHolder createHolder(View view) {
+    public ViewHolder createHolder(View view) {
         final ViewHolder holder = new ViewHolder();
         holder.name = (TextView) view.findViewById(R.id.album_name);
         holder.count = (TextView) view.findViewById(R.id.album_count);
@@ -93,7 +93,7 @@ class AlbumsAdapter extends BaseAdapter {
         return holder;
     }
 
-    private void setupItemListener() {
+    public void setupItemListener() {
         fragment.albumsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View itemView, int position, long id) {
@@ -103,7 +103,7 @@ class AlbumsAdapter extends BaseAdapter {
         });
     }
 
-    private static class ViewHolder {
+    public static class ViewHolder {
         ImageView thumbnail;
         TextView count;
         TextView name;

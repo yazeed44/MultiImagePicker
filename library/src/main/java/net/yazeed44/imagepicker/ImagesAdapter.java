@@ -70,7 +70,7 @@ class ImagesAdapter extends BaseAdapter {
         return convertView;
     }
 
-    private void setHeight(final View convertView) {
+    public void setHeight(final View convertView) {
 
 
         final int height = (int) (mFragment.getResources().getDimensionPixelSize(R.dimen.image_width) * 1.1);
@@ -79,12 +79,12 @@ class ImagesAdapter extends BaseAdapter {
 
     }
 
-    private void loadImage(final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
+    public void loadImage(final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
 
         ImageLoader.getInstance().displayImage("file://" + photo.path, holder.thumbnail);
     }
 
-    private void drawGrid(final View convertView, final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
+    public void drawGrid(final View convertView, final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
 
         final Resources r = mFragment.getResources();
         if (isPicked(photo)) {
@@ -101,7 +101,7 @@ class ImagesAdapter extends BaseAdapter {
     }
 
 
-    private void pickImage(final View convertView, final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
+    public void pickImage(final View convertView, final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
 
         final boolean isPicked = isPicked(photo);
 
@@ -120,7 +120,7 @@ class ImagesAdapter extends BaseAdapter {
 
     }
 
-    private ViewHolder createHolder(final View child) {
+    public ViewHolder createHolder(final View child) {
         final ViewHolder holder = new ViewHolder();
         holder.thumbnail = (ImageView) child.findViewById(R.id.image_thumbnail);
         holder.check = (ImageView) child.findViewById(R.id.image_check);
@@ -129,7 +129,7 @@ class ImagesAdapter extends BaseAdapter {
     }
 
 
-    private void setupItemListener() {
+    public void setupItemListener() {
         mFragment.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -141,7 +141,7 @@ class ImagesAdapter extends BaseAdapter {
         });
     }
 
-    private boolean isPicked(final AlbumUtil.PhotoEntry pPhotoEntry) {
+    public boolean isPicked(final AlbumUtil.PhotoEntry pPhotoEntry) {
 
         boolean isPicked = false;
         for (int i = 0; i < PickerActivity.sCheckedImages.size(); i++) {
@@ -155,7 +155,7 @@ class ImagesAdapter extends BaseAdapter {
         return isPicked;
     }
 
-    private static class ViewHolder {
+    public static class ViewHolder {
         ImageView thumbnail;
         ImageView check;
 

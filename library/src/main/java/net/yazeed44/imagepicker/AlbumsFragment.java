@@ -29,7 +29,7 @@ public class AlbumsFragment extends Fragment {
         return albumsGrid;
     }
 
-    void setupAdapter() {
+    public void setupAdapter() {
         AlbumUtil.loadAlbums(albumsGrid, this);
 
     }

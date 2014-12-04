@@ -72,7 +72,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     }
 
 
-    private void initOptions(){
+    public void initOptions() {
 
 
         sCheckedImages.clear();
@@ -95,7 +95,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     }
 
 
-    private void setupAlbums(Bundle savedInstanceState){
+    public void setupAlbums(Bundle savedInstanceState) {
         if (findViewById(R.id.fragment_container) != null) {
 
             if (savedInstanceState == null) {
@@ -141,7 +141,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     }
 
 
-    private void updateTextAndBadge() {
+    public void updateTextAndBadge() {
 
         if (sCheckedImages.size() == 0) {
             mDoneBadge.setVisibility(View.GONE);
