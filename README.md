@@ -24,7 +24,7 @@ It's easy
 ```java
 private void pickImages(){
         final Intent pickIntent = new Intent(this, PickerActivity.class); 
-        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit
+        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit , you can skip that if you want no limit
 
         startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
     }
