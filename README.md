@@ -3,7 +3,7 @@ MultiImagePicker
 
 A library to pick multi images
 
-Sample App (On playstore) : Soon
+Sample App (On playstore) : https://play.google.com/store/apps/details?id=net.yazeed44.imagepicker.sample
 
 This library is built-in gallery to pick multiple images or capture new photos , and retrieve the path in the code
 
