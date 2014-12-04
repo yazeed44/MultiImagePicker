@@ -24,5 +24,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile project(':library')
+    compile 'com.afollestad:material-dialogs:0.3.4'
 
 }

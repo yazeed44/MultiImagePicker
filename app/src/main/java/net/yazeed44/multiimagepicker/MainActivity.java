@@ -1,7 +1,6 @@
 package net.yazeed44.multiimagepicker;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -17,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import net.yazeed44.imagepicker.PickerActivity;
@@ -73,9 +73,10 @@ public class MainActivity extends ActionBarActivity {
 
         final Spanned aboutBody = Html.fromHtml(getResources().getString(R.string.about_body_html));
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.about_title)
-                .setMessage(aboutBody)
+        new MaterialDialog.Builder(this)
+                .title(R.string.about_title)
+                .content(aboutBody)
+                .contentLineSpacing(1.6f)
                 .show();
 
     }

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:onClick="onClickPick"
-        android:text="Pick 6 images" />
+        android:text="@string/pick_btn" />
 
     <GridView
         android:id="@+id/images_sample"

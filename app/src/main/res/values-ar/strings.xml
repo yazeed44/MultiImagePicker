@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">نموذج لمكتبة مختار الصور المتعدد</string>
+    <string name="about_body_html"><![CDATA[نموذج لمكتبة مختار الصور المتعددة , طور بواسطة<b>yazeed44</b>.<br/>         <a href=\'https://github.com/yazeed44\'>Github</a>&nbsp;&nbsp;        <a href=\'https://google.com/+yazeedAlmakoushi\'>Google+</a>        <a href=\'mailto:g--56@hotmail.com\'>Email</a>  ]]></string>
+    <string name="about_title">عن التطبيق</string>
+    <string name="pick_btn">إختر 6 صور</string>
+</resources>
