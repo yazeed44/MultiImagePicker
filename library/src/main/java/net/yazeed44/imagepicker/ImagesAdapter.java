@@ -16,7 +16,7 @@ import net.yazeed44.imagepicker.library.R;
 /**
  * Created by yazeed44 on 11/23/14.
  */
-class ImagesAdapter extends BaseAdapter {
+public class ImagesAdapter extends BaseAdapter {
 
 
     private final AlbumUtil.AlbumEntry mAlbum;

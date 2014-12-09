@@ -3,6 +3,7 @@ package net.yazeed44.imagepicker;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,7 +38,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     public static final String PICKED_IMAGES_KEY = "pickedImagesKey";
     public static final String LIMIT_KEY = "limitKey";
 
-    public static final int PICK_REQUEST = 100;
+    public static final int PICK_REQUEST = 144;
     public static final int NO_LIMIT = -1;
 
     private int mLimit = NO_LIMIT;
@@ -47,9 +48,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     private View mDoneLayout;
     private ImagesFragment mImagesFragment;
     private AlbumsFragment mAlbumsFragment;
-
-    private String mCapturedPhotoPath = Environment.getExternalStorageDirectory() + "/temp_tmp" + "capture_tmp.png";
-    private int mCaptureCount = 0;
+    private Uri mCapturedPhotoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,13 +149,13 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
         } else if (sCheckedImages.size() == mLimit) {
             mDoneBadge.setText(sCheckedImages.size() + "");
-            mDoneBadge.setBackgroundColor(getResources().getColor(R.color.reached_limit_text));
+            mDoneBadge.getBackground().setColorFilter(getResources().getColor(R.color.reached_limit_text), PorterDuff.Mode.SRC);
             Toast.makeText(this, R.string.reach_limit, Toast.LENGTH_SHORT).show();
 
         } else {
             mDoneText.setTextColor(Color.parseColor("#ffffff"));
             mDoneLayout.setClickable(true);
-            mDoneBadge.setBackgroundColor(getResources().getColor(R.color.checked_photo));
+            mDoneBadge.getBackground().setColorFilter(getResources().getColor(R.color.checked_photo), PorterDuff.Mode.SRC);
             mDoneBadge.setVisibility(View.VISIBLE);
             mDoneBadge.setText(sCheckedImages.size() + "");
         }
@@ -184,17 +183,16 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
     }
 
-    private void capturePhoto() {
-        mCapturedPhotoPath += mCaptureCount;
+    public void capturePhoto() {
 
-        final File captureFolder = new File(mCapturedPhotoPath);
+        final File captureFolder = new File(Environment.getExternalStorageDirectory(), "capture" + System.currentTimeMillis() + ".png");
 
-        captureFolder.mkdir();
+        captureFolder.mkdirs();
 
-        final Uri outputURI = Uri.fromFile(captureFolder);
+        mCapturedPhotoUri = Uri.fromFile(captureFolder);
 
         final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputURI);
+        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedPhotoUri);
         startActivityForResult(captureIntent, 0);
     }
 
@@ -203,12 +201,9 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && requestCode == 0 && data == null) {
 
-            Log.d("onActivityResult OK", "Captured photo exists  " + new File(mCapturedPhotoPath).exists());
-
-            sCheckedImages.put(mCaptureCount, new AlbumUtil.PhotoEntry.Builder(mCapturedPhotoPath).build());
-            mCaptureCount++;
+            sCheckedImages.append((int) System.currentTimeMillis(), new AlbumUtil.PhotoEntry.Builder(mCapturedPhotoUri.getPath()).build());
             updateTextAndBadge();
 
         } else {

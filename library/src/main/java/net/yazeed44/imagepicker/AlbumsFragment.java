@@ -16,7 +16,7 @@ import net.yazeed44.imagepicker.library.R;
  */
 public class AlbumsFragment extends Fragment {
     public OnClickAlbum listener;
-    GridView albumsGrid;
+    public GridView albumsGrid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

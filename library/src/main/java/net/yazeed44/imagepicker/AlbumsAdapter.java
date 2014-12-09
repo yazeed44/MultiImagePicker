@@ -19,8 +19,8 @@ import java.util.ArrayList;
  */
 public class AlbumsAdapter extends BaseAdapter {
 
-    private final ArrayList<AlbumUtil.AlbumEntry> albums;
-    private final AlbumsFragment fragment;
+    public final ArrayList<AlbumUtil.AlbumEntry> albums;
+    public final AlbumsFragment fragment;
 
     public AlbumsAdapter(final ArrayList<AlbumUtil.AlbumEntry> albums, final AlbumsFragment fragment) {
         this.albums = albums;

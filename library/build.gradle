@@ -4,7 +4,6 @@ android {
     buildToolsVersion "21.1.1"
 
     defaultConfig {
-        applicationId "net.yazeed44.imagepicker.library"
         minSdkVersion 8
         targetSdkVersion 21
         versionCode 1
