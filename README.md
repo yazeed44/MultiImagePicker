@@ -3,7 +3,7 @@ MultiImagePicker
 
 A library to pick multi images
 
-Sample App (On playstore) : Soon
+Sample App (On playstore) : https://play.google.com/store/apps/details?id=net.yazeed44.imagepicker.sample
 
 This library is built-in gallery to pick multiple images or capture new photos , and retrieve the path in the code
 
@@ -24,7 +24,7 @@ It's easy
 ```java
 private void pickImages(){
         final Intent pickIntent = new Intent(this, PickerActivity.class); 
-        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit
+        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit , you can skip that if you want no limit
 
         startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
     }
