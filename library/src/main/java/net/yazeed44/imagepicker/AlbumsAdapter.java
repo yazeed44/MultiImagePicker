@@ -71,7 +71,7 @@ public class AlbumsAdapter extends BaseAdapter {
 
     public void setHeight(final View grid) {
 
-        final int height = (int) (fragment.getResources().getDimensionPixelSize(R.dimen.album_width) * 1.5);
+        final int height = grid.getResources().getDimensionPixelSize(R.dimen.album_height);
 
         grid.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
 

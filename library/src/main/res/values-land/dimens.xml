@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="album_height">160dp</dimen>
+    <dimen name="image_height">120dp</dimen>
+
+    <item name="fragment_weight" format="float" type="dimen">17.2</item>
+    <item name="ok_cancel_layout_weight" format="float" type="dimen">2.8</item>
+</resources>

@@ -19,24 +19,24 @@ import net.yazeed44.imagepicker.library.R;
 public class ImagesAdapter extends BaseAdapter {
 
 
-    private final AlbumUtil.AlbumEntry mAlbum;
-    private final ImagesFragment mFragment;
+    public final AlbumUtil.AlbumEntry album;
+    public final ImagesFragment fragment;
 
     public ImagesAdapter(final AlbumUtil.AlbumEntry album, final ImagesFragment fragment) {
-        this.mAlbum = album;
-        this.mFragment = fragment;
+        this.album = album;
+        this.fragment = fragment;
         setupItemListener();
     }
 
 
     @Override
     public int getCount() {
-        return mAlbum.photos.size();
+        return album.photos.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mAlbum.photos.get(position);
+        return album.photos.get(position);
     }
 
 
@@ -48,11 +48,11 @@ public class ImagesAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final AlbumUtil.PhotoEntry photo = mAlbum.photos.get(position);
+        final AlbumUtil.PhotoEntry photo = album.photos.get(position);
 
         final ViewHolder holder;
         if (convertView == null) {
-            convertView = mFragment.getActivity().getLayoutInflater().inflate(R.layout.image, parent, false);
+            convertView = fragment.getActivity().getLayoutInflater().inflate(R.layout.image, parent, false);
             holder = createHolder(convertView);
 
 
@@ -73,7 +73,7 @@ public class ImagesAdapter extends BaseAdapter {
     public void setHeight(final View convertView) {
 
 
-        final int height = (int) (mFragment.getResources().getDimensionPixelSize(R.dimen.image_width) * 1.1);
+        final int height = fragment.getResources().getDimensionPixelSize(R.dimen.image_height);
 
         convertView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
 
@@ -86,7 +86,7 @@ public class ImagesAdapter extends BaseAdapter {
 
     public void drawGrid(final View convertView, final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
 
-        final Resources r = mFragment.getResources();
+        final Resources r = fragment.getResources();
         if (isPicked(photo)) {
             Log.d("drawGrid", photo.imageId + "   is picked");
             convertView.setBackgroundColor(r.getColor(R.color.checked_photo));
@@ -108,11 +108,11 @@ public class ImagesAdapter extends BaseAdapter {
         if (isPicked) {
             //Unpick
 
-            mFragment.pickListener.onUnpickImage(photo);
+            fragment.pickListener.onUnpickImage(photo);
 
         } else if (AlbumUtil.sLimit == PickerActivity.NO_LIMIT || AlbumUtil.sLimit > PickerActivity.sCheckedImages.size()) {
             //pick
-            mFragment.pickListener.onPickImage(photo);
+            fragment.pickListener.onPickImage(photo);
 
         }
 
@@ -130,10 +130,10 @@ public class ImagesAdapter extends BaseAdapter {
 
 
     public void setupItemListener() {
-        mFragment.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        fragment.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final AlbumUtil.PhotoEntry photoEntry = mAlbum.photos.get(position);
+                final AlbumUtil.PhotoEntry photoEntry = album.photos.get(position);
                 final ViewHolder holder = createHolder(view);
 
                 pickImage(view, holder, photoEntry);

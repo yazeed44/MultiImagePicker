@@ -12,12 +12,12 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="18.3" />
+        android:layout_weight="@dimen/fragment_weight" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.7"
+        android:layout_weight="@dimen/ok_cancel_layout_weight"
         android:background="#ff333333">
 
         <Button
