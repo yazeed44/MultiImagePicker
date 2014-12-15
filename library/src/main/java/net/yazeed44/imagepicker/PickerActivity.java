@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.WindowCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -50,9 +51,13 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     private AlbumsFragment mAlbumsFragment;
     private Uri mCapturedPhotoUri;
 
+
+    //TODO Add animation
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_pick);
         getSupportActionBar().setTitle(R.string.albums_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);

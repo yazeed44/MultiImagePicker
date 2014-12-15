@@ -1,6 +1,7 @@
 package net.yazeed44.imagepicker;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +64,7 @@ public class ImagesAdapter extends BaseAdapter {
         }
 
         setHeight(convertView);
-        loadImage(holder, photo);
+        displayThumbnail(holder, photo);
         drawGrid(convertView, holder, photo);
 
 
@@ -79,7 +80,7 @@ public class ImagesAdapter extends BaseAdapter {
 
     }
 
-    public void loadImage(final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
+    public void displayThumbnail(final ViewHolder holder, final AlbumUtil.PhotoEntry photo) {
 
         ImageLoader.getInstance().displayImage("file://" + photo.path, holder.thumbnail);
     }
@@ -91,12 +92,14 @@ public class ImagesAdapter extends BaseAdapter {
             Log.d("drawGrid", photo.imageId + "   is picked");
             convertView.setBackgroundColor(r.getColor(R.color.checked_photo));
             holder.check.setBackgroundColor(r.getColor(R.color.checked_photo));
-            final int padding = 10;
-            holder.thumbnail.setPadding(padding, padding, padding, padding);
+            final int padding = fragment.getResources().getDimensionPixelSize(R.dimen.image_checked_padding);
+            holder.thumbnail.setColorFilter(fragment.getResources().getColor(R.color.checked_photo_overlay));
+            convertView.setPadding(padding, padding, padding, padding);
         } else {
             holder.check.setBackgroundColor(r.getColor(R.color.check_default_color));
             convertView.setBackgroundColor(r.getColor(android.R.color.transparent));
-            holder.thumbnail.setPadding(0, 0, 0, 0);
+            holder.thumbnail.setColorFilter(Color.TRANSPARENT);
+            convertView.setPadding(0, 0, 0, 0);
         }
     }
 
@@ -109,6 +112,7 @@ public class ImagesAdapter extends BaseAdapter {
             //Unpick
 
             fragment.pickListener.onUnpickImage(photo);
+
 
         } else if (AlbumUtil.sLimit == PickerActivity.NO_LIMIT || AlbumUtil.sLimit > PickerActivity.sCheckedImages.size()) {
             //pick
@@ -143,17 +147,19 @@ public class ImagesAdapter extends BaseAdapter {
 
     public boolean isPicked(final AlbumUtil.PhotoEntry pPhotoEntry) {
 
-        boolean isPicked = false;
+
         for (int i = 0; i < PickerActivity.sCheckedImages.size(); i++) {
             final AlbumUtil.PhotoEntry photo = PickerActivity.sCheckedImages.valueAt(i);
 
             if (photo.path.equals(pPhotoEntry.path)) {
-                isPicked = true;
+
+                return true;
             }
         }
 
-        return isPicked;
+        return false;
     }
+
 
     public static class ViewHolder {
         ImageView thumbnail;

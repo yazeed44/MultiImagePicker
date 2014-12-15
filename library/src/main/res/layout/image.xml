@@ -15,7 +15,8 @@
         android:contentDescription="@string/image_thumbnail"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:scaleType="fitXY"
+
+        android:scaleType="centerCrop"
 
         />
 
