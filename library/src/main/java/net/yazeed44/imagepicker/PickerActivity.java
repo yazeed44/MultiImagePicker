@@ -71,7 +71,6 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         updateTextAndBadge();
 
 
-
         setupAlbums(savedInstanceState);
     }
 
@@ -80,7 +79,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
 
         sCheckedImages.clear();
-       final Intent options = getIntent();
+        final Intent options = getIntent();
 
         if (options != null) {
 
@@ -110,8 +109,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, mAlbumsFragment)
-                .commit();
-
+                        .commit();
 
 
             }
@@ -119,27 +117,27 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     }
 
 
-    private void initImageLoader(){
+    private void initImageLoader() {
 
 
-                String CACHE_DIR = Environment.getExternalStorageDirectory()
-                        .getAbsolutePath() + "/.temp_tmp";
-                new File(CACHE_DIR).mkdirs();
-                File cacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(),
-                        CACHE_DIR);
-                DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                        .cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY)
-                        .bitmapConfig(Bitmap.Config.RGB_565)
-                            .resetViewBeforeLoading(true)
-                           .  build();
-                ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
-                        getBaseContext())
-                        .defaultDisplayImageOptions(defaultOptions)
-                        .diskCache(new UnlimitedDiscCache(cacheDir))
-                        .memoryCache(new WeakMemoryCache());
-                ImageLoaderConfiguration config = builder.build();
+        String CACHE_DIR = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/.temp_tmp";
+        new File(CACHE_DIR).mkdirs();
+        File cacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(),
+                CACHE_DIR);
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .resetViewBeforeLoading(true)
+                .build();
+        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
+                getBaseContext())
+                .defaultDisplayImageOptions(defaultOptions)
+                .diskCache(new UnlimitedDiscCache(cacheDir))
+                .memoryCache(new WeakMemoryCache());
+        ImageLoaderConfiguration config = builder.build();
 
-                ImageLoader.getInstance().init(config);
+        ImageLoader.getInstance().init(config);
 
 
     }
@@ -202,7 +200,6 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     }
 
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -219,7 +216,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_capture, menu);
+        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
         return true;
     }
 
@@ -231,7 +228,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         int id = item.getItemId();
 
 
-        if (id == R.id.menu_camera) {
+        if (id == R.id.action_take_photo) {
             capturePhoto();
             return true;
         }
@@ -241,7 +238,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
 
     @Override
-    public void finish(){
+    public void finish() {
 
         if (mImagesFragment != null && mImagesFragment.isVisible()) {
             mAlbumsFragment = new AlbumsFragment();
@@ -250,9 +247,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
                     .commit();
             getSupportActionBar().setTitle(R.string.albums_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
-
-        else {
+        } else {
             super.finish();
         }
     }
@@ -261,7 +256,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     @Override
     public void onClickAlbum(AlbumUtil.AlbumEntry album) {
         final Bundle albumBundle = new Bundle();
-        albumBundle.putSerializable(ALBUM_KEY,album);
+        albumBundle.putSerializable(ALBUM_KEY, album);
 
         mImagesFragment = new ImagesFragment();
         mImagesFragment.setArguments(albumBundle);
@@ -285,7 +280,6 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         }
 
 
-
         updateTextAndBadge();
     }
 
@@ -306,7 +300,6 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
         return false;
     }
-
 
 
 }

@@ -4,7 +4,7 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/menu_camera"
+        android:id="@+id/action_take_photo"
         android:icon="@drawable/ic_camera"
         android:title="@string/take_photo"
         imagePicker:showAsAction="always" />

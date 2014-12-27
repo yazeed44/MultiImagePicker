@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="@dimen/ok_cancel_layout_weight"
-        android:background="#ff333333">
+        android:background="@color/btn_background">
 
         <Button
             style="@style/Btn"

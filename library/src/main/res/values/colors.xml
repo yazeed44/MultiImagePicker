@@ -18,5 +18,11 @@
     <color name="reached_limit_text">#ffff113b</color>
     <color name="checked_photo_overlay">#28576eff</color>
 
+    <color name="album_details_background">#8e212121</color>
+
+
+    <color name="btn_background">#ff333333</color>
+    <color name="btn_clicked_background">#ff3d3d3d</color>
+
 
 </resources>

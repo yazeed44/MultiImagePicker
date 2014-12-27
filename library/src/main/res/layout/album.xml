@@ -21,12 +21,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="#8e212121"
+        android:background="@color/album_details_background"
         android:focusable="false"
         android:focusableInTouchMode="false">
 
         <TextView
             android:id="@+id/album_name"
+            style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center"
@@ -34,10 +35,8 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="Album name"
-            android:textColor="#ffffff"
-            android:textSize="14sp"
 
-            />
+            android:textColor="#fff" />
 
         <TextView
             android:id="@+id/album_count"
@@ -50,6 +49,7 @@
             android:text="100"
             android:textColor="#ff979797"
             android:textSize="13sp"
+
 
             />
     </FrameLayout>

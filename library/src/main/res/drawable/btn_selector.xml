@@ -3,17 +3,17 @@
 
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <solid android:color="#ff3d3d3d" />
+            <solid android:color="@color/btn_clicked_background" />
         </shape>
     </item>
     <item android:state_focused="true">
         <shape android:shape="rectangle">
-            <solid android:color="#ff3d3d3d" />
+            <solid android:color="@color/btn_clicked_background" />
         </shape>
     </item>
     <item android:state_selected="true">
         <shape android:shape="rectangle">
-            <solid android:color="#ff3d3d3d" />
+            <solid android:color="@color/btn_clicked_background" />
         </shape>
     </item>
     <item android:drawable="@drawable/transparent" />
