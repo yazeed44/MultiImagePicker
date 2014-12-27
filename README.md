@@ -61,6 +61,30 @@ private void pickImages(){
             
 ```
 
+##Contribution
+
+### Questions
+
+If you have any questions regarding MultiImagePicker,create an Issue
+
+### Feature request
+
+To create a new Feature request, open an issue 
+
+I'll try to answer as soon as I find the time.
+
+### Pull requests welcome
+
+Feel free to contribute to MultiImagePicker.
+
+Either you found a bug or have created a new and awesome feature, just create a pull request.
+
+
+### Discuss
+
+Join in the conversation, check out the [XDA Thread](http://forum.xda-developers.com/tools/programming/library-multi-image-picker-t2985724/post57775519#post57775519).
+
+
 
 
 Change Log
