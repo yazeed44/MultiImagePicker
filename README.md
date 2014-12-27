@@ -67,9 +67,11 @@ Change Log
 ==========
 
 1.1:
+
 -Better support for tablets
 
 1.0:
+
 -First release
 
 
