@@ -26,6 +26,12 @@ Soooon
 
 
 
+Adding to your project
+======================
+Add :library to your project as module Then compile it in build.gradle
+
+
+
 Getting started
 ==========
 
