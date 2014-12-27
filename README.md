@@ -62,3 +62,5 @@ TODO
 
 -Implement animations
 
+-Add more translations
+
