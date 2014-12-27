@@ -57,6 +57,8 @@ TODO
 ====
 
 -Better user expirenece
+
 -easy integration
+
 -Implement animations
 
