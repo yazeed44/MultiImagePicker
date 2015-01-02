@@ -44,7 +44,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
     private int mLimit = NO_LIMIT;
 
-    public static SparseArray<AlbumUtil.PhotoEntry> sCheckedImages = new SparseArray<AlbumUtil.PhotoEntry>();
+    public static SparseArray<AlbumUtil.PhotoEntry> sCheckedImages = new SparseArray<>();
     private TextView mDoneBadge, mDoneText;
     private View mDoneLayout;
     private ImagesFragment mImagesFragment;
@@ -105,7 +105,6 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
 
                 mAlbumsFragment = new AlbumsFragment();
-                mAlbumsFragment.setArguments(getIntent().getExtras());
 
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, mAlbumsFragment)
@@ -241,10 +240,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     public void finish() {
 
         if (mImagesFragment != null && mImagesFragment.isVisible()) {
-            mAlbumsFragment = new AlbumsFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, mAlbumsFragment)
-                    .commit();
+            getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         } else {
@@ -258,12 +254,16 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         final Bundle albumBundle = new Bundle();
         albumBundle.putSerializable(ALBUM_KEY, album);
 
-        mImagesFragment = new ImagesFragment();
+        if (mImagesFragment == null) {
+            mImagesFragment = new ImagesFragment();
+        }
+
         mImagesFragment.setArguments(albumBundle);
 
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, mImagesFragment)
+                .addToBackStack(null)
                 .commit();
 
         getSupportActionBar().setTitle(album.name);
@@ -293,12 +293,9 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
     @Override
     public boolean onSupportNavigateUp() {
-        if (mImagesFragment != null && mImagesFragment.isVisible()) {
-            finish();
-            return true;
-        }
+        finish();
 
-        return false;
+        return true;
     }
 
 
