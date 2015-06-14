@@ -1,7 +1,6 @@
 package net.yazeed44.imagepicker;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -18,20 +17,16 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.utils.StorageUtils;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.ThreadEnforcer;
 
 import net.yazeed44.imagepicker.library.R;
 
 import java.io.File;
 
 
-public class PickerActivity extends ActionBarActivity implements AlbumsFragment.OnClickAlbum, ImagesFragment.OnPickImage {
+public class PickerActivity extends ActionBarActivity {
 
 
     public static final String ALBUM_KEY = "albumKey";
@@ -41,10 +36,9 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
     public static final int PICK_REQUEST = 144;
     public static final int NO_LIMIT = -1;
-
+    public static final Bus BUS = new Bus(ThreadEnforcer.ANY);
+    public static SparseArray<Util.ImageEntry> sCheckedImages = new SparseArray<>();
     private int mLimit = NO_LIMIT;
-
-    public static SparseArray<AlbumUtil.PhotoEntry> sCheckedImages = new SparseArray<>();
     private TextView mDoneBadge, mDoneText;
     private View mDoneLayout;
     private ImagesFragment mImagesFragment;
@@ -53,9 +47,12 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
 
     //TODO Add animation
+    //TODO Fix bugs with changing orientation
+    //TODO Add support for gif
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_pick);
@@ -74,6 +71,17 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         setupAlbums(savedInstanceState);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BUS.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BUS.unregister(this);
+    }
 
     public void initOptions() {
 
@@ -93,7 +101,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         }
 
 
-        AlbumUtil.initLimit(mLimit);
+        Util.initLimit(mLimit);
 
     }
 
@@ -119,24 +127,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
     private void initImageLoader() {
 
 
-        String CACHE_DIR = Environment.getExternalStorageDirectory()
-                .getAbsolutePath() + "/.temp_tmp";
-        new File(CACHE_DIR).mkdirs();
-        File cacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(),
-                CACHE_DIR);
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisk(true).imageScaleType(ImageScaleType.EXACTLY)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .resetViewBeforeLoading(true)
-                .build();
-        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
-                getBaseContext())
-                .defaultDisplayImageOptions(defaultOptions)
-                .diskCache(new UnlimitedDiscCache(cacheDir))
-                .memoryCache(new WeakMemoryCache());
-        ImageLoaderConfiguration config = builder.build();
 
-        ImageLoader.getInstance().init(config);
 
 
     }
@@ -204,7 +195,7 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
         if (resultCode == RESULT_OK && requestCode == 0 && data == null) {
 
-            sCheckedImages.append((int) System.currentTimeMillis(), new AlbumUtil.PhotoEntry.Builder(mCapturedPhotoUri.getPath()).build());
+            sCheckedImages.append((int) System.currentTimeMillis(), new Util.ImageEntry.Builder(mCapturedPhotoUri.getPath()).build());
             updateTextAndBadge();
 
         } else {
@@ -237,20 +228,28 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
 
     @Override
-    public void finish() {
+    public void onBackPressed() {
 
         if (mImagesFragment != null && mImagesFragment.isVisible()) {
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         } else {
-            super.finish();
+            super.onBackPressed();
         }
     }
 
-
     @Override
-    public void onClickAlbum(AlbumUtil.AlbumEntry album) {
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+
+        return true;
+    }
+
+
+    @Subscribe
+    public void onClickAlbum(final Events.OnClickAlbumEvent albumEvent) {
+        final Util.AlbumEntry album = albumEvent.albumEntry;
         final Bundle albumBundle = new Bundle();
         albumBundle.putSerializable(ALBUM_KEY, album);
 
@@ -268,13 +267,12 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
 
         getSupportActionBar().setTitle(album.name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
 
-    @Override
-    public void onPickImage(AlbumUtil.PhotoEntry photoEntry) {
+    @Subscribe
+    public void onPickImage(final Events.OnPickImageEvent pickImageEvent) {
         if (mLimit == NO_LIMIT || sCheckedImages.size() < mLimit) {
-            sCheckedImages.put(photoEntry.imageId, photoEntry);
+            sCheckedImages.put(pickImageEvent.imageEntry.imageId, pickImageEvent.imageEntry);
         } else {
             Log.i("onPickImage", "You can't check more images");
         }
@@ -283,19 +281,12 @@ public class PickerActivity extends ActionBarActivity implements AlbumsFragment.
         updateTextAndBadge();
     }
 
-    @Override
-    public void onUnpickImage(AlbumUtil.PhotoEntry photo) {
-        sCheckedImages.remove(photo.imageId);
+
+    @Subscribe
+    public void onUnpickImage(final Events.OnUnpickImageEvent unpickImageEvent) {
+        sCheckedImages.remove(unpickImageEvent.imageEntry.imageId);
 
         updateTextAndBadge();
-    }
-
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-
-        return true;
     }
 
 

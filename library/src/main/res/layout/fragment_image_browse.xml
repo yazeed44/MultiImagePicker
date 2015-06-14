@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/images_list"
+    style="@style/RecyclerView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:columnWidth="@dimen/image_width"
-    android:horizontalSpacing="@dimen/horizontal_spacing"
-    android:numColumns="@integer/num_columns_images"
-    android:scrollbarStyle="outsideOverlay"
-    android:verticalSpacing="@dimen/vertical_spacing" />
+    android:layout_height="match_parent" />

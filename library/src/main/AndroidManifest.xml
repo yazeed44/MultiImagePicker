@@ -12,6 +12,10 @@
 
 
         <activity android:name="net.yazeed44.imagepicker.PickerActivity" />
+
+        <service
+            android:name="net.yazeed44.imagepicker.OfflineSpiceService"
+            android:exported="false" />
     </application>
 
 </manifest>

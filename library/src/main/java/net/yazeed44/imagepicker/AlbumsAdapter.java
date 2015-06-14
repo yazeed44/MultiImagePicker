@@ -1,14 +1,14 @@
 package net.yazeed44.imagepicker;
 
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.bumptech.glide.Glide;
 
 import net.yazeed44.imagepicker.library.R;
 
@@ -17,96 +17,87 @@ import java.util.ArrayList;
 /**
  * Created by yazeed44 on 11/22/14.
  */
-public class AlbumsAdapter extends BaseAdapter {
+public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewHolder> implements Util.OnClickAlbum {
 
-    public final ArrayList<AlbumUtil.AlbumEntry> albums;
-    public final AlbumsFragment fragment;
+    protected final ArrayList<Util.AlbumEntry> mAlbumList;
+    protected final RecyclerView mRecycler;
 
-    public AlbumsAdapter(final ArrayList<AlbumUtil.AlbumEntry> albums, final AlbumsFragment fragment) {
-        this.albums = albums;
-        this.fragment = fragment;
-        setupItemListener();
+    public AlbumsAdapter(final ArrayList<Util.AlbumEntry> albums, RecyclerView mRecycler) {
+        this.mAlbumList = albums;
+        this.mRecycler = mRecycler;
     }
 
 
     @Override
-    public int getCount() {
-        return albums.size();
+    public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View layout = LayoutInflater.from(mRecycler.getContext()).inflate(R.layout.element_album, parent, false);
+        return new AlbumViewHolder(layout, this);
     }
-
 
     @Override
-    public Object getItem(int position) {
-        return albums.get(position);
-    }
+    public void onBindViewHolder(AlbumViewHolder holder, int position) {
 
+        setHeight(holder.itemView);
+        setupAlbum(holder, mAlbumList.get(position));
+
+    }
 
     @Override
-    public long getItemId(int position) {
-        return 0;
+    public int getItemCount() {
+        return mAlbumList.size();
     }
-
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final AlbumUtil.AlbumEntry album = albums.get(position);
-        View grid = convertView;
+    public void onClickAlbum(View layout) {
+        final int position = mRecycler.getChildPosition(layout);
+        final Util.AlbumEntry album = mAlbumList.get(position);
 
-        final ViewHolder holder;
-        if (convertView == null) {
-
-            grid = fragment.getActivity().getLayoutInflater().inflate(R.layout.album, parent, false);
-            holder = createHolder(grid);
-            grid.setTag(holder);
-        } else {
-            holder = (ViewHolder) grid.getTag();
-        }
-
-        setHeight(grid);
-        setupAlbum(holder, album);
-
-        return grid;
-
-    }
-
-    public void setHeight(final View grid) {
-
-        final int height = grid.getResources().getDimensionPixelSize(R.dimen.album_height);
-
-        grid.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+        PickerActivity.BUS.post(new Events.OnClickAlbumEvent(album));
 
 
     }
 
-    public void setupAlbum(final ViewHolder holder, final AlbumUtil.AlbumEntry album) {
+
+    public void setHeight(final View layout) {
+
+        final int height = layout.getResources().getDimensionPixelSize(R.dimen.album_height);
+
+        layout.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
+
+
+    }
+
+    public void setupAlbum(final AlbumViewHolder holder, final Util.AlbumEntry album) {
         holder.name.setText(album.name);
-        holder.count.setText(album.photos.size() + "");
+        holder.count.setText(album.imageList.size() + "");
 
-        ImageLoader.getInstance().displayImage("file://" + album.coverPhoto.path, holder.thumbnail);
+        Glide.with(mRecycler.getContext())
+                .load(album.coverImage.path)
+                .asBitmap()
+                .into(holder.thumbnail);
     }
 
-    public ViewHolder createHolder(View view) {
-        final ViewHolder holder = new ViewHolder();
-        holder.name = (TextView) view.findViewById(R.id.album_name);
-        holder.count = (TextView) view.findViewById(R.id.album_count);
-        holder.thumbnail = (ImageView) view.findViewById(R.id.album_thumbnail);
-        return holder;
-    }
 
-    public void setupItemListener() {
-        fragment.albumsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View itemView, int position, long id) {
-                final AlbumUtil.AlbumEntry album = albums.get(position);
-                fragment.listener.onClickAlbum(album);
-            }
-        });
-    }
+    class AlbumViewHolder extends RecyclerView.ViewHolder {
+        protected final ImageView thumbnail;
+        protected final TextView count;
+        protected final TextView name;
 
-    public static class ViewHolder {
-        ImageView thumbnail;
-        TextView count;
-        TextView name;
 
+        public AlbumViewHolder(final View itemView, final Util.OnClickAlbum listener) {
+            super(itemView);
+
+            thumbnail = (ImageView) itemView.findViewById(R.id.album_thumbnail);
+            count = (TextView) itemView.findViewById(R.id.album_count);
+            name = (TextView) itemView.findViewById(R.id.album_name);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onClickAlbum(itemView);
+                }
+            });
+
+        }
     }
 }

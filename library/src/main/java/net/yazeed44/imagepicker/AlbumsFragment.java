@@ -1,53 +1,99 @@
 package net.yazeed44.imagepicker;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
+
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yazeed44.imagepicker.library.R;
+
+import java.util.ArrayList;
 
 
 /**
  * Created by yazeed44 on 11/22/14.
  */
-public class AlbumsFragment extends Fragment {
-    public OnClickAlbum listener;
-    public GridView albumsGrid;
+public class AlbumsFragment extends Fragment implements RequestListener<ArrayList> {
+    public static final String TAG = "Albums Fragment";
+    protected RecyclerView mAlbumsRecycler;
+    protected SpiceManager mSpiceManager = new SpiceManager(OfflineSpiceService.class);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        albumsGrid = (GridView) inflater.inflate(R.layout.fragment_album_browse, container, false);
+        mAlbumsRecycler = (RecyclerView) inflater.inflate(R.layout.fragment_album_browse, container, false);
 
 
+        setupRecycler();
         setupAdapter();
 
-        return albumsGrid;
+        return mAlbumsRecycler;
+    }
+
+    protected void setupRecycler() {
+
+        mAlbumsRecycler.setHasFixedSize(true);
+        mAlbumsRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.album_spacing)));
+
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_albums));
+        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        mAlbumsRecycler.setLayoutManager(gridLayoutManager);
+
+
+    }
+
+    @Override
+    public void onStart() {
+        mSpiceManager.start(getActivity());
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mSpiceManager.shouldStop();
+        super.onStop();
     }
 
     public void setupAdapter() {
-        AlbumUtil.loadAlbums(albumsGrid, this);
+        final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
+
+        mSpiceManager.execute(loadingRequest, this);
+
 
     }
+
 
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof OnClickAlbum) {
-            listener = (OnClickAlbum) activity;
-        } else {
-            throw new ClassCastException(activity.toString() + "  Dosen't implement AlbumsFragment.OnClickAlbum !!");
-        }
+    public void onRequestFailure(SpiceException spiceException) {
+        Log.e(TAG, spiceException.getMessage());
+
     }
 
+    @Override
+    public void onRequestSuccess(ArrayList albumEntries) {
 
-    public static interface OnClickAlbum {
+        if (hasLoadedSuccessfully(albumEntries)) {
 
-        void onClickAlbum(net.yazeed44.imagepicker.AlbumUtil.AlbumEntry album);
+            final AlbumsAdapter albumsAdapter = new AlbumsAdapter(albumEntries, mAlbumsRecycler);
+            mAlbumsRecycler.setAdapter(albumsAdapter);
+
+
+        }
+
+    }
+
+    private boolean hasLoadedSuccessfully(final ArrayList albumList) {
+        return albumList != null && albumList.size() > 0;
     }
 }

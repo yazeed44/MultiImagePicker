@@ -1,9 +1,12 @@
 package net.yazeed44.multiimagepicker;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -12,12 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.bumptech.glide.Glide;
 
 import net.yazeed44.imagepicker.PickerActivity;
 import net.yazeed44.imagepicker.sample.R;
@@ -25,10 +25,24 @@ import net.yazeed44.imagepicker.sample.R;
 
 public class MainActivity extends ActionBarActivity {
 
+    private RecyclerView mImageSampleRecycler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mImageSampleRecycler = (RecyclerView) findViewById(R.id.images_sample);
+        setupRecycler();
+    }
+
+    private void setupRecycler() {
+
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, getResources().getInteger(R.integer.num_columns_image_samples));
+        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mImageSampleRecycler.setLayoutManager(gridLayoutManager);
+
+
     }
 
 
@@ -73,11 +87,12 @@ public class MainActivity extends ActionBarActivity {
 
         final Spanned aboutBody = Html.fromHtml(getResources().getString(R.string.about_body_html));
 
-        new MaterialDialog.Builder(this)
-                .title(R.string.about_title)
-                .content(aboutBody)
-                .contentLineSpacing(1.6f)
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.about_title)
+                .setMessage(aboutBody)
                 .show();
+
 
     }
 
@@ -101,71 +116,57 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private void setupImageSamples(String[] paths) {
+        mImageSampleRecycler.setAdapter(new ImageSamplesAdapter(paths));
+    }
 
-    private void setupImageSamples(final String[] paths) {
-        final GridView gridView = (GridView) findViewById(R.id.images_sample);
 
-        gridView.setAdapter(new SamplesAdapter(paths, this));
+    private class ImageSamplesAdapter extends RecyclerView.Adapter<ImageSampleViewHolder> {
+        private String[] paths;
+
+        public ImageSamplesAdapter(final String[] paths) {
+            this.paths = paths;
+        }
+
+        @Override
+        public ImageSampleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            final ImageView imageView = new ImageView(mImageSampleRecycler.getContext());
+            return new ImageSampleViewHolder(imageView);
+        }
+
+        @Override
+        public void onBindViewHolder(ImageSampleViewHolder holder, int position) {
+
+            final String path = paths[position];
+            loadImage(path, holder.thumbnail);
+        }
+
+        @Override
+        public int getItemCount() {
+            return paths.length;
+        }
+
+
+        private void loadImage(final String path, final ImageView imageView) {
+            imageView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 440));
+
+            Glide.with(MainActivity.this)
+                    .load(path)
+                    .asBitmap()
+                    .into(imageView);
+
+        }
 
 
     }
 
+    class ImageSampleViewHolder extends RecyclerView.ViewHolder {
 
-    private class SamplesAdapter extends BaseAdapter {
-        private String[] paths;
-        private Activity activity;
+        protected ImageView thumbnail;
 
-        public SamplesAdapter(final String[] paths, final Activity activity) {
-            this.paths = paths;
-            this.activity = activity;
+        public ImageSampleViewHolder(View itemView) {
+            super(itemView);
+            thumbnail = (ImageView) itemView;
         }
-
-        @Override
-        public int getCount() {
-            return paths.length;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return paths[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            final String path = paths[position];
-            final ImageView imageView;
-            if (convertView == null) {
-                convertView = createImage();
-                imageView = (ImageView) convertView;
-                convertView.setTag(imageView);
-
-            } else {
-                imageView = (ImageView) convertView.getTag();
-            }
-
-            loadImage(path, imageView);
-
-            return convertView;
-        }
-
-
-        public ImageView createImage() {
-            return new ImageView(activity);
-
-        }
-
-        private void loadImage(final String path, final ImageView imageView) {
-            imageView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 440));
-            ImageLoader.getInstance().displayImage("file://" + path, imageView);
-
-        }
-
-
     }
 }

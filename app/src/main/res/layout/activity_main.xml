@@ -13,12 +13,12 @@
         android:onClick="onClickPick"
         android:text="@string/pick_btn" />
 
-    <GridView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/images_sample"
+        style="@style/RecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="auto_fit"
 
+        android:layout_height="match_parent"
 
         />
 
