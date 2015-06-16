@@ -14,7 +14,11 @@
 
     <color name="alter_checked_photo_overlay">#28576eff</color>
 
-    <color name="album_details_background">#BF000000</color>
+    <color name="alter_album_background">#BF000000</color>
+
+    <color name="alter_album_name_text_color">#fcffff</color>
+
+    <color name="alter_album_images_count_text_color">#a5a49f</color>
 
 
 </resources>

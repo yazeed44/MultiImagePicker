@@ -20,15 +20,10 @@ import java.util.HashMap;
 public final class Util {
 
 
-    public static int sLimit;
 
 
     private Util() {
         throw new AssertionError();
-    }
-
-    public static void initLimit(int limit) {
-        sLimit = limit;
     }
 
 

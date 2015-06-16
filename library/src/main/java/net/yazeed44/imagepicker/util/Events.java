@@ -2,6 +2,8 @@ package net.yazeed44.imagepicker.util;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import java.util.ArrayList;
+
 /**
  * Created by yazeed44 on 6/13/15.
  */
@@ -44,11 +46,19 @@ public final class Events {
         }
     }
 
-    public static class OnPublishPickOptions {
+    public static class OnPublishPickOptionsEvent {
         public final Picker options;
 
-        public OnPublishPickOptions(final Picker options) {
+        public OnPublishPickOptionsEvent(final Picker options) {
             this.options = options;
+        }
+    }
+
+    public static class onAlbumsLoadedEvent {
+        public final ArrayList<AlbumEntry> albumList;
+
+        public onAlbumsLoadedEvent(final ArrayList<AlbumEntry> albumList) {
+            this.albumList = albumList;
         }
     }
 }

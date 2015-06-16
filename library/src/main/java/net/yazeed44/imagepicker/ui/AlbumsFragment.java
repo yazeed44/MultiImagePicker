@@ -16,11 +16,14 @@ import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.LoadingAlbumsRequest;
 import net.yazeed44.imagepicker.util.OfflineSpiceService;
 import net.yazeed44.imagepicker.util.Picker;
 
 import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 
 /**
@@ -39,6 +42,25 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
                              Bundle savedInstanceState) {
         mAlbumsRecycler = (RecyclerView) inflater.inflate(R.layout.fragment_album_browse, container, false);
 
+        if (mPickOptions == null) {
+            mPickOptions = EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class).options;
+        }
+
+        if (mAlbumList == null) {
+
+            final Events.onAlbumsLoadedEvent albumLoadedEvent = EventBus.getDefault().getStickyEvent(Events.onAlbumsLoadedEvent.class);
+
+            if (albumLoadedEvent != null) {
+                mAlbumList = albumLoadedEvent.albumList;
+            }
+
+
+        }
+
+
+        setupAdapter();
+
+
 
         setupRecycler();
         setupAdapter();
@@ -49,7 +71,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     protected void setupRecycler() {
 
         mAlbumsRecycler.setHasFixedSize(true);
-        // mAlbumsRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.album_spacing)));
+
 
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_albums));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -79,7 +101,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
             mSpiceManager.execute(loadingRequest, this);
         } else {
 
-            mAlbumsRecycler.setAdapter(new AlbumsAdapter(mAlbumList, mAlbumsRecycler));
+            mAlbumsRecycler.setAdapter(new AlbumsAdapter(mAlbumList, mAlbumsRecycler, mPickOptions));
         }
 
 
@@ -100,7 +122,9 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         if (hasLoadedSuccessfully(albumEntries)) {
             mAlbumList = albumEntries;
 
-            final AlbumsAdapter albumsAdapter = new AlbumsAdapter(albumEntries, mAlbumsRecycler);
+            EventBus.getDefault().postSticky(new Events.onAlbumsLoadedEvent(mAlbumList));
+
+            final AlbumsAdapter albumsAdapter = new AlbumsAdapter(albumEntries, mAlbumsRecycler, mPickOptions);
             mAlbumsRecycler.setAdapter(albumsAdapter);
 
 

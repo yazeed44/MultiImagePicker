@@ -5,7 +5,7 @@
 
 
     <dimen name="album_width">120dp</dimen>
-    <dimen name="album_height">160dp</dimen>
+    <dimen name="album_height">180dp</dimen>
 
 
     <dimen name="image_width">120dp</dimen>
@@ -18,8 +18,6 @@
     <dimen name="grid_spacing">2dp</dimen>
     <dimen name="grid_titleframe_height">42dp</dimen>
 
-    <item name="fragment_weight" format="float" type="dimen">18.3</item>
-    <item name="ok_cancel_layout_weight" format="float" type="dimen">1.7</item>
 
 
 </resources>

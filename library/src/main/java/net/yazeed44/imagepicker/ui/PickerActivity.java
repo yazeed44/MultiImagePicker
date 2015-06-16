@@ -15,10 +15,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.ImageEntry;
 import net.yazeed44.imagepicker.util.Picker;
-import net.yazeed44.imagepicker.util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class PickerActivity extends AppCompatActivity {
 
     private com.melnykov.fab.FloatingActionButton mDoneFab;
     private Picker mPickOptions;
-
+    private ArrayList<AlbumEntry> mAlbumList;
 
 
     //TODO Add animation
@@ -60,7 +60,7 @@ public class PickerActivity extends AppCompatActivity {
 
         EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
 
-        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptions.class)).options;
+        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
 
         getTheme().setTo(mPickOptions.context.getTheme());
 
@@ -94,9 +94,6 @@ public class PickerActivity extends AppCompatActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mPickOptions.actionBarBackgroundColor));
 
 
-        Util.initLimit(mPickOptions.limit);
-
-
     }
 
 
@@ -123,9 +120,9 @@ public class PickerActivity extends AppCompatActivity {
             mDoneFab.setVisibility(View.GONE);
 
         } else if (sCheckedImages.size() == mPickOptions.limit) {
+
             mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
-            Toast.makeText(this, R.string.reach_limit, Toast.LENGTH_SHORT).show();
 
         } else {
             mDoneFab.setVisibility(View.VISIBLE);
@@ -140,10 +137,9 @@ public class PickerActivity extends AppCompatActivity {
 
         final String[] paths = new String[sCheckedImages.size()];
 
-        int i = 0;
-        for (final ImageEntry image : sCheckedImages) {
-            paths[i] = image.path;
-            i++;
+
+        for (int i = 0; i < paths.length; i++) {
+            paths[i] = sCheckedImages.get(i).path;
         }
 
 
@@ -275,6 +271,10 @@ public class PickerActivity extends AppCompatActivity {
         sCheckedImages.remove(unpickImageEvent.imageEntry);
 
         updateFab();
+    }
+
+    public void onEvent(final Events.onAlbumsLoadedEvent albumsLoadedEvent) {
+        mAlbumList = albumsLoadedEvent.albumList;
     }
 
 

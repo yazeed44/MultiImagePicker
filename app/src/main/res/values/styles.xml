@@ -5,6 +5,9 @@
         <!-- Customize your theme here. -->
 
 
+        <item name="colorPrimary">#3f51b5</item>
+        <item name="colorPrimaryDark">#303F9F</item>
+        <item name="colorAccent">#3D5AFE</item>
     </style>
 
 </resources>

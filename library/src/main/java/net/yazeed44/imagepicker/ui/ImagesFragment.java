@@ -32,7 +32,7 @@ public class ImagesFragment extends Fragment {
 
         setupRecycler();
 
-        mPickOptions = EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptions.class).options;
+        mPickOptions = EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class).options;
 
         return mImagesRecycler;
     }

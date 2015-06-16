@@ -116,7 +116,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
             EventBus.getDefault().post(new Events.OnUnpickImageEvent(imageEntry));
 
 
-        } else if (Util.sLimit == PickerActivity.NO_LIMIT || Util.sLimit > PickerActivity.sCheckedImages.size()) {
+        } else {
             //pick
             EventBus.getDefault().post(new Events.OnPickImageEvent(imageEntry));
 

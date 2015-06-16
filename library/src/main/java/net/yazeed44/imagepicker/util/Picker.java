@@ -27,6 +27,9 @@ public final class Picker {
     public final int checkedImageOverlayColor;
     public final PickListener pickListener;
     public final int doneIconResId;
+    public final int albumImagesCountTextColor;
+    public final int albumBackgroundColor;
+    public final int albumNameTextColor;
 
 
     private Picker(final Builder builder) {
@@ -42,13 +45,17 @@ public final class Picker {
         checkedImageOverlayColor = builder.mCheckedImageOverlayColor;
         pickListener = builder.mPickListener;
         doneIconResId = builder.mDoneIconResId;
+        albumBackgroundColor = builder.mAlbumBackgroundColor;
+        albumImagesCountTextColor = builder.mAlbumImagesCountTextColor;
+        albumNameTextColor = builder.mAlbumNameTextColor;
+
 
 
     }
 
     public void startActivity() {
 
-        EventBus.getDefault().postSticky(new Events.OnPublishPickOptions(this));
+        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
 
         final Intent intent = new Intent(context, PickerActivity.class);
 
@@ -56,6 +63,10 @@ public final class Picker {
 
     }
 
+
+    public enum Color {
+        WHITE, BLACK, GREY
+    }
 
     public interface PickListener {
         void onPickedSuccessfully(final String[] paths);
@@ -82,6 +93,9 @@ public final class Picker {
         private int mImageBackgroundColor;
         private int mImageCheckColor;
         private int mCheckedImageOverlayColor;
+        private int mAlbumImagesCountTextColor;
+        private int mAlbumBackgroundColor;
+        private int mAlbumNameTextColor;
 
 
         public Builder(final Context context, final PickListener listener) {
@@ -101,12 +115,14 @@ public final class Picker {
             mImageBackgroundColor = mContext.getResources().getColor(R.color.alter_unchecked_image_background);
             mImageCheckColor = mContext.getResources().getColor(R.color.alter_image_check_color);
             mCheckedImageOverlayColor = mContext.getResources().getColor(R.color.alter_checked_photo_overlay);
+            mAlbumBackgroundColor = mContext.getResources().getColor(R.color.alter_album_background);
+            mAlbumNameTextColor = mContext.getResources().getColor(R.color.alter_album_name_text_color);
+            mAlbumImagesCountTextColor = mContext.getResources().getColor(R.color.alter_album_images_count_text_color);
 
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
 
 
         }
-
         private void initUsingColorPrimary(final TypedValue typedValue) {
 
             if (mContext.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true)) {
@@ -234,16 +250,27 @@ public final class Picker {
             return this;
         }
 
+
+        public Picker.Builder setAlbumBackgroundColor(final int color) {
+            mAlbumBackgroundColor = color;
+            return this;
+        }
+
+        public Picker.Builder setAlbumNameTextColor(final int color) {
+            mAlbumNameTextColor = color;
+            return this;
+        }
+
+        public Picker.Builder setAlbumImagesCountTextColor(final int color) {
+            mAlbumImagesCountTextColor = color;
+            return this;
+        }
+
         public Picker build() {
             return new Picker(this);
         }
 
-        public enum Color {
-            WHITE, BLACK, GREY
-        }
-
 
     }
-
 
 }
