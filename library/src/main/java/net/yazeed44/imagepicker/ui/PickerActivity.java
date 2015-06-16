@@ -29,10 +29,7 @@ import de.greenrobot.event.EventBus;
 public class PickerActivity extends AppCompatActivity {
 
 
-    public static final String PICKED_IMAGES_KEY = "pickedImagesKey";
-    public static final String LIMIT_KEY = "limitKey";
 
-    public static final int PICK_REQUEST = 144;
     public static final int NO_LIMIT = -1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
     private ImagesFragment mImagesFragment;

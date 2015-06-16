@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <drawable name="transparent">@android:color/transparent</drawable>
     <color name="alter_primary">#424242</color>
     <color name="alter_primary_dark">#212121</color>
 
@@ -13,7 +14,7 @@
 
     <color name="alter_checked_photo_overlay">#28576eff</color>
 
-    <color name="album_details_background">#8e212121</color>
+    <color name="album_details_background">#BF000000</color>
 
 
 </resources>

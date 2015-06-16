@@ -4,7 +4,10 @@
     android:layout_height="match_parent"
     android:focusable="false"
     android:focusableInTouchMode="false"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/grid_spacing"
+    android:paddingRight="@dimen/grid_spacing"
+    android:paddingTop="@dimen/grid_spacing">
 
     <ImageView
         android:id="@+id/album_thumbnail"
@@ -16,44 +19,53 @@
 
         />
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/grid_titleframe_height"
         android:layout_gravity="bottom"
         android:background="@color/album_details_background"
         android:focusable="false"
-        android:focusableInTouchMode="false">
+        android:focusableInTouchMode="false"
+        android:paddingBottom="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/album_name"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/album_count"
+            android:layout_toStartOf="@+id/album_count"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:singleLine="true"
             android:text="Album name"
-
-            android:textColor="#fff" />
+            android:textColor="?android:textColorPrimaryInverse"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/album_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|center"
-            android:layout_marginEnd="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:text="100"
-            android:textColor="#ff979797"
-            android:textSize="13sp"
+            android:textColor="?android:textColorSecondaryInverse"
+            android:textSize="14sp"
+
 
 
             />
-    </FrameLayout>
+    </RelativeLayout>
 
 
 </FrameLayout>

@@ -49,7 +49,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     protected void setupRecycler() {
 
         mAlbumsRecycler.setHasFixedSize(true);
-        mAlbumsRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.album_spacing)));
+        // mAlbumsRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.album_spacing)));
 
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_albums));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
