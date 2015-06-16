@@ -1,54 +1,53 @@
-package net.yazeed44.imagepicker;
+package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.WindowCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-import com.squareup.otto.ThreadEnforcer;
-
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.Events;
+import net.yazeed44.imagepicker.util.ImageEntry;
+import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.Util;
 
 import java.io.File;
+import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 
-public class PickerActivity extends ActionBarActivity {
+public class PickerActivity extends AppCompatActivity {
 
-
-    public static final String ALBUM_KEY = "albumKey";
 
     public static final String PICKED_IMAGES_KEY = "pickedImagesKey";
     public static final String LIMIT_KEY = "limitKey";
 
     public static final int PICK_REQUEST = 144;
     public static final int NO_LIMIT = -1;
-    public static final Bus BUS = new Bus(ThreadEnforcer.ANY);
-    public static SparseArray<Util.ImageEntry> sCheckedImages = new SparseArray<>();
-    private int mLimit = NO_LIMIT;
-    private TextView mDoneBadge, mDoneText;
-    private View mDoneLayout;
+    public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
     private ImagesFragment mImagesFragment;
     private AlbumsFragment mAlbumsFragment;
     private Uri mCapturedPhotoUri;
+
+    private com.melnykov.fab.FloatingActionButton mDoneFab;
+    private Picker mPickOptions;
+
 
 
     //TODO Add animation
     //TODO Fix bugs with changing orientation
     //TODO Add support for gif
+    //TODO Use robust method for capturing photos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +57,18 @@ public class PickerActivity extends ActionBarActivity {
         setContentView(R.layout.activity_pick);
         getSupportActionBar().setTitle(R.string.albums_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        initImageLoader();
 
+
+        mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
+
+        EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
+
+        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptions.class)).options;
+
+        getTheme().setTo(mPickOptions.context.getTheme());
 
         initOptions();
-        mDoneBadge = (TextView) findViewById(R.id.done_button_badge);
-        mDoneText = (TextView) findViewById(R.id.done_button_text);
-        mDoneLayout = findViewById(R.id.done_btn);
-        updateTextAndBadge();
+        updateFab();
 
 
         setupAlbums(savedInstanceState);
@@ -74,34 +77,28 @@ public class PickerActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BUS.register(this);
+        EventBus.getDefault().register(this);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        BUS.unregister(this);
+        EventBus.getDefault().unregister(this);
     }
 
     public void initOptions() {
 
 
-        sCheckedImages.clear();
-        final Intent options = getIntent();
+        mDoneFab.setImageDrawable(getResources().getDrawable(mPickOptions.doneIconResId));
+        mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
+        mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
 
-        if (options != null) {
-
-            try {
-                mLimit = options.getExtras().getInt(LIMIT_KEY);
-            } catch (NullPointerException ex) {
-                mLimit = NO_LIMIT;
-            }
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mPickOptions.actionBarBackgroundColor));
 
 
-        }
+        Util.initLimit(mPickOptions.limit);
 
-
-        Util.initLimit(mLimit);
 
     }
 
@@ -110,7 +107,6 @@ public class PickerActivity extends ActionBarActivity {
         if (findViewById(R.id.fragment_container) != null) {
 
             if (savedInstanceState == null) {
-
 
                 mAlbumsFragment = new AlbumsFragment();
 
@@ -124,33 +120,21 @@ public class PickerActivity extends ActionBarActivity {
     }
 
 
-    private void initImageLoader() {
-
-
-
-
-
-    }
-
-
-    public void updateTextAndBadge() {
+    public void updateFab() {
 
         if (sCheckedImages.size() == 0) {
-            mDoneBadge.setVisibility(View.GONE);
-            mDoneLayout.setClickable(false);
-            mDoneText.setTextColor(getResources().getColor(R.color.no_checked_photos_text));
+            mDoneFab.setVisibility(View.GONE);
 
-        } else if (sCheckedImages.size() == mLimit) {
-            mDoneBadge.setText(sCheckedImages.size() + "");
-            mDoneBadge.getBackground().setColorFilter(getResources().getColor(R.color.reached_limit_text), PorterDuff.Mode.SRC);
+        } else if (sCheckedImages.size() == mPickOptions.limit) {
+            mDoneFab.setVisibility(View.VISIBLE);
+            mDoneFab.show();
             Toast.makeText(this, R.string.reach_limit, Toast.LENGTH_SHORT).show();
 
         } else {
-            mDoneText.setTextColor(Color.parseColor("#ffffff"));
-            mDoneLayout.setClickable(true);
-            mDoneBadge.getBackground().setColorFilter(getResources().getColor(R.color.checked_photo), PorterDuff.Mode.SRC);
-            mDoneBadge.setVisibility(View.VISIBLE);
-            mDoneBadge.setText(sCheckedImages.size() + "");
+            mDoneFab.setVisibility(View.VISIBLE);
+            mDoneFab.show();
+
+
         }
 
     }
@@ -159,19 +143,24 @@ public class PickerActivity extends ActionBarActivity {
 
         final String[] paths = new String[sCheckedImages.size()];
 
-        for (int i = 0; i < sCheckedImages.size(); i++) {
-            paths[i] = sCheckedImages.valueAt(i).path;
+        int i = 0;
+        for (final ImageEntry image : sCheckedImages) {
+            paths[i] = image.path;
+            i++;
         }
 
-        final Intent data = new Intent().putExtra(PICKED_IMAGES_KEY, paths);
-        setResult(RESULT_OK, data);
+
         super.finish();
+        mPickOptions.pickListener.onPickedSuccessfully(paths);
+        sCheckedImages.clear();
 
     }
 
     public void onClickCancel(View view) {
         setResult(RESULT_CANCELED);
         super.finish();
+        mPickOptions.pickListener.onCancel();
+        sCheckedImages.clear();
 
 
     }
@@ -194,9 +183,10 @@ public class PickerActivity extends ActionBarActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK && requestCode == 0 && data == null) {
+            //For capturing image from camera
 
-            sCheckedImages.append((int) System.currentTimeMillis(), new Util.ImageEntry.Builder(mCapturedPhotoUri.getPath()).build());
-            updateTextAndBadge();
+            sCheckedImages.add(ImageEntry.from(mCapturedPhotoUri));
+            updateFab();
 
         } else {
             Log.i("onActivityResult", "User canceled the camera activity");
@@ -207,6 +197,10 @@ public class PickerActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+
+        menu.findItem(R.id.action_take_photo).setIcon(mPickOptions.captureIconResId);
+
+
         return true;
     }
 
@@ -247,17 +241,13 @@ public class PickerActivity extends ActionBarActivity {
     }
 
 
-    @Subscribe
-    public void onClickAlbum(final Events.OnClickAlbumEvent albumEvent) {
-        final Util.AlbumEntry album = albumEvent.albumEntry;
-        final Bundle albumBundle = new Bundle();
-        albumBundle.putSerializable(ALBUM_KEY, album);
+    public void onEvent(final Events.OnClickAlbumEvent albumEvent) {
+
 
         if (mImagesFragment == null) {
             mImagesFragment = new ImagesFragment();
         }
 
-        mImagesFragment.setArguments(albumBundle);
 
 
         getSupportFragmentManager().beginTransaction()
@@ -265,28 +255,29 @@ public class PickerActivity extends ActionBarActivity {
                 .addToBackStack(null)
                 .commit();
 
-        getSupportActionBar().setTitle(album.name);
+        getSupportActionBar().setTitle(albumEvent.albumEntry.name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    @Subscribe
-    public void onPickImage(final Events.OnPickImageEvent pickImageEvent) {
-        if (mLimit == NO_LIMIT || sCheckedImages.size() < mLimit) {
-            sCheckedImages.put(pickImageEvent.imageEntry.imageId, pickImageEvent.imageEntry);
+
+    public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
+        if (mPickOptions.limit == NO_LIMIT || sCheckedImages.size() < mPickOptions.limit) {
+            sCheckedImages.add(pickImageEvent.imageEntry);
         } else {
+            Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
             Log.i("onPickImage", "You can't check more images");
+
         }
 
 
-        updateTextAndBadge();
+        updateFab();
     }
 
 
-    @Subscribe
-    public void onUnpickImage(final Events.OnUnpickImageEvent unpickImageEvent) {
-        sCheckedImages.remove(unpickImageEvent.imageEntry.imageId);
+    public void onEvent(final Events.OnUnpickImageEvent unpickImageEvent) {
+        sCheckedImages.remove(unpickImageEvent.imageEntry);
 
-        updateTextAndBadge();
+        updateFab();
     }
 
 

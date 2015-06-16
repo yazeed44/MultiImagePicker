@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker;
+package net.yazeed44.imagepicker.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,18 +11,23 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.util.Events;
+import net.yazeed44.imagepicker.util.Util;
 
 import java.util.ArrayList;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by yazeed44 on 11/22/14.
  */
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewHolder> implements Util.OnClickAlbum {
 
-    protected final ArrayList<Util.AlbumEntry> mAlbumList;
-    protected final RecyclerView mRecycler;
+    public final RecyclerView mRecycler;
+    protected final ArrayList<AlbumEntry> mAlbumList;
 
-    public AlbumsAdapter(final ArrayList<Util.AlbumEntry> albums, RecyclerView mRecycler) {
+    public AlbumsAdapter(final ArrayList<AlbumEntry> albums, RecyclerView mRecycler) {
         this.mAlbumList = albums;
         this.mRecycler = mRecycler;
     }
@@ -50,9 +55,9 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
     @Override
     public void onClickAlbum(View layout) {
         final int position = mRecycler.getChildPosition(layout);
-        final Util.AlbumEntry album = mAlbumList.get(position);
+        final AlbumEntry album = mAlbumList.get(position);
 
-        PickerActivity.BUS.post(new Events.OnClickAlbumEvent(album));
+        EventBus.getDefault().postSticky(new Events.OnClickAlbumEvent(album));
 
 
     }
@@ -67,13 +72,14 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
 
     }
 
-    public void setupAlbum(final AlbumViewHolder holder, final Util.AlbumEntry album) {
+    public void setupAlbum(final AlbumViewHolder holder, final AlbumEntry album) {
         holder.name.setText(album.name);
         holder.count.setText(album.imageList.size() + "");
 
         Glide.with(mRecycler.getContext())
                 .load(album.coverImage.path)
                 .asBitmap()
+                .centerCrop()
                 .into(holder.thumbnail);
     }
 

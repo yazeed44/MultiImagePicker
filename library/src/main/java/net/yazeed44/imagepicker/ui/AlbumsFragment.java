@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker;
+package net.yazeed44.imagepicker.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +15,10 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.util.LoadingAlbumsRequest;
+import net.yazeed44.imagepicker.util.OfflineSpiceService;
+import net.yazeed44.imagepicker.util.Picker;
 
 import java.util.ArrayList;
 
@@ -26,6 +30,9 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     public static final String TAG = "Albums Fragment";
     protected RecyclerView mAlbumsRecycler;
     protected SpiceManager mSpiceManager = new SpiceManager(OfflineSpiceService.class);
+    protected ArrayList<AlbumEntry> mAlbumList;
+    protected Picker mPickOptions;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,10 +71,17 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         super.onStop();
     }
 
-    public void setupAdapter() {
-        final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
 
-        mSpiceManager.execute(loadingRequest, this);
+    public void setupAdapter() {
+        if (mAlbumList == null) {
+            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
+
+            mSpiceManager.execute(loadingRequest, this);
+        } else {
+
+            mAlbumsRecycler.setAdapter(new AlbumsAdapter(mAlbumList, mAlbumsRecycler));
+        }
+
 
 
     }
@@ -84,6 +98,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     public void onRequestSuccess(ArrayList albumEntries) {
 
         if (hasLoadedSuccessfully(albumEntries)) {
+            mAlbumList = albumEntries;
 
             final AlbumsAdapter albumsAdapter = new AlbumsAdapter(albumEntries, mAlbumsRecycler);
             mAlbumsRecycler.setAdapter(albumsAdapter);
@@ -96,4 +111,11 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     private boolean hasLoadedSuccessfully(final ArrayList albumList) {
         return albumList != null && albumList.size() > 0;
     }
+
+
+   /* public void onEvent(final Events.OnAttachFabEvent fabEvent){
+        fabEvent.fab.attachToRecyclerView(mAlbumsRecycler);
+    }*/
+
+
 }

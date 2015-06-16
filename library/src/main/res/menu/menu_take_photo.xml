@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_take_photo"
-        android:icon="@drawable/ic_camera"
+        android:icon="@drawable/ic_action_camera_white"
         android:title="@string/take_photo"
         imagePicker:showAsAction="always" />
 </menu>

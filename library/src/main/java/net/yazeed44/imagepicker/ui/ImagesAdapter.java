@@ -1,6 +1,5 @@
-package net.yazeed44.imagepicker;
+package net.yazeed44.imagepicker.ui;
 
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +11,13 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.util.Events;
+import net.yazeed44.imagepicker.util.ImageEntry;
+import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.Util;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by yazeed44 on 11/23/14.
@@ -19,12 +25,14 @@ import net.yazeed44.imagepicker.library.R;
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesViewHolder> implements Util.OnClickImage {
 
 
-    private final Util.AlbumEntry mAlbum;
-    private final RecyclerView mRecyclerView;
+    protected final AlbumEntry mAlbum;
+    protected final RecyclerView mRecyclerView;
+    protected final Picker mPickOptions;
 
-    public ImagesAdapter(final Util.AlbumEntry album, final RecyclerView fragment) {
+    public ImagesAdapter(final AlbumEntry album, final RecyclerView fragment, Picker pickOptions) {
         this.mAlbum = album;
         this.mRecyclerView = fragment;
+        mPickOptions = pickOptions;
     }
 
     @Override
@@ -41,7 +49,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
     @Override
     public void onBindViewHolder(ImagesViewHolder imagesViewHolder, int position) {
-        final Util.ImageEntry photoEntry = mAlbum.imageList.get(position);
+        final ImageEntry photoEntry = mAlbum.imageList.get(position);
         setHeight(imagesViewHolder.itemView);
         displayThumbnail(imagesViewHolder, photoEntry);
         drawGrid(imagesViewHolder, photoEntry);
@@ -66,7 +74,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
     }
 
-    public void displayThumbnail(final ImagesViewHolder holder, final Util.ImageEntry photo) {
+    public void displayThumbnail(final ImagesViewHolder holder, final ImageEntry photo) {
 
 
         Glide.with(mRecyclerView.getContext())
@@ -79,39 +87,38 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
     }
 
-    public void drawGrid(final ImagesViewHolder holder, final Util.ImageEntry imageEntry) {
+    public void drawGrid(final ImagesViewHolder holder, final ImageEntry imageEntry) {
 
-        final Resources r = mRecyclerView.getContext().getResources();
-        if (isPicked(imageEntry)) {
-            holder.itemView.setBackgroundColor(r.getColor(R.color.checked_photo));
-            holder.check.setBackgroundColor(r.getColor(R.color.checked_photo));
+        if (isChecked(imageEntry)) {
+            holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
+            holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
 
 
-            holder.thumbnail.setColorFilter(mRecyclerView.getContext().getResources().getColor(R.color.checked_photo_overlay));
+            holder.thumbnail.setColorFilter(mPickOptions.checkedImageOverlayColor);
             final int padding = mRecyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.image_checked_padding);
             holder.itemView.setPadding(padding, padding, padding, padding);
         } else {
-            holder.check.setBackgroundColor(r.getColor(R.color.check_default_color));
-            holder.itemView.setBackgroundColor(r.getColor(android.R.color.transparent));
+            holder.check.setBackgroundColor(mPickOptions.imageCheckColor);
+            holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
             holder.thumbnail.setColorFilter(Color.TRANSPARENT);
             holder.itemView.setPadding(0, 0, 0, 0);
         }
     }
 
 
-    public void pickImage(final ImagesViewHolder holder, final Util.ImageEntry imageEntry) {
+    public void pickImage(final ImagesViewHolder holder, final ImageEntry imageEntry) {
 
-        final boolean isPicked = isPicked(imageEntry);
+        final boolean isPicked = isChecked(imageEntry);
 
         if (isPicked) {
             //Unpick
 
-            PickerActivity.BUS.post(new Events.OnUnpickImageEvent(imageEntry));
+            EventBus.getDefault().post(new Events.OnUnpickImageEvent(imageEntry));
 
 
         } else if (Util.sLimit == PickerActivity.NO_LIMIT || Util.sLimit > PickerActivity.sCheckedImages.size()) {
             //pick
-            PickerActivity.BUS.post(new Events.OnPickImageEvent(imageEntry));
+            EventBus.getDefault().post(new Events.OnPickImageEvent(imageEntry));
 
 
         }
@@ -121,16 +128,15 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
     }
 
 
-    public boolean isPicked(final Util.ImageEntry pImageEntry) {
+    public boolean isChecked(final ImageEntry pImageEntry) {
 
 
-        for (int i = 0; i < PickerActivity.sCheckedImages.size(); i++) {
-            final Util.ImageEntry image = PickerActivity.sCheckedImages.valueAt(i);
+        for (final ImageEntry imageEntry : PickerActivity.sCheckedImages) {
 
-            if (image.path.equals(pImageEntry.path)) {
-
+            if (imageEntry.equals(pImageEntry)) {
                 return true;
             }
+
         }
 
         return false;

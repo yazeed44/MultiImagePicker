@@ -1,9 +1,8 @@
 package net.yazeed44.multiimagepicker;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,12 +18,13 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import net.yazeed44.imagepicker.PickerActivity;
 import net.yazeed44.imagepicker.sample.R;
+import net.yazeed44.imagepicker.util.Picker;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity implements Picker.PickListener {
 
+    private static final String TAG = "Sample activity";
     private RecyclerView mImageSampleRecycler;
 
     @Override
@@ -34,6 +34,8 @@ public class MainActivity extends ActionBarActivity {
 
         mImageSampleRecycler = (RecyclerView) findViewById(R.id.images_sample);
         setupRecycler();
+
+
     }
 
     private void setupRecycler() {
@@ -48,16 +50,12 @@ public class MainActivity extends ActionBarActivity {
 
     public void onClickPick(View view) {
 
-        pickImages();
+        new Picker.Builder(this, this)
+                .limit(6)
+                .build()
+                .startActivity();
     }
 
-
-    private void pickImages() {
-        final Intent pickIntent = new Intent(this, PickerActivity.class);
-        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit
-
-        startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
-    }
 
 
     @Override
@@ -97,27 +95,27 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(resultCode, requestCode, data);
-        if (requestCode == PickerActivity.PICK_REQUEST && resultCode == RESULT_OK) {
-            //No problemo
 
-            final String[] paths = data.getStringArrayExtra(PickerActivity.PICKED_IMAGES_KEY);//Paths for chosen images (Organized)
-
-            //Do what you want with paths
-
-            setupImageSamples(paths);
-            for (String path : paths) {
-                Log.d("onActivityResult", path);
-            }
-        } else {
-            //There was a problem
-        }
-    }
 
     private void setupImageSamples(String[] paths) {
         mImageSampleRecycler.setAdapter(new ImageSamplesAdapter(paths));
+    }
+
+    @Override
+    public void onPickedSuccessfully(String[] paths) {
+        setupImageSamples(paths);
+    }
+
+    @Override
+    public void onFailedToPick(Exception exception) {
+        Log.e(TAG, exception.getMessage());
+
+    }
+
+    @Override
+    public void onCancel() {
+        Log.i(TAG, "User canceled picker activity");
+
     }
 
 

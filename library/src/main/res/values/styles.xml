@@ -1,23 +1,7 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
 
-    </style>
-
-    <style name="Btn" parent="TextAppearance.AppCompat.Button">
-        <item name="android:background">@drawable/btn_selector</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textColor">#ffffff</item>
-        <item name="android:textSize">16sp</item>
-
-    </style>
-
-    <style name="RecyclerView">
+<style name="RecyclerView">
         <item name="android:clipToPadding">false</item>
         <item name="android:scrollbars">vertical</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>

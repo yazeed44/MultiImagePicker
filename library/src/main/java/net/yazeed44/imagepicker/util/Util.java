@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker;
+package net.yazeed44.imagepicker.util;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,7 +11,6 @@ import android.widget.ImageView;
 
 import net.yazeed44.imagepicker.library.R;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -70,7 +69,7 @@ public final class Util {
                     String bucketName = cursor.getString(bucketNameColumn);
 
 
-                    final ImageEntry imageEntry = createImageEntry(cursor);
+                    final ImageEntry imageEntry = ImageEntry.from(cursor);
 
                     if (imageEntry.path == null || imageEntry.path.length() == 0) {
                         continue;
@@ -113,27 +112,7 @@ public final class Util {
 
     }
 
-    private static ImageEntry createImageEntry(final Cursor cursor) {
-        final int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-        // final int dateColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
-        // final int orientationColumn = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
-        final int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-        // final int bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
 
-        final int imageId = cursor.getInt(imageIdColumn);
-        //final int bucketId = cursor.getInt(bucketIdColumn);
-        final String path = cursor.getString(dataColumn);
-        //final long dateTaken = cursor.getLong(dateColumn);
-        //final int orientation = cursor.getInt(orientationColumn);
-
-        return new ImageEntry.Builder(path)
-                //.albumId(bucketId)
-                //.dateTaken(dateTaken)
-                //.orientation(orientation)
-                .imageId(imageId)
-                .build();
-
-    }
 
     public static int getPositionOfChild(final View child, final int childParentId, final RecyclerView recyclerView) {
 
@@ -155,80 +134,6 @@ public final class Util {
 
     public interface OnClickAlbum {
         void onClickAlbum(final View layout);
-    }
-
-    public static class AlbumEntry implements Serializable {
-        public final int id;
-        public final String name;
-        public final ImageEntry coverImage;
-        public final ArrayList<ImageEntry> imageList = new ArrayList<>();
-
-        public AlbumEntry(int albumId, String albumName, ImageEntry coverImage) {
-            this.id = albumId;
-            this.name = albumName;
-            this.coverImage = coverImage;
-        }
-
-        public void addPhoto(ImageEntry photoEntry) {
-            imageList.add(photoEntry);
-        }
-    }
-
-    public static class ImageEntry implements Serializable {
-        // public final int albumId;
-        public final int imageId;
-        // public final long dateTaken;
-        public final String path;
-        // public final int orientation;
-
-        public ImageEntry(final Builder builder) {
-            // this.albumId = builder.mAlbumId;
-            this.path = builder.mPath;
-//            this.orientation = builder.mOrientation;
-            this.imageId = builder.mImageId;
-            // this.dateTaken = builder.mDateTaken;
-        }
-
-
-        public static class Builder {
-
-            private final String mPath;
-            //  private int mAlbumId;
-            private int mImageId;
-            // private long mDateTaken;
-            //          private int mOrientation;
-
-            public Builder(final String path) {
-                this.mPath = path;
-            }
-
-            /*  public Builder albumId(int albumId) {
-                  this.mAlbumId = albumId;
-                  return this;
-              }
-  */
-            public Builder imageId(int imageId) {
-                this.mImageId = imageId;
-                return this;
-            }
-
-           /* public Builder dateTaken(final long dateTaken) {
-                this.mDateTaken = dateTaken;
-                return this;
-            }*/
-
-           /* public Builder orientation(final int orientation) {
-                this.mOrientation = orientation;
-                return this;
-            }*/
-
-            public ImageEntry build() {
-                return new ImageEntry(this);
-            }
-
-
-        }
-
     }
 
 

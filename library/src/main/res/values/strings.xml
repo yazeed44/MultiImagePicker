@@ -11,5 +11,6 @@
     <string name="image_check">Image check</string>
     <string name="reach_limit">You have reached the limit</string>
     <string name="albums_title">Albums</string>
+    <string name="you_cant_check_more_images">You can\'t check more images</string>
 
 </resources>

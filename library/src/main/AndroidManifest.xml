@@ -6,15 +6,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:label="@string/app_name">
 
 
-        <activity android:name="net.yazeed44.imagepicker.PickerActivity" />
+        <activity android:name="net.yazeed44.imagepicker.ui.PickerActivity" />
 
         <service
-            android:name="net.yazeed44.imagepicker.OfflineSpiceService"
+            android:name="net.yazeed44.imagepicker.util.OfflineSpiceService"
             android:exported="false" />
     </application>
 

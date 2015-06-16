@@ -1,9 +1,7 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="20"
     tools:context=".MainActivity"
     tools:ignore="MergeRootFrame">
 
@@ -11,86 +9,21 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="@dimen/fragment_weight" />
+        android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="@dimen/ok_cancel_layout_weight"
-        android:background="@color/btn_background">
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab_done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="onClickDone"
+        android:src="@drawable/ic_action_done_white"
 
-        <Button
-            style="@style/Btn"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.44"
-            android:onClick="onClickCancel"
-
-            android:text="@android:string/cancel" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="0.02"
-            android:background="#5c5c5c" />
-
-        <FrameLayout
-            android:id="@+id/done_btn"
-            android:layout_width="0.0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.44"
-            android:background="@drawable/btn_selector"
-            android:clickable="true"
-            android:onClick="onClickDone"
-            android:paddingRight="3dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
+        />
 
 
-                <TextView
-                    android:id="@+id/done_button_text"
-
-                    style="@style/Btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:gravity="center"
-                    android:text="@android:string/ok"
-                    android:textStyle="bold" />
-
-
-                <TextView
-                    android:id="@+id/done_button_badge"
-
-                    style="@style/Btn"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/badge_background"
-
-
-                    android:gravity="center"
-                    android:text="10"
-
-                    android:textSize="13sp"
-
-                    android:visibility="visible"
-
-                    />
-
-            </LinearLayout>
-        </FrameLayout>
-
-
-    </LinearLayout>
-
-
-</LinearLayout>
+</FrameLayout>
 
 
 

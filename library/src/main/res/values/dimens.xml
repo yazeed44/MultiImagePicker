@@ -14,6 +14,7 @@
     <dimen name="image_spacing">2dp</dimen>
     <dimen name="image_checked_padding">4dp</dimen>
     <dimen name="album_spacing">2dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
     <item name="fragment_weight" format="float" type="dimen">18.3</item>
     <item name="ok_cancel_layout_weight" format="float" type="dimen">1.7</item>

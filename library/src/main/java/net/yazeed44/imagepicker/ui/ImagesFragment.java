@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker;
+package net.yazeed44.imagepicker.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.Events;
+import net.yazeed44.imagepicker.util.Picker;
+
+import de.greenrobot.event.EventBus;
 
 
 /**
@@ -18,6 +22,7 @@ import net.yazeed44.imagepicker.library.R;
 public class ImagesFragment extends Fragment {
 
     protected RecyclerView mImagesRecycler;
+    protected Picker mPickOptions;
 
 
     @Override
@@ -27,8 +32,21 @@ public class ImagesFragment extends Fragment {
 
         setupRecycler();
 
+        mPickOptions = EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptions.class).options;
 
         return mImagesRecycler;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().registerSticky(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
     }
 
     protected void setupRecycler() {
@@ -40,18 +58,23 @@ public class ImagesFragment extends Fragment {
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         mImagesRecycler.setLayoutManager(gridLayoutManager);
-        mImagesRecycler.setAdapter(createAdapter());
 
 
-    }
-
-    protected ImagesAdapter createAdapter() {
-        //TODO Replace getSerializable
-        final Util.AlbumEntry album = (Util.AlbumEntry) getArguments().getSerializable(PickerActivity.ALBUM_KEY);
-
-        return new ImagesAdapter(album, mImagesRecycler);
 
     }
+
+
+    public void onEvent(final Events.OnClickAlbumEvent event) {
+        mImagesRecycler.setAdapter(new ImagesAdapter(event.albumEntry, mImagesRecycler, mPickOptions));
+    }
+
+
+    public void onEvent(final Events.OnAttachFabEvent fabEvent) {
+        fabEvent.fab.attachToRecyclerView(mImagesRecycler);
+    }
+
+
+
 
 
 }

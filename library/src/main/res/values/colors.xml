@@ -1,28 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <drawable name="transparent">@android:color/transparent</drawable>
-
-    <color name="primary">#424242</color>
-    <color name="primary_dark">#212121</color>
-    <color name="accent">#FF80AB</color>
+    <color name="alter_primary">#424242</color>
+    <color name="alter_primary_dark">#212121</color>
 
 
-    <color name="unchecked_photo">@android:color/transparent</color>
-    <color name="checked_photo">#dd2fdfff</color>
+    <color name="alter_unchecked_image_background">@android:color/transparent</color>
+    <color name="alter_checked_image_background">#dd2fdfff</color>
 
-    <color name="no_checked_photos_text">#ffaeaeae</color>
 
-    <color name="check_default_color">#b457585b</color>
+    <color name="alter_image_check_color">#b457585b</color>
 
-    <color name="reached_limit_text">#ffff113b</color>
-    <color name="checked_photo_overlay">#28576eff</color>
+    <color name="alter_checked_photo_overlay">#28576eff</color>
 
     <color name="album_details_background">#8e212121</color>
-
-
-    <color name="btn_background">#ff333333</color>
-    <color name="btn_clicked_background">#ff3d3d3d</color>
 
 
 </resources>
