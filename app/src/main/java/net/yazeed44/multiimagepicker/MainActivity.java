@@ -1,6 +1,6 @@
 package net.yazeed44.multiimagepicker;
 
-import android.app.AlertDialog;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import net.yazeed44.imagepicker.sample.R;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
 
         if (id == R.id.action_about) {
@@ -86,9 +87,10 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
         final Spanned aboutBody = Html.fromHtml(getResources().getString(R.string.about_body_html));
 
 
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.about_title)
-                .setMessage(aboutBody)
+        new MaterialDialog.Builder(this)
+                .title(R.string.about_title)
+                .content(aboutBody)
+                .contentLineSpacing(1.6f)
                 .show();
 
 
@@ -106,11 +108,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
         setupImageSamples(paths);
     }
 
-    @Override
-    public void onFailedToPick(Exception exception) {
-        Log.e(TAG, exception.getMessage());
 
-    }
 
     @Override
     public void onCancel() {

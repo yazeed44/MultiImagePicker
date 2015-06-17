@@ -71,8 +71,6 @@ public final class Picker {
     public interface PickListener {
         void onPickedSuccessfully(final String[] paths);
 
-        void onFailedToPick(final Exception exception);
-
         void onCancel();
 
     }

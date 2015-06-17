@@ -83,13 +83,17 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     @Override
     public void onStart() {
-        mSpiceManager.start(getActivity());
+        if (mAlbumList == null) {
+            mSpiceManager.start(getActivity());
+        }
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        mSpiceManager.shouldStop();
+        if (mSpiceManager.isStarted()) {
+            mSpiceManager.shouldStop();
+        }
         super.onStop();
     }
 
@@ -129,6 +133,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
 
         }
+
 
     }
 
