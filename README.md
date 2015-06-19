@@ -18,18 +18,26 @@ This library is inspired by Telegram image picker
 :app  is the sample application 
 
 
-:library  is the library source code
+:imagepicker  is the library source code
 
 Gradle Dependency (jCenter)
 ==========================
-Soooon
+Just add the dependency to your build.gradle file
+```gradle 
+compile 'net.yazeed44.imagepicker:imagepicker:1.0.0' 
+```
 
+[ ![Download](https://api.bintray.com/packages/yazeed44/maven/multi-image-picker/images/download.svg) ](https://bintray.com/yazeed44/maven/multi-image-picker/_latestVersion)
 
+### If jCenter is Having Issues (the library can't be resolved)
 
-Adding to your project
-======================
-Add :library to your project as module Then compile it in build.gradle
+Add this to your app's build.gradle file:
 
+```Gradle
+repositories {
+    maven { url 'https://dl.bintray.com/yazeed44/maven' }
+}
+```
 
 
 Getting started
