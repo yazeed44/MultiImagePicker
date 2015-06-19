@@ -2,6 +2,7 @@
 <net.yazeed44.imagepicker.ui.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/selectableItemBackground"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:orientation="vertical"
@@ -60,7 +61,6 @@
             android:focusableInTouchMode="false"
             android:text="100"
             android:textSize="14sp"
-
 
 
             />

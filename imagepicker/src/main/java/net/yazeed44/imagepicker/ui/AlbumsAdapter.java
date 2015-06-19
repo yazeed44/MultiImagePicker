@@ -82,8 +82,6 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
         holder.count.setTextColor(mPickOptions.albumImagesCountTextColor);
 
 
-
-
         holder.name.setText(album.name);
         holder.count.setText(album.imageList.size() + "");
 

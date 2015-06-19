@@ -2,10 +2,12 @@ package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.WindowCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,7 +17,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.util.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.ImageEntry;
 import net.yazeed44.imagepicker.util.Picker;
@@ -29,7 +30,6 @@ import de.greenrobot.event.EventBus;
 public class PickerActivity extends AppCompatActivity {
 
 
-
     public static final int NO_LIMIT = -1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
     private ImagesFragment mImagesFragment;
@@ -38,13 +38,13 @@ public class PickerActivity extends AppCompatActivity {
 
     private com.melnykov.fab.FloatingActionButton mDoneFab;
     private Picker mPickOptions;
-    private ArrayList<AlbumEntry> mAlbumList;
 
 
     //TODO Add animation
     //TODO Fix bugs with changing orientation
     //TODO Add support for gif
     //TODO Use robust method for capturing photos
+    //TODO Add support for picking videos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +85,9 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void initOptions() {
+        final Drawable doneIcon = ContextCompat.getDrawable(this, mPickOptions.doneIconResId);
 
-
-        mDoneFab.setImageDrawable(getResources().getDrawable(mPickOptions.doneIconResId));
+        mDoneFab.setImageDrawable(doneIcon);
         mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
         mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
 
@@ -150,8 +150,6 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void onClickCancel(View view) {
-        setResult(RESULT_CANCELED);
-        super.finish();
         mPickOptions.pickListener.onCancel();
         sCheckedImages.clear();
 
@@ -223,6 +221,7 @@ public class PickerActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         } else {
             super.onBackPressed();
+            onClickCancel(null);
         }
     }
 
@@ -240,7 +239,6 @@ public class PickerActivity extends AppCompatActivity {
         if (mImagesFragment == null) {
             mImagesFragment = new ImagesFragment();
         }
-
 
 
         getSupportFragmentManager().beginTransaction()
@@ -271,10 +269,6 @@ public class PickerActivity extends AppCompatActivity {
         sCheckedImages.remove(unpickImageEvent.imageEntry);
 
         updateFab();
-    }
-
-    public void onEvent(final Events.onAlbumsLoadedEvent albumsLoadedEvent) {
-        mAlbumList = albumsLoadedEvent.albumList;
     }
 
 

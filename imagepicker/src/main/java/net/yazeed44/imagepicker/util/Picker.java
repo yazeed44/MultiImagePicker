@@ -50,7 +50,6 @@ public final class Picker {
         albumNameTextColor = builder.mAlbumNameTextColor;
 
 
-
     }
 
     public void startActivity() {
@@ -121,6 +120,7 @@ public final class Picker {
 
 
         }
+
         private void initUsingColorPrimary(final TypedValue typedValue) {
 
             if (mContext.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true)) {
@@ -168,7 +168,7 @@ public final class Picker {
             }
         }
 
-        public Picker.Builder limit(final int limit) {
+        public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
             return this;
         }

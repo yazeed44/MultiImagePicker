@@ -20,13 +20,9 @@ import java.util.HashMap;
 public final class Util {
 
 
-
-
     private Util() {
         throw new AssertionError();
     }
-
-
 
 
     public static ArrayList<AlbumEntry> getAlbums(final Context context) {
@@ -106,7 +102,6 @@ public final class Util {
         return albumsSorted;
 
     }
-
 
 
     public static int getPositionOfChild(final View child, final int childParentId, final RecyclerView recyclerView) {

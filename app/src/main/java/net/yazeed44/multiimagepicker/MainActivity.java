@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
     public void onClickPick(View view) {
 
         new Picker.Builder(this, this)
-                .limit(6)
+                .setLimit(6)
                 .build()
                 .startActivity();
     }

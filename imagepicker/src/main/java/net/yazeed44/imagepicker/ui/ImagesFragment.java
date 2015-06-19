@@ -60,7 +60,6 @@ public class ImagesFragment extends Fragment {
         mImagesRecycler.setLayoutManager(gridLayoutManager);
 
 
-
     }
 
 
@@ -72,9 +71,6 @@ public class ImagesFragment extends Fragment {
     public void onEvent(final Events.OnAttachFabEvent fabEvent) {
         fabEvent.fab.attachToRecyclerView(mImagesRecycler);
     }
-
-
-
 
 
 }

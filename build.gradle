@@ -9,7 +9,8 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
-        //classpath 'com.novoda:bintray-release:0.2.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,16 +25,3 @@ allprojects {
         jcenter()
     }
 }
-
-/*publish {
-    userOrg = 'yazeed44'
-    groupId = 'net.yazeed44.imagepicker.library'
-    artifactId = 'image-picker'
-    version = '0.1.0'
-    description = 'A built-in gallery library for multi choose'
-    website = 'https://github.com/yazeed44/MultiImagePicker'
-    issueTracker = "${website}/issues"
-    repository = "${website}.git"
-    bintrayUser = 'yazeed44'
-    bintrayKey = '4702d32c812974c168e9839e765b11d862148506'
-}*/

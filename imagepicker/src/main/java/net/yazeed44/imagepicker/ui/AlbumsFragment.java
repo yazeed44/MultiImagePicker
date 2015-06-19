@@ -61,7 +61,6 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         setupAdapter();
 
 
-
         setupRecycler();
         setupAdapter();
 
@@ -109,9 +108,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         }
 
 
-
     }
-
 
 
     @Override
