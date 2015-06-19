@@ -52,7 +52,7 @@ public class ImagesFragment extends Fragment {
     protected void setupRecycler() {
 
         mImagesRecycler.setHasFixedSize(true);
-        mImagesRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_spacing)));
+        //mImagesRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_spacing)));
 
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_images));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

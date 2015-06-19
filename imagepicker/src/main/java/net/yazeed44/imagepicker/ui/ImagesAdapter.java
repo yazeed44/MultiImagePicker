@@ -89,19 +89,21 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
     public void drawGrid(final ImagesViewHolder holder, final ImageEntry imageEntry) {
 
+        final int orgPadding = mRecyclerView.getResources().getDimensionPixelSize(R.dimen.image_spacing);
+
         if (isChecked(imageEntry)) {
-            holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
-            holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
+            // holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
+            holder.check.setVisibility(View.VISIBLE);
 
 
-            holder.thumbnail.setColorFilter(mPickOptions.checkedImageOverlayColor);
-            final int padding = mRecyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.image_checked_padding);
+            holder.thumbnail.setColorFilter(mRecyclerView.getResources().getColor(R.color.alter_checked_image_overlay));
+            final int padding = 0 + orgPadding;
             holder.itemView.setPadding(padding, padding, padding, padding);
         } else {
-            holder.check.setBackgroundColor(mPickOptions.imageCheckColor);
-            holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
+            holder.check.setVisibility(View.GONE);
+            //holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
             holder.thumbnail.setColorFilter(Color.TRANSPARENT);
-            holder.itemView.setPadding(0, 0, 0, 0);
+            holder.itemView.setPadding(orgPadding, orgPadding, orgPadding, orgPadding);
         }
     }
 
