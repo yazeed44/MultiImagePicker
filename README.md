@@ -52,7 +52,6 @@ private void pickImages(){
         new Picker.Builder(getBaseContext(),new MyPickListener())
         .build()
         .startActivity();
-        .
         
     }
 ```
