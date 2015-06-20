@@ -47,25 +47,34 @@ It's easy
 
 ```java
 private void pickImages(){
-        final Intent pickIntent = new Intent(this, PickerActivity.class); 
-        pickIntent.putExtra(PickerActivity.LIMIT_KEY, 6); // Set a limit , you can skip that if you want no limit
-
-        startActivityForResult(pickIntent, PickerActivity.PICK_REQUEST); //Open gallery
+       
+       //You can change many settings in builder like limit , Pick mode and colors 
+        new Picker.Builder(getBaseContext(),new MyPickListener())
+        .build()
+        .startActivity();
+        .
+        
     }
 ```
 
     
     
 ```java
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(resultCode, requestCode, data);
-        if (requestCode == PickerActivity.PICK_REQUEST && resultCode == RESULT_OK) {
-            //No problemo
 
-            final String[] paths = data.getStringArrayExtra(PickerActivity.PICKED_IMAGES_KEY);//Paths for chosen images (Organized)
 
-            //Do what you want with paths
+private class MyPickListener implements PickListener
+
+@Override
+public void onPickedSuccessfully(final ArrayList<ImageEntry> images)
+{
+
+doSomethingWithImages(images);
+}
+
+@Override
+public void onCancel(){
+//User cancled the pick activity
+}
             
 ```
 
