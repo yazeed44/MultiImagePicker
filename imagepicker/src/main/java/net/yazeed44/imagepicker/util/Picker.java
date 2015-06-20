@@ -8,6 +8,8 @@ import android.util.TypedValue;
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.ui.PickerActivity;
 
+import java.util.ArrayList;
+
 import de.greenrobot.event.EventBus;
 
 /**
@@ -30,6 +32,7 @@ public final class Picker {
     public final int albumImagesCountTextColor;
     public final int albumBackgroundColor;
     public final int albumNameTextColor;
+    public final PickMode pickMode;
 
 
     private Picker(final Builder builder) {
@@ -48,6 +51,7 @@ public final class Picker {
         albumBackgroundColor = builder.mAlbumBackgroundColor;
         albumImagesCountTextColor = builder.mAlbumImagesCountTextColor;
         albumNameTextColor = builder.mAlbumNameTextColor;
+        pickMode = builder.mPickMode;
 
 
     }
@@ -67,8 +71,13 @@ public final class Picker {
         WHITE, BLACK, GREY
     }
 
+    public enum PickMode {
+
+        SINGLE_IMAGE, MULTIPLE_IMAGES
+    }
+
     public interface PickListener {
-        void onPickedSuccessfully(final String[] paths);
+        void onPickedSuccessfully(final ArrayList<ImageEntry> images);
 
         void onCancel();
 
@@ -93,6 +102,7 @@ public final class Picker {
         private int mAlbumImagesCountTextColor;
         private int mAlbumBackgroundColor;
         private int mAlbumNameTextColor;
+        private PickMode mPickMode;
 
 
         public Builder(final Context context, final PickListener listener) {
@@ -117,6 +127,8 @@ public final class Picker {
             mAlbumImagesCountTextColor = mContext.getResources().getColor(R.color.alter_album_images_count_text_color);
 
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
+
+            mPickMode = PickMode.MULTIPLE_IMAGES;
 
 
         }
@@ -264,11 +276,15 @@ public final class Picker {
             return this;
         }
 
+        public Picker.Builder setPickMode(final PickMode pickMode) {
+            mPickMode = pickMode;
+            return this;
+        }
+
         public Picker build() {
             return new Picker(this);
         }
 
 
     }
-
 }

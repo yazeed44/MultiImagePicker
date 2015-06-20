@@ -61,4 +61,13 @@ public final class Events {
             this.albumList = albumList;
         }
     }
+
+    public static class OnChangingDisplayedImageEvent {
+        public final ImageEntry currentImage;
+
+        public OnChangingDisplayedImageEvent(ImageEntry currentImage) {
+
+            this.currentImage = currentImage;
+        }
+    }
 }

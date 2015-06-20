@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">مختار الصور</string>
-    <string name="action_settings">الإعدادات</string>
     <string name="album_thumbnail">لمحة الألبوم</string>
     <string name="albums_title">الألبومات</string>
     <string name="all_photos">جميع الصور</string>
-    <string name="hello_world">أهلا بالعالم</string>
     <string name="image_check">مراجعة الصورة</string>
     <string name="image_thumbnail">لمحة الصورة</string>
-    <string name="reach_limit">لقد وصلت الحد</string>
     <string name="take_photo">ألتقط صورة</string>
 </resources>

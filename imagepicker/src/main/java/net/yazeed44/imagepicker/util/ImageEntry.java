@@ -31,6 +31,13 @@ public class ImageEntry implements Serializable {
         return o instanceof ImageEntry && imageId == ((ImageEntry) o).imageId;
     }
 
+    @Override
+    public String toString() {
+        return "ImageEntry{" +
+                "path='" + path + '\'' +
+                '}';
+    }
+
     public static class Builder {
 
         private final String mPath;

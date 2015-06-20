@@ -1,6 +1,5 @@
 package net.yazeed44.imagepicker.ui;
 
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +21,15 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by yazeed44 on 11/23/14.
  */
-public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesViewHolder> implements Util.OnClickImage {
+public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnailAdapter.ImagesViewHolder> implements Util.OnClickImage {
 
 
     protected final AlbumEntry mAlbum;
     protected final RecyclerView mRecyclerView;
     protected final Picker mPickOptions;
 
-    public ImagesAdapter(final AlbumEntry album, final RecyclerView fragment, Picker pickOptions) {
+
+    public ImagesThumbnailAdapter(final AlbumEntry album, final RecyclerView fragment, Picker pickOptions) {
         this.mAlbum = album;
         this.mRecyclerView = fragment;
         mPickOptions = pickOptions;
@@ -92,18 +92,21 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
         final int orgPadding = mRecyclerView.getResources().getDimensionPixelSize(R.dimen.image_spacing);
 
         if (isChecked(imageEntry)) {
-            // holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
-            holder.check.setVisibility(View.VISIBLE);
+            //holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
+            holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
 
 
-            holder.thumbnail.setColorFilter(mRecyclerView.getResources().getColor(R.color.alter_checked_image_overlay));
-            final int padding = 0 + orgPadding;
-            holder.itemView.setPadding(padding, padding, padding, padding);
-        } else {
-            holder.check.setVisibility(View.GONE);
-            //holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
-            holder.thumbnail.setColorFilter(Color.TRANSPARENT);
+            // holder.thumbnail.setColorFilter(mPickOptions.checkedImageOverlayColor);
             holder.itemView.setPadding(orgPadding, orgPadding, orgPadding, orgPadding);
+        } else {
+            holder.check.setBackgroundColor(mPickOptions.imageCheckColor);
+            //holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
+            // holder.thumbnail.setColorFilter(Color.TRANSPARENT);
+            holder.itemView.setPadding(orgPadding, orgPadding, orgPadding, orgPadding);
+        }
+
+        if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
+            holder.check.setVisibility(View.GONE);
         }
     }
 
@@ -120,7 +123,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
 
         } else {
             //pick
-            EventBus.getDefault().post(new Events.OnPickImageEvent(imageEntry));
+            EventBus.getDefault().postSticky(new Events.OnPickImageEvent(imageEntry));
 
 
         }
@@ -161,6 +164,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ImagesView
                     listener.onClickImage(itemView, thumbnail, check);
                 }
             });
+
 
         }
     }

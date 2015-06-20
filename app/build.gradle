@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "net.yazeed44.imagepicker.sample"
-        minSdkVersion 10
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 2
         versionName "1.1"
@@ -37,5 +37,6 @@ dependencies {
 
     compile project(':imagepicker')
     compile 'com.afollestad:material-dialogs:0.7.6.0'
+
     //compile 'net.yazeed44.imagepicker:imagepicker:1.0.0'
 }

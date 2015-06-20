@@ -19,7 +19,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by yazeed44 on 11/23/14.
  */
-public class ImagesFragment extends Fragment {
+public class ImagesThumbnailFragment extends Fragment {
 
     protected RecyclerView mImagesRecycler;
     protected Picker mPickOptions;
@@ -52,8 +52,6 @@ public class ImagesFragment extends Fragment {
     protected void setupRecycler() {
 
         mImagesRecycler.setHasFixedSize(true);
-        //mImagesRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_spacing)));
-
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_images));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -64,7 +62,7 @@ public class ImagesFragment extends Fragment {
 
 
     public void onEvent(final Events.OnClickAlbumEvent event) {
-        mImagesRecycler.setAdapter(new ImagesAdapter(event.albumEntry, mImagesRecycler, mPickOptions));
+        mImagesRecycler.setAdapter(new ImagesThumbnailAdapter(event.albumEntry, mImagesRecycler, mPickOptions));
     }
 
 

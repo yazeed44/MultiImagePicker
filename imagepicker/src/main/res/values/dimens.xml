@@ -4,11 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
 
-    <dimen name="album_width">120dp</dimen>
     <dimen name="album_height">180dp</dimen>
-
-
-    <dimen name="image_width">120dp</dimen>
     <dimen name="image_height">120dp</dimen>
 
     <dimen name="image_spacing">2dp</dimen>

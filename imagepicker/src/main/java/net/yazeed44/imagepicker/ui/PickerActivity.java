@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.util.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.ImageEntry;
 import net.yazeed44.imagepicker.util.Picker;
@@ -32,12 +33,16 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final int NO_LIMIT = -1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
-    private ImagesFragment mImagesFragment;
-    private AlbumsFragment mAlbumsFragment;
+    private ImagesThumbnailFragment mImagesThumbnailFragment;
+    private ImagesPagerFragment mImagesViewPagerFragment;
+
     private Uri mCapturedPhotoUri;
 
     private com.melnykov.fab.FloatingActionButton mDoneFab;
     private Picker mPickOptions;
+    //For ViewPager
+    private ImageEntry mCurrentlyDisplayedImage;
+    private AlbumEntry mSelectedAlbum;
 
 
     //TODO Add animation
@@ -102,7 +107,7 @@ public class PickerActivity extends AppCompatActivity {
 
             if (savedInstanceState == null) {
 
-                mAlbumsFragment = new AlbumsFragment();
+                final AlbumsFragment mAlbumsFragment = new AlbumsFragment();
 
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, mAlbumsFragment)
@@ -115,6 +120,12 @@ public class PickerActivity extends AppCompatActivity {
 
 
     public void updateFab() {
+
+        if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
+            mDoneFab.setVisibility(View.GONE);
+            mDoneFab.hide();
+            return;
+        }
 
         if (sCheckedImages.size() == 0) {
             mDoneFab.setVisibility(View.GONE);
@@ -135,23 +146,27 @@ public class PickerActivity extends AppCompatActivity {
 
     public void onClickDone(View view) {
 
-        final String[] paths = new String[sCheckedImages.size()];
+        if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
 
+            sCheckedImages.add(mCurrentlyDisplayedImage);
+        } else {
 
-        for (int i = 0; i < paths.length; i++) {
-            paths[i] = sCheckedImages.get(i).path;
+            //No need to modify sCheckedImages for Multiple images mode
         }
 
-
         super.finish();
-        mPickOptions.pickListener.onPickedSuccessfully(paths);
+
+        //New object because sCheckedImages will get cleared
+        mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
         sCheckedImages.clear();
+        EventBus.getDefault().removeAllStickyEvents();
 
     }
 
-    public void onClickCancel(View view) {
+    public void onCancel() {
         mPickOptions.pickListener.onCancel();
         sCheckedImages.clear();
+        EventBus.getDefault().removeAllStickyEvents();
 
 
     }
@@ -215,13 +230,20 @@ public class PickerActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (mImagesFragment != null && mImagesFragment.isVisible()) {
+        if (mImagesThumbnailFragment != null && mImagesThumbnailFragment.isVisible()) {
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        } else if (mImagesViewPagerFragment != null && mImagesViewPagerFragment.isVisible()) {
+            mDoneFab.setVisibility(View.GONE);
+            getSupportFragmentManager().popBackStack();
+            getSupportActionBar().setTitle(mSelectedAlbum.name);
+            getSupportActionBar().show();
+
         } else {
+            //User on album fragment
             super.onBackPressed();
-            onClickCancel(null);
+            onCancel();
         }
     }
 
@@ -234,15 +256,16 @@ public class PickerActivity extends AppCompatActivity {
 
 
     public void onEvent(final Events.OnClickAlbumEvent albumEvent) {
+        mSelectedAlbum = albumEvent.albumEntry;
 
 
-        if (mImagesFragment == null) {
-            mImagesFragment = new ImagesFragment();
+        if (mImagesThumbnailFragment == null) {
+            mImagesThumbnailFragment = new ImagesThumbnailFragment();
         }
 
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, mImagesFragment)
+                .replace(R.id.fragment_container, mImagesThumbnailFragment)
                 .addToBackStack(null)
                 .commit();
 
@@ -252,11 +275,25 @@ public class PickerActivity extends AppCompatActivity {
 
 
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
-        if (mPickOptions.limit == NO_LIMIT || sCheckedImages.size() < mPickOptions.limit) {
+        if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES && mPickOptions.limit == NO_LIMIT || sCheckedImages.size() < mPickOptions.limit) {
             sCheckedImages.add(pickImageEvent.imageEntry);
-        } else {
+        } else if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES) {
             Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
             Log.i("onPickImage", "You can't check more images");
+
+        } else if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
+            //Single image pick mode
+
+            if (mImagesViewPagerFragment == null) {
+                mImagesViewPagerFragment = new ImagesPagerFragment();
+            }
+
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, mImagesViewPagerFragment)
+                    .addToBackStack(null)
+                    .commit();
+
 
         }
 
@@ -270,6 +307,13 @@ public class PickerActivity extends AppCompatActivity {
 
         updateFab();
     }
+
+    public void onEvent(final Events.OnChangingDisplayedImageEvent newImageEvent) {
+        mCurrentlyDisplayedImage = newImageEvent.currentImage;
+
+    }
+
+
 
 
 }

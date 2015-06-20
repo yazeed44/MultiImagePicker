@@ -107,7 +107,7 @@ public final class Util {
     public static int getPositionOfChild(final View child, final int childParentId, final RecyclerView recyclerView) {
 
         if (child.getId() == childParentId) {
-            return recyclerView.getChildPosition(child);
+            return recyclerView.getChildAdapterPosition(child);
         }
 
 
@@ -115,7 +115,7 @@ public final class Util {
         while (parent.getId() != childParentId) {
             parent = (View) parent.getParent();
         }
-        return recyclerView.getChildPosition(parent);
+        return recyclerView.getChildAdapterPosition(parent);
     }
 
     public interface OnClickImage {

@@ -58,7 +58,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
 
     @Override
     public void onClickAlbum(View layout) {
-        final int position = mRecycler.getChildPosition(layout);
+        final int position = mRecycler.getChildAdapterPosition(layout);
         final AlbumEntry album = mAlbumList.get(position);
 
         EventBus.getDefault().postSticky(new Events.OnClickAlbumEvent(album));

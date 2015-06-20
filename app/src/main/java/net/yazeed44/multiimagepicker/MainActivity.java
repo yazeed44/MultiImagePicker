@@ -20,13 +20,17 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import net.yazeed44.imagepicker.sample.R;
+import net.yazeed44.imagepicker.util.ImageEntry;
 import net.yazeed44.imagepicker.util.Picker;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements Picker.PickListener {
 
     private static final String TAG = "Sample activity";
     private RecyclerView mImageSampleRecycler;
+    private ArrayList<ImageEntry> mSelectedImages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +53,17 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
     }
 
 
-    public void onClickPick(View view) {
+    public void onClickPickImageSingle(View view) {
 
         new Picker.Builder(this, this)
-                .setLimit(6)
+                .setPickMode(Picker.PickMode.SINGLE_IMAGE)
+                .build()
+                .startActivity();
+    }
+
+    public void onClickPickImageMultiple(View view) {
+        new Picker.Builder(this, this)
+                .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
                 .build()
                 .startActivity();
     }
@@ -99,16 +110,18 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
 
 
-    private void setupImageSamples(String[] paths) {
-        mImageSampleRecycler.setAdapter(new ImageSamplesAdapter(paths));
-    }
+
 
     @Override
-    public void onPickedSuccessfully(String[] paths) {
-        setupImageSamples(paths);
+    public void onPickedSuccessfully(ArrayList<ImageEntry> images) {
+        mSelectedImages = images;
+        setupImageSamples();
+        Log.d(TAG, "Picked images  " + images.toString());
     }
 
-
+    private void setupImageSamples() {
+        mImageSampleRecycler.setAdapter(new ImageSamplesAdapter());
+    }
 
     @Override
     public void onCancel() {
@@ -118,28 +131,24 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
 
     private class ImageSamplesAdapter extends RecyclerView.Adapter<ImageSampleViewHolder> {
-        private String[] paths;
 
-        public ImageSamplesAdapter(final String[] paths) {
-            this.paths = paths;
-        }
 
         @Override
         public ImageSampleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final ImageView imageView = new ImageView(mImageSampleRecycler.getContext());
+            final ImageView imageView = new ImageView(parent.getContext());
             return new ImageSampleViewHolder(imageView);
         }
 
         @Override
         public void onBindViewHolder(ImageSampleViewHolder holder, int position) {
 
-            final String path = paths[position];
+            final String path = mSelectedImages.get(position).path;
             loadImage(path, holder.thumbnail);
         }
 
         @Override
         public int getItemCount() {
-            return paths.length;
+            return mSelectedImages.size();
         }
 
 
@@ -150,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
                     .load(path)
                     .asBitmap()
                     .into(imageView);
+
 
         }
 

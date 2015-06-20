@@ -21,9 +21,10 @@
 
     <ImageView
         android:id="@+id/image_check"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:background="@color/alter_image_check_color"
         android:contentDescription="@string/image_check"
         android:focusable="false"
         android:focusableInTouchMode="false"
