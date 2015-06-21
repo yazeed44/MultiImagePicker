@@ -62,7 +62,7 @@ private void pickImages(){
 
 
 private class MyPickListener implements PickListener
-
+{
 @Override
 public void onPickedSuccessfully(final ArrayList<ImageEntry> images)
 {
@@ -73,6 +73,7 @@ doSomethingWithImages(images);
 @Override
 public void onCancel(){
 //User cancled the pick activity
+}
 }
             
 ```
