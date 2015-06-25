@@ -48,8 +48,8 @@ It's easy
 ```java
 private void pickImages(){
        
-       //You can change many settings in builder like limit , Pick mode and colors 
-        new Picker.Builder(getBaseContext(),new MyPickListener())
+       //You can change many settings in builder like limit , Pick mode and colors
+        new Picker.Builder(this,new MyPickListener())
         .build()
         .startActivity();
         
