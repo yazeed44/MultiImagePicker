@@ -61,13 +61,21 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
                 .startActivity();
     }
 
-    public void onClickPickImageMultiple(View view) {
+    public void onClickPickImageMultipleWithLimit(View view) {
         new Picker.Builder(this, this)
                 .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
+                .setLimit(6)
                 .build()
                 .startActivity();
     }
 
+    public void onPickImageMultipleInfinite(View view) {
+        new Picker.Builder(this, this)
+                .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
+                .build()
+                .startActivity();
+
+    }
 
 
     @Override

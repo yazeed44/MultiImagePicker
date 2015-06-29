@@ -70,5 +70,10 @@ public class ImagesThumbnailFragment extends Fragment {
         fabEvent.fab.attachToRecyclerView(mImagesRecycler);
     }
 
+    public void onEvent(final Events.OnUpdateImagesThumbnailEvent redrawImage) {
+        mImagesRecycler.getAdapter().notifyDataSetChanged();
+
+    }
+
 
 }

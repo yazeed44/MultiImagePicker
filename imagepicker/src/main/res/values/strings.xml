@@ -4,11 +4,13 @@
     <string name="app_name">ImagePicker</string>
     <string name="album_thumbnail">Album Thumbnail</string>
     <string name="image_thumbnail">Image thumbnail</string>
-    <string name="take_photo">Take a photo</string>
+    <string name="action_take_photo">Take a photo</string>
     <string name="all_photos">All Photos</string>
     <string name="image_check">Image check</string>
     <string name="albums_title">Albums</string>
     <string name="you_cant_check_more_images">You can\'t check more images</string>
     <string name="image_position_in_view_pager">% of $</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_deselect_all">Deselect all</string>
 
 </resources>

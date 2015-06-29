@@ -180,6 +180,9 @@ public final class Picker {
             }
         }
 
+        /**
+         * @param limit limit for the count of image user can pick , By default it's infinite
+         */
         public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
             return this;

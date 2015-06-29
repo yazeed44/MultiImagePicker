@@ -43,6 +43,8 @@ public class PickerActivity extends AppCompatActivity {
     //For ViewPager
     private ImageEntry mCurrentlyDisplayedImage;
     private AlbumEntry mSelectedAlbum;
+    private MenuItem mSelectAllMenuItem;
+    private MenuItem mDeselectAllMenuItem;
 
 
     //TODO Add animation
@@ -50,6 +52,7 @@ public class PickerActivity extends AppCompatActivity {
     //TODO Add support for gif
     //TODO Use robust method for capturing photos
     //TODO Add support for picking videos
+    //TODO When photo is captured a new album created for it
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class PickerActivity extends AppCompatActivity {
 
 
         setupAlbums(savedInstanceState);
+
     }
 
     @Override
@@ -132,6 +136,7 @@ public class PickerActivity extends AppCompatActivity {
 
         } else if (sCheckedImages.size() == mPickOptions.limit) {
 
+            //Might change FAB appearance on other version
             mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
 
@@ -203,11 +208,33 @@ public class PickerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+        getMenuInflater().inflate(R.menu.menu_select_all, menu);
+        getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
 
         menu.findItem(R.id.action_take_photo).setIcon(mPickOptions.captureIconResId);
 
+        mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
+        mDeselectAllMenuItem = menu.findItem(R.id.action_deselect_all);
+        hideSelectAll();
+        hideDeselectAll();
+
 
         return true;
+    }
+
+    private void hideDeselectAll() {
+        mDeselectAllMenuItem.setVisible(false);
+
+    }
+
+    private void showDeselectAll() {
+
+        if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
+            return;
+        }
+
+        mDeselectAllMenuItem.setVisible(true);
+
     }
 
     @Override
@@ -215,15 +242,60 @@ public class PickerActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
 
-        if (id == R.id.action_take_photo) {
+        final int itemId = item.getItemId();
+        if (itemId == R.id.action_take_photo) {
             capturePhoto();
-            return true;
+
+        } else if (itemId == R.id.action_select_all) {
+            selectAllImages();
+
+        } else if (itemId == R.id.action_deselect_all) {
+            deselectAllImages();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deselectAllImages() {
+
+        for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
+            sCheckedImages.remove(imageEntry);
+        }
+
+        EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
+
+    }
+
+    private void selectAllImages() {
+
+        if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
+
+            for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
+
+                if (mPickOptions.limit != NO_LIMIT && sCheckedImages.size() + 1 > mPickOptions.limit) {
+                    //Hit the limit
+                    Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+
+                sCheckedImages.add(imageEntry);
+
+
+            }
+
+        }
+
+
+        EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
+        updateFab();
+
+        /*if (shouldShowDeselectAll()){
+            showDeselectAll();
+        }*/
+
     }
 
 
@@ -234,11 +306,14 @@ public class PickerActivity extends AppCompatActivity {
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            hideSelectAll();
+
         } else if (mImagesViewPagerFragment != null && mImagesViewPagerFragment.isVisible()) {
             mDoneFab.setVisibility(View.GONE);
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(mSelectedAlbum.name);
             getSupportActionBar().show();
+            showSelectAll();
 
         } else {
             //User on album fragment
@@ -252,6 +327,53 @@ public class PickerActivity extends AppCompatActivity {
         onBackPressed();
 
         return true;
+    }
+
+    private void hideSelectAll() {
+        mSelectAllMenuItem.setVisible(false);
+
+    }
+
+    private void showSelectAll() {
+        if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
+            //Keep it hidden
+            return;
+        }
+        mSelectAllMenuItem.setVisible(true);
+
+    }
+
+    private void handleMultipleModeAddition(final ImageEntry imageEntry) {
+
+        if (mPickOptions.pickMode != Picker.PickMode.MULTIPLE_IMAGES) {
+            return;
+        }
+
+        if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
+            sCheckedImages.add(imageEntry);
+        } else {
+            Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
+            Log.i("onPickImage", "You can't check more images");
+        }
+
+        if (shouldShowDeselectAll()) {
+            //If all the images in the album selected then show de select all menu item
+            showDeselectAll();
+        }
+
+
+    }
+
+    private boolean shouldShowDeselectAll() {
+        boolean isAllImagesSelected = true;
+        for (final ImageEntry albumChildImage : mSelectedAlbum.imageList) {
+
+            if (!sCheckedImages.contains(albumChildImage)) {
+                isAllImagesSelected = false;
+            }
+        }
+
+        return isAllImagesSelected;
     }
 
 
@@ -271,15 +393,22 @@ public class PickerActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(albumEvent.albumEntry.name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        showSelectAll();
+
+        if (shouldShowDeselectAll()) {
+            showDeselectAll();
+        } else {
+            hideDeselectAll();
+        }
     }
 
 
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
-        if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES && mPickOptions.limit == NO_LIMIT || sCheckedImages.size() < mPickOptions.limit) {
-            sCheckedImages.add(pickImageEvent.imageEntry);
-        } else if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES) {
-            Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
-            Log.i("onPickImage", "You can't check more images");
+
+
+        if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES) {
+            handleMultipleModeAddition(pickImageEvent.imageEntry);
+
 
         } else if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
             //Single image pick mode
@@ -299,6 +428,7 @@ public class PickerActivity extends AppCompatActivity {
 
 
         updateFab();
+
     }
 
 

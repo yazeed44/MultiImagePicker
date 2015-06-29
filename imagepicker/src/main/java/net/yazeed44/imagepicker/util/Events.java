@@ -70,4 +70,12 @@ public final class Events {
             this.currentImage = currentImage;
         }
     }
+
+    public static class OnUpdateImagesThumbnailEvent {
+
+
+        public OnUpdateImagesThumbnailEvent() {
+
+        }
+    }
 }

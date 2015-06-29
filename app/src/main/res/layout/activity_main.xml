@@ -5,19 +5,24 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onPickImageMultipleInfinite"
+        android:text="@string/btn_pick_multiple_image_infinite" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onClickPickImageMultiple"
-        android:text="@string/pick_multiple_images_btn" />
+        android:onClick="onClickPickImageMultipleWithLimit"
+        android:text="@string/btn_pick_multiple_images_with_limit" />
 
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickPickImageSingle"
-        android:text="@string/pick_single_image_btn" />
+        android:text="@string/btn_pick_single_image" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/images_sample"
