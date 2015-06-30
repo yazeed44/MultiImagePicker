@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
     @Override
     public void onCancel() {
         Log.i(TAG, "User canceled picker activity");
+        Toast.makeText(this, "User canceld picker activtiy", Toast.LENGTH_SHORT).show();
 
     }
 

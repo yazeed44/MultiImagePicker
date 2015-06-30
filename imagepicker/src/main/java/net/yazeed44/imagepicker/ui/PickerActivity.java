@@ -245,6 +245,8 @@ public class PickerActivity extends AppCompatActivity {
 
 
         final int itemId = item.getItemId();
+
+
         if (itemId == R.id.action_take_photo) {
             capturePhoto();
 
@@ -266,6 +268,8 @@ public class PickerActivity extends AppCompatActivity {
 
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
 
+        hideDeselectAll();
+
     }
 
     private void selectAllImages() {
@@ -281,7 +285,10 @@ public class PickerActivity extends AppCompatActivity {
                 }
 
 
-                sCheckedImages.add(imageEntry);
+                if (!sCheckedImages.contains(imageEntry)) {
+                    //To avoid repeated images
+                    sCheckedImages.add(imageEntry);
+                }
 
 
             }
@@ -292,9 +299,8 @@ public class PickerActivity extends AppCompatActivity {
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
         updateFab();
 
-        /*if (shouldShowDeselectAll()){
-            showDeselectAll();
-        }*/
+        showDeselectAll();
+
 
     }
 
@@ -303,12 +309,15 @@ public class PickerActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         if (mImagesThumbnailFragment != null && mImagesThumbnailFragment.isVisible()) {
+            //Return to albums fragment
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             hideSelectAll();
+            hideDeselectAll();
 
         } else if (mImagesViewPagerFragment != null && mImagesViewPagerFragment.isVisible()) {
+            //Returns to images thumbnail fragment
             mDoneFab.setVisibility(View.GONE);
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(mSelectedAlbum.name);
@@ -356,10 +365,10 @@ public class PickerActivity extends AppCompatActivity {
             Log.i("onPickImage", "You can't check more images");
         }
 
-        if (shouldShowDeselectAll()) {
+        /*if (shouldShowDeselectAll()) {
             //If all the images in the album selected then show de select all menu item
             showDeselectAll();
-        }
+        }*/
 
 
     }
@@ -370,6 +379,7 @@ public class PickerActivity extends AppCompatActivity {
 
             if (!sCheckedImages.contains(albumChildImage)) {
                 isAllImagesSelected = false;
+                break;
             }
         }
 
@@ -436,6 +446,7 @@ public class PickerActivity extends AppCompatActivity {
         sCheckedImages.remove(unpickImageEvent.imageEntry);
 
         updateFab();
+        hideDeselectAll();
     }
 
     public void onEvent(final Events.OnChangingDisplayedImageEvent newImageEvent) {
