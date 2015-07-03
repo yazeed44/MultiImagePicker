@@ -64,7 +64,7 @@ private void pickImages(){
 private class MyPickListener implements PickListener
 {
 @Override
-public void onPickedSuccessfully(final ArrayList<ImageEntry> images)
+public void onPickedSuccessfully(final String[] paths)
 {
 
 doSomethingWithImages(images);
@@ -98,32 +98,6 @@ Either you found a bug or have created a new and awesome feature, just create a 
 
 
 ### Discuss
+Join in the conversation , [Join us in telegram](https://telegram.me/joinchat/013dbd2b01ae8b2dcdb1147ac067c9ae).
 
-Join in the conversation, check out the [XDA Thread](http://forum.xda-developers.com/tools/programming/library-multi-image-picker-t2985724/post57775519#post57775519).
-
-
-
-
-Change Log
-==========
-
-1.1:
-
--Better support for tablets
-
-1.0:
-
--First release
-
-
-TODO
-====
-
--Better user expirenece
-
--easy integration
-
--Implement animations
-
--Add more translations
 
