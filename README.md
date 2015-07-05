@@ -1,7 +1,7 @@
 MultiImagePicker
 ================
 
-A library to pick multi images
+A library to pick multi images With features like setting limit and UI that goes nicely with your app theme
 
 Sample App (On playstore) : https://play.google.com/store/apps/details?id=net.yazeed44.imagepicker.sample
 
