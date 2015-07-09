@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mImageSampleRecycler = (RecyclerView) findViewById(R.id.images_sample);
         setupRecycler();
 
@@ -56,14 +57,14 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
     public void onClickPickImageSingle(View view) {
 
-        new Picker.Builder(this, this)
+        new Picker.Builder(this, this, R.style.MIP_theme)
                 .setPickMode(Picker.PickMode.SINGLE_IMAGE)
                 .build()
                 .startActivity();
     }
 
     public void onClickPickImageMultipleWithLimit(View view) {
-        new Picker.Builder(this, this)
+        new Picker.Builder(this, this, R.style.MIP_theme)
                 .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
                 .setLimit(6)
                 .build()
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
     }
 
     public void onPickImageMultipleInfinite(View view) {
-        new Picker.Builder(this, this)
+        new Picker.Builder(this, this, R.style.MIP_theme)
                 .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
                 .build()
                 .startActivity();

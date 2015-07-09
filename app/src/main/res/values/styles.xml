@@ -10,4 +10,18 @@
         <item name="colorAccent">#3D5AFE</item>
     </style>
 
+    <style name="MIP_theme" parent="AppTheme">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="toolbarStyle">@style/MIP_toolbarTheme</item>
+
+
+    </style>
+
+    <style name="MIP_toolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+
+
+    </style>
+
 </resources>

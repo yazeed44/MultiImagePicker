@@ -1,19 +1,22 @@
 package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.WindowCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
@@ -46,6 +49,7 @@ public class PickerActivity extends AppCompatActivity {
     private MenuItem mSelectAllMenuItem;
     private MenuItem mDeselectAllMenuItem;
 
+    private Toolbar mToolbar;
 
     //TODO Add animation
     //TODO Fix bugs with changing orientation
@@ -56,51 +60,99 @@ public class PickerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
+        setTheme(mPickOptions.themeResId);
 
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
+
+
         setContentView(R.layout.activity_pick);
-        getSupportActionBar().setTitle(R.string.albums_title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+
+        mToolbar = new Toolbar(this, null, getActionBarStyleResId());
+
+        mToolbar.setMinimumHeight(getActionBarHeight());
+
+        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+
+
+        appBarLayout.addView(mToolbar, new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+
+        setSupportActionBar(mToolbar);
 
 
         mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
 
         EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
 
-        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
 
-        getTheme().setTo(mPickOptions.context.getTheme());
-
+        initActionbar();
         initOptions();
         updateFab();
+
 
 
         setupAlbums(savedInstanceState);
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        EventBus.getDefault().register(this);
+    private int getActionBarHeight() {
 
+
+        int actionBarHeight = 0;
+
+        final TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+
+
+        return actionBarHeight;
+    }
+
+    private int getActionBarStyleResId() {
+        final TypedValue tv = new TypedValue();
+
+
+        if (getTheme().resolveAttribute(R.attr.toolbarStyle, tv, true)) {
+            return tv.resourceId;
+        }
+
+        return -1;
+    }
+
+
+    @Override
+    protected void onStart() {
+        EventBus.getDefault().register(this);
+        super.onStart();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
         EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+
+    private void initActionbar() {
+
+
+        getSupportActionBar().setTitle(R.string.albums_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
     }
 
     public void initOptions() {
-        final Drawable doneIcon = ContextCompat.getDrawable(this, mPickOptions.doneIconResId);
+        Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
+        doneIcon = DrawableCompat.wrap(doneIcon);
+        DrawableCompat.setTint(doneIcon, mPickOptions.doneIconTintColor);
 
         mDoneFab.setImageDrawable(doneIcon);
         mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
         mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
 
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mPickOptions.actionBarBackgroundColor));
+        //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mPickOptions.actionBarBackgroundColor));
 
 
     }
@@ -130,6 +182,7 @@ public class PickerActivity extends AppCompatActivity {
             mDoneFab.hide();
             return;
         }
+
 
         if (sCheckedImages.size() == 0) {
             mDoneFab.setVisibility(View.GONE);
@@ -211,7 +264,14 @@ public class PickerActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_select_all, menu);
         getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
 
-        menu.findItem(R.id.action_take_photo).setIcon(mPickOptions.captureIconResId);
+
+        Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
+
+        captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
+
+        DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureIconTintColor);
+
+        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
 
         mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
         mDeselectAllMenuItem = menu.findItem(R.id.action_deselect_all);

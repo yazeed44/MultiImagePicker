@@ -2,6 +2,7 @@ package net.yazeed44.imagepicker.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.graphics.ColorUtils;
 import android.util.TypedValue;
 
@@ -20,7 +21,7 @@ public final class Picker {
     public final int limit;
     public final Context context;
     public final int actionBarBackgroundColor;
-    public final int captureIconResId;
+    public final int captureIconTintColor;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
     public final int imageBackgroundColorWhenChecked;
@@ -28,18 +29,19 @@ public final class Picker {
     public final int imageCheckColor;
     public final int checkedImageOverlayColor;
     public final PickListener pickListener;
-    public final int doneIconResId;
+    public final int doneIconTintColor;
     public final int albumImagesCountTextColor;
     public final int albumBackgroundColor;
     public final int albumNameTextColor;
     public final PickMode pickMode;
+    public final int themeResId;
 
 
     private Picker(final Builder builder) {
         context = builder.mContext;
         limit = builder.mLimit;
         actionBarBackgroundColor = builder.mActionBarBackgroundColor;
-        captureIconResId = builder.mCaptureIconResId;
+        captureIconTintColor = builder.mCaptureIconTintColor;
         fabBackgroundColor = builder.mFabBackgroundColor;
         fabBackgroundColorWhenPressed = builder.mFabBackgroundColorWhenPressed;
         imageBackgroundColorWhenChecked = builder.mImageBackgroundColorWhenChecked;
@@ -47,11 +49,12 @@ public final class Picker {
         imageCheckColor = builder.mImageCheckColor;
         checkedImageOverlayColor = builder.mCheckedImageOverlayColor;
         pickListener = builder.mPickListener;
-        doneIconResId = builder.mDoneIconResId;
+        doneIconTintColor = builder.mDoneIconTintColor;
         albumBackgroundColor = builder.mAlbumBackgroundColor;
         albumImagesCountTextColor = builder.mAlbumImagesCountTextColor;
         albumNameTextColor = builder.mAlbumNameTextColor;
         pickMode = builder.mPickMode;
+        themeResId = builder.mThemeResId;
 
 
     }
@@ -66,10 +69,6 @@ public final class Picker {
 
     }
 
-
-    public enum Color {
-        WHITE, BLACK, GREY
-    }
 
     public enum PickMode {
 
@@ -87,10 +86,10 @@ public final class Picker {
 
         private final Context mContext;
         private final PickListener mPickListener;
-        private int mDoneIconResId;
+        private int mDoneIconTintColor;
         private int mLimit = PickerActivity.NO_LIMIT;
         private int mActionBarBackgroundColor;
-        private int mCaptureIconResId;
+        private int mCaptureIconTintColor;
 
         private int mFabBackgroundColor;
         private int mFabBackgroundColorWhenPressed;
@@ -103,12 +102,25 @@ public final class Picker {
         private int mAlbumBackgroundColor;
         private int mAlbumNameTextColor;
         private PickMode mPickMode;
+        private int mThemeResId;
 
 
+        //Use (Context,PickListener,themeResId) instead
+        @Deprecated
         public Builder(final Context context, final PickListener listener) {
 
             mContext = context;
             mPickListener = listener;
+            init();
+
+
+        }
+
+        public Builder(final Context context, final PickListener listener, final int themeResId) {
+            mContext = context;
+            mContext.setTheme(themeResId);
+            mPickListener = listener;
+            mThemeResId = themeResId;
             init();
 
         }
@@ -117,7 +129,8 @@ public final class Picker {
             final TypedValue typedValue = new TypedValue();
             initUsingColorPrimary(typedValue);
             initUsingColorAccent(typedValue);
-            initUsingIsThemeLight(typedValue);
+            initUsingActionMenuTextColor(typedValue);
+
 
             mImageBackgroundColor = mContext.getResources().getColor(R.color.alter_unchecked_image_background);
             mImageCheckColor = mContext.getResources().getColor(R.color.alter_image_check_color);
@@ -129,6 +142,9 @@ public final class Picker {
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
 
             mPickMode = PickMode.MULTIPLE_IMAGES;
+
+            if (mThemeResId == 0)
+                initUsingThemeResId(typedValue);
 
 
         }
@@ -158,25 +174,30 @@ public final class Picker {
 
         }
 
-        private void initUsingIsThemeLight(final TypedValue typedValue) {
-
-            if (mContext.getTheme().resolveAttribute(R.attr.isLightTheme, typedValue, true)) {
-                final boolean themeIsLight = typedValue.data == 1;
-
-                if (themeIsLight) {
-                    mCaptureIconResId = R.drawable.ic_action_camera_black;
-                    mDoneIconResId = R.drawable.ic_action_done_black;
-
-                } else {
-                    mCaptureIconResId = R.drawable.ic_action_camera_white;
-                    mDoneIconResId = R.drawable.ic_action_done_white;
+        private void initUsingActionMenuTextColor(final TypedValue typedValue) {
 
 
-                }
+            if (mContext.getTheme().resolveAttribute(R.attr.itemTextColor, typedValue, true)) {
+
+                mCaptureIconTintColor = typedValue.data;
+                mDoneIconTintColor = typedValue.data;
+
 
             } else {
-                mCaptureIconResId = R.drawable.ic_action_camera_grey;
-                mDoneIconResId = R.drawable.ic_action_done_grey;
+                mCaptureIconTintColor = Color.GRAY;
+                mDoneIconTintColor = Color.GRAY;
+            }
+        }
+
+        private void initUsingThemeResId(final TypedValue typedValue) {
+
+            if (mContext.getTheme().resolveAttribute(R.attr.theme, typedValue, true)) {
+                //Initialize default theme
+                mThemeResId = typedValue.resourceId;
+
+            } else {
+
+                mThemeResId = R.style.Theme_AppCompat_Light_NoActionBar;
             }
         }
 
@@ -188,43 +209,14 @@ public final class Picker {
             return this;
         }
 
-        public Picker.Builder setCaptureIconColor(final Color color) {
 
-            switch (color) {
-                case WHITE:
-                    mCaptureIconResId = R.drawable.ic_action_camera_white;
-
-                    break;
-
-                case BLACK:
-                    mCaptureIconResId = R.drawable.ic_action_camera_black;
-
-                    break;
-
-                case GREY:
-                    mCaptureIconResId = R.drawable.ic_action_camera_grey;
-
-                    break;
-            }
-
+        public Picker.Builder setCaptureIconTintColor(final int color) {
+            mCaptureIconTintColor = color;
             return this;
         }
 
-        public Picker.Builder setDoneIconColor(final Color color) {
-            switch (color) {
-                case WHITE:
-                    mDoneIconResId = R.drawable.ic_action_done_white;
-                    break;
-
-                case BLACK:
-                    mDoneIconResId = R.drawable.ic_action_done_black;
-                    break;
-
-                case GREY:
-                    mDoneIconResId = R.drawable.ic_action_done_grey;
-                    break;
-            }
-
+        public Picker.Builder setDoneIconTintColor(final int color) {
+            mDoneIconTintColor = color;
             return this;
         }
 
