@@ -35,6 +35,9 @@ public final class Picker {
     public final int albumNameTextColor;
     public final PickMode pickMode;
     public final int themeResId;
+    public final int popupThemeResId;
+    public final int captureItemIconTintColor;
+    public final int doneFabIconTintColor;
 
 
     private Picker(final Builder builder) {
@@ -52,6 +55,10 @@ public final class Picker {
         albumNameTextColor = builder.mAlbumNameTextColor;
         pickMode = builder.mPickMode;
         themeResId = builder.mThemeResId;
+        popupThemeResId = builder.mPopupThemeResId;
+        captureItemIconTintColor = builder.mCaptureItemIconTintColor;
+        doneFabIconTintColor = builder.mDoneFabIconTintColor;
+
 
 
     }
@@ -95,6 +102,10 @@ public final class Picker {
         private int mAlbumBackgroundColor;
         private int mAlbumNameTextColor;
         private PickMode mPickMode;
+        private int mPopupThemeResId;
+        private int mDoneFabIconTintColor;
+        private int mCaptureItemIconTintColor;
+
 
 
         //Use (Context,PickListener,themeResId) instead
@@ -132,6 +143,9 @@ public final class Picker {
             mAlbumImagesCountTextColor = mContext.getResources().getColor(R.color.alter_album_images_count_text_color);
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
             mPickMode = PickMode.MULTIPLE_IMAGES;
+
+            mPopupThemeResId = Util.getDefaultPopupTheme(mContext);
+            mCaptureItemIconTintColor = mDoneFabIconTintColor = Util.getDefaultIconTintColor(mContext);
 
         }
 
@@ -200,6 +214,21 @@ public final class Picker {
 
         public Picker.Builder setPickMode(final PickMode pickMode) {
             mPickMode = pickMode;
+            return this;
+        }
+
+        public Picker.Builder setToolbarPopupTheme(@StyleRes final int themeRes) {
+            mPopupThemeResId = themeRes;
+            return this;
+        }
+
+        public Picker.Builder setDoneFabIconTintColor(@ColorInt final int color) {
+            mDoneFabIconTintColor = color;
+            return this;
+        }
+
+        public Picker.Builder setCaptureItemIconTintColor(@ColorInt final int color) {
+            mCaptureItemIconTintColor = color;
             return this;
         }
 

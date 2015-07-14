@@ -2,10 +2,12 @@ package net.yazeed44.imagepicker.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -22,10 +24,11 @@ import java.util.HashMap;
 public final class Util {
 
 
+    public static final TypedValue TYPED_VALUE = new TypedValue();
+
     private Util() {
         throw new AssertionError();
     }
-
 
     public static ArrayList<AlbumEntry> getAlbums(final Context context) {
 
@@ -118,6 +121,56 @@ public final class Util {
             parent = (View) parent.getParent();
         }
         return recyclerView.getChildAdapterPosition(parent);
+    }
+
+    public static int getActionBarHeight(final Context context) {
+        context.getTheme().resolveAttribute(android.R.attr.actionBarSize, TYPED_VALUE, true);
+
+
+        return TypedValue.complexToDimensionPixelSize(TYPED_VALUE.data, context.getResources().getDisplayMetrics());
+    }
+
+    public static int getActionBarThemeResId(final Context context) {
+        context.getTheme().resolveAttribute(R.attr.actionBarTheme, TYPED_VALUE, true);
+
+        return TYPED_VALUE.resourceId;
+    }
+
+    public static int getToolbarThemeResId(final Context context) {
+
+        if (isActionbarThemeLight(context)) {
+            return R.style.ThemeOverlay_AppCompat_ActionBar;
+
+        } else {
+            return R.style.ThemeOverlay_AppCompat_Dark_ActionBar;
+        }
+
+    }
+
+    public static int getDefaultPopupTheme(final Context context) {
+
+        if (isActionbarThemeLight(context)) {
+            return R.style.ThemeOverlay_AppCompat_Dark;
+        } else {
+            return R.style.ThemeOverlay_AppCompat_Light;
+        }
+
+    }
+
+
+    public static boolean isActionbarThemeLight(final Context context) {
+        return context.getTheme().obtainStyledAttributes(getActionBarThemeResId(context), new int[]{R.attr.isLightTheme}).getBoolean(0, true);
+
+    }
+
+    public static int getDefaultIconTintColor(final Context context) {
+
+        if (isActionbarThemeLight(context)) {
+            return Color.BLACK;
+        } else {
+            return Color.WHITE;
+
+        }
     }
 
     public interface OnClickImage {
