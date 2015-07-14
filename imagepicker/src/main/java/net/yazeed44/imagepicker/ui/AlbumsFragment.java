@@ -15,7 +15,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.LoadingAlbumsRequest;
 import net.yazeed44.imagepicker.util.OfflineSpiceService;

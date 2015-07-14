@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.util;
+package net.yazeed44.imagepicker.model;
 
 import android.database.Cursor;
 import android.net.Uri;

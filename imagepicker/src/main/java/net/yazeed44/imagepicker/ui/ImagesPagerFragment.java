@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.melnykov.fab.FloatingActionButton;
 
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 
 import de.greenrobot.event.EventBus;

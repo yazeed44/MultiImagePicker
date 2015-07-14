@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.model.AlbumEntry;
+import net.yazeed44.imagepicker.model.ImageEntry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
