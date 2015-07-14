@@ -8,8 +8,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import net.yazeed44.imagepicker.util.AlbumEntry;
-import net.yazeed44.imagepicker.util.ImageEntry;
+import net.yazeed44.imagepicker.model.AlbumEntry;
+import net.yazeed44.imagepicker.model.ImageEntry;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -49,6 +49,7 @@ public class ImagePagerAdapter extends PagerAdapter {
 
         Glide.with(mContext)
                 .load(imageEntry.path)
+                .asBitmap()
                 .into(view);
 
         container.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

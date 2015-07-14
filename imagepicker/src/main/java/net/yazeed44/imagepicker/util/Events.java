@@ -2,6 +2,9 @@ package net.yazeed44.imagepicker.util;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import net.yazeed44.imagepicker.model.AlbumEntry;
+import net.yazeed44.imagepicker.model.ImageEntry;
+
 import java.util.ArrayList;
 
 /**

@@ -1,26 +1,30 @@
 package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.WindowCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.util.AlbumEntry;
+import net.yazeed44.imagepicker.model.AlbumEntry;
+import net.yazeed44.imagepicker.model.ImageEntry;
 import net.yazeed44.imagepicker.util.Events;
-import net.yazeed44.imagepicker.util.ImageEntry;
 import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.Util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ public class PickerActivity extends AppCompatActivity {
     private MenuItem mSelectAllMenuItem;
     private MenuItem mDeselectAllMenuItem;
 
+    private Toolbar mToolbar;
 
     //TODO Add animation
     //TODO Fix bugs with changing orientation
@@ -56,23 +61,16 @@ public class PickerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
+        initTheme();
 
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR);
+
         setContentView(R.layout.activity_pick);
-        getSupportActionBar().setTitle(R.string.albums_title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        addToolbarToLayout();
+        initFab();
 
-
-        mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
-
-        EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
-
-        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
-
-        getTheme().setTo(mPickOptions.context.getTheme());
-
-        initOptions();
+        initActionbar();
         updateFab();
 
 
@@ -80,31 +78,60 @@ public class PickerActivity extends AppCompatActivity {
 
     }
 
+    private void initTheme() {
+        setTheme(mPickOptions.themeResId);
+        mToolbar = new Toolbar(new ContextThemeWrapper(mPickOptions.context, Util.getToolbarThemeResId(this)));
+        mToolbar.setPopupTheme(mPickOptions.popupThemeResId);
+    }
+
+    private void addToolbarToLayout() {
+        mToolbar.setMinimumHeight(Util.getActionBarHeight(this));
+
+        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+
+
+        appBarLayout.addView(mToolbar, new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+
+        setSupportActionBar(mToolbar);
+    }
+
+
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
         EventBus.getDefault().register(this);
-
+        super.onStart();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
         EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
-    public void initOptions() {
-        final Drawable doneIcon = ContextCompat.getDrawable(this, mPickOptions.doneIconResId);
 
-        mDoneFab.setImageDrawable(doneIcon);
+    private void initActionbar() {
+
+
+        getSupportActionBar().setTitle(R.string.albums_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
+
+    public void initFab() {
+        Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
+        final Drawable doneIconWrapped = DrawableCompat.wrap(doneIcon);
+        DrawableCompat.setTint(doneIconWrapped, mPickOptions.doneFabIconTintColor);
+
+        mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
+        mDoneFab.setImageDrawable(doneIconWrapped);
         mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
         mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
 
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(mPickOptions.actionBarBackgroundColor));
+
+        EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
 
 
     }
-
 
     public void setupAlbums(Bundle savedInstanceState) {
         if (findViewById(R.id.fragment_container) != null) {
@@ -130,6 +157,7 @@ public class PickerActivity extends AppCompatActivity {
             mDoneFab.hide();
             return;
         }
+
 
         if (sCheckedImages.size() == 0) {
             mDoneFab.setVisibility(View.GONE);
@@ -211,7 +239,14 @@ public class PickerActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_select_all, menu);
         getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
 
-        menu.findItem(R.id.action_take_photo).setIcon(mPickOptions.captureIconResId);
+
+        final Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
+
+        final Drawable captureIconDrawableWrapped = DrawableCompat.wrap(captureIconDrawable);
+
+        DrawableCompat.setTint(captureIconDrawableWrapped, mPickOptions.captureItemIconTintColor);
+
+        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawableWrapped);
 
         mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
         mDeselectAllMenuItem = menu.findItem(R.id.action_deselect_all);
@@ -453,8 +488,6 @@ public class PickerActivity extends AppCompatActivity {
         mCurrentlyDisplayedImage = newImageEvent.currentImage;
 
     }
-
-
 
 
 }

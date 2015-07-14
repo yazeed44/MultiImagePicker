@@ -2,10 +2,14 @@ package net.yazeed44.imagepicker.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.annotation.StyleRes;
 import android.support.v4.graphics.ColorUtils;
 import android.util.TypedValue;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.model.ImageEntry;
 import net.yazeed44.imagepicker.ui.PickerActivity;
 
 import java.util.ArrayList;
@@ -19,8 +23,6 @@ public final class Picker {
 
     public final int limit;
     public final Context context;
-    public final int actionBarBackgroundColor;
-    public final int captureIconResId;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
     public final int imageBackgroundColorWhenChecked;
@@ -28,18 +30,19 @@ public final class Picker {
     public final int imageCheckColor;
     public final int checkedImageOverlayColor;
     public final PickListener pickListener;
-    public final int doneIconResId;
     public final int albumImagesCountTextColor;
     public final int albumBackgroundColor;
     public final int albumNameTextColor;
     public final PickMode pickMode;
+    public final int themeResId;
+    public final int popupThemeResId;
+    public final int captureItemIconTintColor;
+    public final int doneFabIconTintColor;
 
 
     private Picker(final Builder builder) {
         context = builder.mContext;
         limit = builder.mLimit;
-        actionBarBackgroundColor = builder.mActionBarBackgroundColor;
-        captureIconResId = builder.mCaptureIconResId;
         fabBackgroundColor = builder.mFabBackgroundColor;
         fabBackgroundColorWhenPressed = builder.mFabBackgroundColorWhenPressed;
         imageBackgroundColorWhenChecked = builder.mImageBackgroundColorWhenChecked;
@@ -47,11 +50,15 @@ public final class Picker {
         imageCheckColor = builder.mImageCheckColor;
         checkedImageOverlayColor = builder.mCheckedImageOverlayColor;
         pickListener = builder.mPickListener;
-        doneIconResId = builder.mDoneIconResId;
         albumBackgroundColor = builder.mAlbumBackgroundColor;
         albumImagesCountTextColor = builder.mAlbumImagesCountTextColor;
         albumNameTextColor = builder.mAlbumNameTextColor;
         pickMode = builder.mPickMode;
+        themeResId = builder.mThemeResId;
+        popupThemeResId = builder.mPopupThemeResId;
+        captureItemIconTintColor = builder.mCaptureItemIconTintColor;
+        doneFabIconTintColor = builder.mDoneFabIconTintColor;
+
 
 
     }
@@ -66,10 +73,6 @@ public final class Picker {
 
     }
 
-
-    public enum Color {
-        WHITE, BLACK, GREY
-    }
 
     public enum PickMode {
 
@@ -87,14 +90,10 @@ public final class Picker {
 
         private final Context mContext;
         private final PickListener mPickListener;
-        private int mDoneIconResId;
+        private final int mThemeResId;
         private int mLimit = PickerActivity.NO_LIMIT;
-        private int mActionBarBackgroundColor;
-        private int mCaptureIconResId;
-
         private int mFabBackgroundColor;
         private int mFabBackgroundColorWhenPressed;
-
         private int mImageBackgroundColorWhenChecked;
         private int mImageBackgroundColor;
         private int mImageCheckColor;
@@ -103,21 +102,38 @@ public final class Picker {
         private int mAlbumBackgroundColor;
         private int mAlbumNameTextColor;
         private PickMode mPickMode;
+        private int mPopupThemeResId;
+        private int mDoneFabIconTintColor;
+        private int mCaptureItemIconTintColor;
 
 
+
+        //Use (Context,PickListener,themeResId) instead
+        @Deprecated
         public Builder(final Context context, final PickListener listener) {
 
+
+            mThemeResId = R.style.Theme_AppCompat_Light_NoActionBar;
             mContext = context;
+            mContext.setTheme(mThemeResId);
             mPickListener = listener;
+            init();
+
+
+        }
+
+        public Builder(@NonNull final Context context, @NonNull final PickListener listener, @StyleRes final int themeResId) {
+            mContext = context;
+            mContext.setTheme(themeResId);
+            mPickListener = listener;
+            mThemeResId = themeResId;
             init();
 
         }
 
         private void init() {
             final TypedValue typedValue = new TypedValue();
-            initUsingColorPrimary(typedValue);
             initUsingColorAccent(typedValue);
-            initUsingIsThemeLight(typedValue);
 
             mImageBackgroundColor = mContext.getResources().getColor(R.color.alter_unchecked_image_background);
             mImageCheckColor = mContext.getResources().getColor(R.color.alter_image_check_color);
@@ -125,60 +141,22 @@ public final class Picker {
             mAlbumBackgroundColor = mContext.getResources().getColor(R.color.alter_album_background);
             mAlbumNameTextColor = mContext.getResources().getColor(R.color.alter_album_name_text_color);
             mAlbumImagesCountTextColor = mContext.getResources().getColor(R.color.alter_album_images_count_text_color);
-
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
-
             mPickMode = PickMode.MULTIPLE_IMAGES;
 
+            mPopupThemeResId = Util.getDefaultPopupTheme(mContext);
+            mCaptureItemIconTintColor = mDoneFabIconTintColor = Util.getDefaultIconTintColor(mContext);
 
         }
 
-        private void initUsingColorPrimary(final TypedValue typedValue) {
-
-            if (mContext.getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true)) {
-                mActionBarBackgroundColor = typedValue.data;
-
-            } else {
-
-                mActionBarBackgroundColor = mContext.getResources().getColor(R.color.alter_primary);
-
-            }
-        }
 
         private void initUsingColorAccent(final TypedValue typedValue) {
-
-
-            if (mContext.getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true)) {
-
-                mImageBackgroundColorWhenChecked = mFabBackgroundColor = typedValue.data;
-            } else {
-                mImageBackgroundColorWhenChecked = mFabBackgroundColor = mContext.getResources().getColor(R.color.alter_checked_image_background);
-            }
+            mContext.getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
+            mImageBackgroundColorWhenChecked = mFabBackgroundColor = typedValue.data;
 
 
         }
 
-        private void initUsingIsThemeLight(final TypedValue typedValue) {
-
-            if (mContext.getTheme().resolveAttribute(R.attr.isLightTheme, typedValue, true)) {
-                final boolean themeIsLight = typedValue.data == 1;
-
-                if (themeIsLight) {
-                    mCaptureIconResId = R.drawable.ic_action_camera_black;
-                    mDoneIconResId = R.drawable.ic_action_done_black;
-
-                } else {
-                    mCaptureIconResId = R.drawable.ic_action_camera_white;
-                    mDoneIconResId = R.drawable.ic_action_done_white;
-
-
-                }
-
-            } else {
-                mCaptureIconResId = R.drawable.ic_action_camera_grey;
-                mDoneIconResId = R.drawable.ic_action_done_grey;
-            }
-        }
 
         /**
          * @param limit limit for the count of image user can pick , By default it's infinite
@@ -188,99 +166,69 @@ public final class Picker {
             return this;
         }
 
-        public Picker.Builder setCaptureIconColor(final Color color) {
-
-            switch (color) {
-                case WHITE:
-                    mCaptureIconResId = R.drawable.ic_action_camera_white;
-
-                    break;
-
-                case BLACK:
-                    mCaptureIconResId = R.drawable.ic_action_camera_black;
-
-                    break;
-
-                case GREY:
-                    mCaptureIconResId = R.drawable.ic_action_camera_grey;
-
-                    break;
-            }
-
-            return this;
-        }
-
-        public Picker.Builder setDoneIconColor(final Color color) {
-            switch (color) {
-                case WHITE:
-                    mDoneIconResId = R.drawable.ic_action_done_white;
-                    break;
-
-                case BLACK:
-                    mDoneIconResId = R.drawable.ic_action_done_black;
-                    break;
-
-                case GREY:
-                    mDoneIconResId = R.drawable.ic_action_done_grey;
-                    break;
-            }
-
-            return this;
-        }
-
-        public Picker.Builder setActionBarBackgroundColor(final int color) {
-            mActionBarBackgroundColor = color;
-            return this;
-        }
-
-        public Picker.Builder setFabBackgroundColor(final int color) {
+        public Picker.Builder setFabBackgroundColor(@ColorInt final int color) {
             mFabBackgroundColor = color;
             return this;
         }
 
-        public Picker.Builder setFabBackgroundColorWhenPressed(final int color) {
+        public Picker.Builder setFabBackgroundColorWhenPressed(@ColorInt final int color) {
             mFabBackgroundColorWhenPressed = color;
             return this;
         }
 
-        public Picker.Builder setImageBackgroundColorWhenChecked(final int color) {
+        public Picker.Builder setImageBackgroundColorWhenChecked(@ColorInt final int color) {
             mImageBackgroundColorWhenChecked = color;
             return this;
         }
 
-        public Picker.Builder setImageBackgroundColor(final int color) {
+        public Picker.Builder setImageBackgroundColor(@ColorInt final int color) {
             mImageBackgroundColor = color;
             return this;
         }
 
-        public Picker.Builder setImageCheckColor(final int color) {
+        public Picker.Builder setImageCheckColor(@ColorInt final int color) {
             mImageCheckColor = color;
             return this;
         }
 
-        public Picker.Builder setCheckedImageOverlayColor(final int color) {
+        public Picker.Builder setCheckedImageOverlayColor(@ColorInt final int color) {
             mCheckedImageOverlayColor = color;
             return this;
         }
 
 
-        public Picker.Builder setAlbumBackgroundColor(final int color) {
+        public Picker.Builder setAlbumBackgroundColor(@ColorInt final int color) {
             mAlbumBackgroundColor = color;
             return this;
         }
 
-        public Picker.Builder setAlbumNameTextColor(final int color) {
+        public Picker.Builder setAlbumNameTextColor(@ColorInt final int color) {
             mAlbumNameTextColor = color;
             return this;
         }
 
-        public Picker.Builder setAlbumImagesCountTextColor(final int color) {
+        public Picker.Builder setAlbumImagesCountTextColor(@ColorInt final int color) {
             mAlbumImagesCountTextColor = color;
             return this;
         }
 
         public Picker.Builder setPickMode(final PickMode pickMode) {
             mPickMode = pickMode;
+            return this;
+        }
+
+        public Picker.Builder setToolbarPopupTheme(@StyleRes final int themeRes) {
+            mPopupThemeResId = themeRes;
+            return this;
+        }
+
+        public Picker.Builder setDoneFabIconTintColor(@ColorInt final int color) {
+            mDoneFabIconTintColor = color;
+            return this;
+        }
+
+        public Picker.Builder setCaptureItemIconTintColor(@ColorInt final int color) {
+            mCaptureItemIconTintColor = color;
             return this;
         }
 
