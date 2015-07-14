@@ -1,5 +1,6 @@
 package net.yazeed44.imagepicker.ui;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,20 +90,20 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
     public void drawGrid(final ImagesViewHolder holder, final ImageEntry imageEntry) {
 
-        final int orgPadding = mRecyclerView.getResources().getDimensionPixelSize(R.dimen.image_spacing);
 
-        if (isChecked(imageEntry)) {
-            //holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
+        if (isPicked(imageEntry)) {
+            holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
             holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
 
 
-            // holder.thumbnail.setColorFilter(mPickOptions.checkedImageOverlayColor);
-            holder.itemView.setPadding(orgPadding, orgPadding, orgPadding, orgPadding);
+            holder.thumbnail.setColorFilter(mPickOptions.checkedImageOverlayColor);
+            final int padding = mRecyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.image_checked_padding);
+            holder.itemView.setPadding(padding, padding, padding, padding);
         } else {
             holder.check.setBackgroundColor(mPickOptions.imageCheckColor);
-            //holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
-            // holder.thumbnail.setColorFilter(Color.TRANSPARENT);
-            holder.itemView.setPadding(orgPadding, orgPadding, orgPadding, orgPadding);
+            holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
+            holder.thumbnail.setColorFilter(Color.TRANSPARENT);
+            holder.itemView.setPadding(0, 0, 0, 0);
         }
 
         if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
@@ -113,7 +114,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
     public void pickImage(final ImagesViewHolder holder, final ImageEntry imageEntry) {
 
-        final boolean isPicked = isChecked(imageEntry);
+        final boolean isPicked = isPicked(imageEntry);
 
         if (isPicked) {
             //Unpick
@@ -133,7 +134,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     }
 
 
-    public boolean isChecked(final ImageEntry pImageEntry) {
+    public boolean isPicked(final ImageEntry pImageEntry) {
 
 
         for (final ImageEntry imageEntry : PickerActivity.sCheckedImages) {
