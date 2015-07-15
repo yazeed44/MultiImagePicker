@@ -100,6 +100,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
             final int padding = mRecyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.image_checked_padding);
             holder.itemView.setPadding(padding, padding, padding, padding);
         } else {
+
             holder.check.setBackgroundColor(mPickOptions.imageCheckColor);
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
             holder.thumbnail.setColorFilter(Color.TRANSPARENT);

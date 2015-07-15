@@ -53,9 +53,11 @@ public class ImagesThumbnailFragment extends Fragment {
 
         mImagesRecycler.setHasFixedSize(true);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_images));
+
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         mImagesRecycler.setLayoutManager(gridLayoutManager);
+        mImagesRecycler.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_spacing)));
 
 
     }
