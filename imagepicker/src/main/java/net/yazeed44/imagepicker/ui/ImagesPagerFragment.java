@@ -67,6 +67,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
             actionBar.show();
             mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
+            mDoneFab.bringToFront();
 
         }
 
@@ -102,6 +103,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
 
         mDoneFab.setVisibility(View.VISIBLE);
         mDoneFab.show();
+        mDoneFab.bringToFront();
         if (mImagePager.getAdapter() != null) {
             return;
         }

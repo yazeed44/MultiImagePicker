@@ -68,13 +68,10 @@ public class PickerActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_pick);
         addToolbarToLayout();
-        initFab();
-
         initActionbar();
-        updateFab();
-
-
         setupAlbums(savedInstanceState);
+        initFab();
+        updateFab();
 
     }
 
@@ -118,7 +115,7 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void initFab() {
-        Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
+        final Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
         final Drawable doneIconWrapped = DrawableCompat.wrap(doneIcon);
         DrawableCompat.setTint(doneIconWrapped, mPickOptions.doneFabIconTintColor);
 
@@ -126,7 +123,6 @@ public class PickerActivity extends AppCompatActivity {
         mDoneFab.setImageDrawable(doneIconWrapped);
         mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
         mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
-
 
         EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
 
@@ -167,10 +163,12 @@ public class PickerActivity extends AppCompatActivity {
             //Might change FAB appearance on other version
             mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
+            mDoneFab.bringToFront();
 
         } else {
             mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
+            mDoneFab.bringToFront();
 
 
         }
