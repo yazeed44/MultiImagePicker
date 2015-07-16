@@ -3,6 +3,8 @@
 
 -``` onPickedSuccessfully(String[] paths)``` has been replaced with ``` onPickedSuccessfully(ArrayList<ImageEntry> images)```
 
+-The sample in google play and screenshots are out-of-date , will update them on 1.2 or 1.3 version
+
 MultiImagePicker
 ================
 
