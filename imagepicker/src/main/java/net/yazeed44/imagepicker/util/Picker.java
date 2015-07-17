@@ -212,6 +212,9 @@ public final class Picker {
             return this;
         }
 
+        /**
+         * @param pickMode how picking images should behave , default mode is multiple images
+         */
         public Picker.Builder setPickMode(final PickMode pickMode) {
             mPickMode = pickMode;
             return this;
