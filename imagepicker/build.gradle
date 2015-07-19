@@ -1,6 +1,41 @@
 apply plugin: 'com.android.library'
 
 
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '23.0.0 rc3'
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.commonsware.cwac:cam2:0.1.0'
+    compile 'com.github.bumptech.glide:glide:3.6.0'
+    compile 'com.octo.android.robospice:robospice:1.4.14'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.melnykov:floatingactionbutton:1.3.0'
+    compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.github.chrisbanes.photoview:library:1.2.3'
+    compile 'com.android.support:support-annotations:22.2.1'
+}
+
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'multi-image-picker'
@@ -23,44 +58,10 @@ ext {
     licenseUrl = 'https://raw.githubusercontent.com/yazeed44/MultiImagePicker/master/LICENSE.txt'
     allLicenses = ["MIT"]
 
+
 }
 
-android {
-    compileSdkVersion 22
-    buildToolsVersion '23.0.0 rc3'
-
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 22
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-}
-
-repositories {
-    maven {
-        url "https://repo.commonsware.com.s3.amazonaws.com"
-    }
-}
-
-
-dependencies {
-    compile 'com.commonsware.cwac:cam2:0.1.+'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.github.bumptech.glide:glide:3.6.0'
-    compile 'com.octo.android.robospice:robospice:1.4.14'
-    compile 'com.android.support:recyclerview-v7:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
-    compile 'com.melnykov:floatingactionbutton:1.3.0'
-    compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.github.chrisbanes.photoview:library:1.2.3'
-    compile 'com.android.support:support-annotations:22.2.1'
-}
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+
