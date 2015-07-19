@@ -1,3 +1,10 @@
+#Notice
+-Picker.Builder(Context,Listener) has been replaced with (Context,Listener,themeResId) and it's highely recommended to use the new constructor
+
+-``` onPickedSuccessfully(String[] paths)``` has been replaced with ``` onPickedSuccessfully(ArrayList<ImageEntry> images)```
+
+-The sample in google play and screenshots are out-of-date , will update them on 1.2 or 1.3 version
+
 MultiImagePicker
 ================
 
@@ -24,7 +31,7 @@ Gradle Dependency (jCenter)
 ==========================
 Just add the dependency to your build.gradle file
 ```gradle 
-compile 'net.yazeed44.imagepicker:imagepicker:1.0.0' 
+compile 'net.yazeed44.imagepicker:imagepicker:1.1.1' 
 ```
 
 [ ![Download](https://api.bintray.com/packages/yazeed44/maven/multi-image-picker/images/download.svg) ](https://bintray.com/yazeed44/maven/multi-image-picker/_latestVersion)
@@ -45,26 +52,34 @@ Getting started
 
 It's easy
 
+-Define a style that uses a toolbar instead of actionbar , if you have already has a style who does that skip this step
+```xml
+
+<style name="MIP_theme" parent="AppTheme">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+
+
+
+    </style>
+```
+
 ```java
 private void pickImages(){
        
        //You can change many settings in builder like limit , Pick mode and colors
-        new Picker.Builder(this,new MyPickListener())
+        new Picker.Builder(this,new MyPickListener(),R.style.MIP_theme)
         .build()
         .startActivity();
         
     }
-```
-
     
-    
-```java
-
-
-private class MyPickListener implements PickListener
+private class MyPickListener implements Picker.PickListener
 {
 @Override
-public void onPickedSuccessfully(final String[] paths)
+public void onPickedSuccessfully(final ArrayList<ImageEntry> paths)
 {
 
 doSomethingWithImages(images);
@@ -75,8 +90,8 @@ public void onCancel(){
 //User cancled the pick activity
 }
 }
-            
 ```
+
 
 ##Contribution
 
