@@ -1,6 +1,8 @@
 package net.yazeed44.imagepicker.model;
 
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -36,6 +38,14 @@ public class ImageEntry implements Serializable {
         return "ImageEntry{" +
                 "path='" + path + '\'' +
                 '}';
+    }
+
+    public Point getDimension() {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        return new Point(options.outWidth, options.outHeight);
+
     }
 
     public static class Builder {

@@ -17,12 +17,11 @@ import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 
 import de.greenrobot.event.EventBus;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by yazeed44 on 6/20/15.
  */
-public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.OnViewTapListener, ViewPager.OnPageChangeListener {
+public class ImagesPagerFragment extends Fragment implements ViewPager.OnPageChangeListener {
 
     protected ViewPager mImagePager;
     protected AlbumEntry mSelectedAlbum;
@@ -52,26 +51,6 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         mDoneFab.hide();
     }
 
-    @Override
-    public void onViewTap(View view, float x, float y) {
-
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (mDoneFab.isVisible()) {
-            //Hide everything expect the image
-            actionBar.hide();
-            mDoneFab.hide();
-
-
-        } else {
-            //Show fab and actionbar
-            actionBar.show();
-            mDoneFab.setVisibility(View.VISIBLE);
-            mDoneFab.show();
-            mDoneFab.bringToFront();
-
-        }
-
-    }
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -107,7 +86,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         if (mImagePager.getAdapter() != null) {
             return;
         }
-        mImagePager.setAdapter(new ImagePagerAdapter(mSelectedAlbum, getActivity(), this));
+        mImagePager.setAdapter(new ImagePagerAdapter(getActivity(), mSelectedAlbum));
         final int imagePosition = mSelectedAlbum.imageList.indexOf(pickImageEvent.imageEntry);
 
         mImagePager.setCurrentItem(imagePosition);
@@ -125,5 +104,22 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         mDoneFab = fabEvent.fab;
     }
 
+    public void onEvent(final Events.OnTapImageEvent tapEvent) {
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (mDoneFab.isVisible()) {
+            //Hide everything expect the image
+            actionBar.hide();
+            mDoneFab.hide();
+
+
+        } else {
+            //Show fab and actionbar
+            actionBar.show();
+            mDoneFab.setVisibility(View.VISIBLE);
+            mDoneFab.show();
+            mDoneFab.bringToFront();
+
+        }
+    }
 
 }

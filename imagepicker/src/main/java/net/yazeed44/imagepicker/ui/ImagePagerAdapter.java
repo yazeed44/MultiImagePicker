@@ -4,15 +4,13 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
 
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by yazeed44 on 6/20/15.
@@ -22,12 +20,10 @@ public class ImagePagerAdapter extends PagerAdapter {
 
     protected final AlbumEntry mAlbumEntry;
     protected final Context mContext;
-    protected final PhotoViewAttacher.OnViewTapListener mTapListener;
 
-    public ImagePagerAdapter(final AlbumEntry albumEntry, final Context context, final PhotoViewAttacher.OnViewTapListener tapListener) {
+    public ImagePagerAdapter(final Context context, final AlbumEntry albumEntry) {
         mAlbumEntry = albumEntry;
         mContext = context;
-        mTapListener = tapListener;
     }
 
     @Override
@@ -43,21 +39,17 @@ public class ImagePagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         final ImageEntry imageEntry = mAlbumEntry.imageList.get(position);
-        final PhotoView view = new PhotoView(mContext);
-        view.setOnViewTapListener(mTapListener);
+        final SubsamplingScaleImageView imageView = new SubsamplingScaleImageView(mContext);
+        imageView.setImage(ImageSource.uri(imageEntry.path));
 
-
-        Glide.with(mContext)
-                .load(imageEntry.path)
-                .asBitmap()
-                .into(view);
-
-        container.addView(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        return view;
+        container.addView(imageView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        return imageView;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView((ImageView) object);
+        container.removeView((View) object);
     }
+
+
 }

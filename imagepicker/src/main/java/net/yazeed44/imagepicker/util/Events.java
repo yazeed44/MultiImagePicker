@@ -75,10 +75,8 @@ public final class Events {
     }
 
     public static class OnUpdateImagesThumbnailEvent {
+    }
 
-
-        public OnUpdateImagesThumbnailEvent() {
-
-        }
+    public static class OnTapImageEvent {
     }
 }
