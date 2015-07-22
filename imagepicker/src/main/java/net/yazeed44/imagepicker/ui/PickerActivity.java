@@ -233,18 +233,17 @@ public class PickerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+
+
+        if (mPickOptions.shouldShowCaptureMenuItem) {
+            initCaptureMenuItem(menu);
+        }
+
         getMenuInflater().inflate(R.menu.menu_select_all, menu);
         getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
 
 
-        final Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
 
-        final Drawable captureIconDrawableWrapped = DrawableCompat.wrap(captureIconDrawable);
-
-        DrawableCompat.setTint(captureIconDrawableWrapped, mPickOptions.captureItemIconTintColor);
-
-        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawableWrapped);
 
         mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
         mDeselectAllMenuItem = menu.findItem(R.id.action_deselect_all);
@@ -253,6 +252,17 @@ public class PickerActivity extends AppCompatActivity {
 
 
         return true;
+    }
+
+    private void initCaptureMenuItem(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+        Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
+        captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
+
+        DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
+
+        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
+
     }
 
     private void hideDeselectAll() {

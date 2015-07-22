@@ -38,6 +38,7 @@ public final class Picker {
     public final int popupThemeResId;
     public final int captureItemIconTintColor;
     public final int doneFabIconTintColor;
+    public boolean shouldShowCaptureMenuItem;
 
 
     private Picker(final Builder builder) {
@@ -58,6 +59,7 @@ public final class Picker {
         popupThemeResId = builder.mPopupThemeResId;
         captureItemIconTintColor = builder.mCaptureItemIconTintColor;
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
+        shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
 
 
 
@@ -105,6 +107,7 @@ public final class Picker {
         private int mPopupThemeResId;
         private int mDoneFabIconTintColor;
         private int mCaptureItemIconTintColor;
+        private boolean mShouldShowCaptureMenuItem;
 
 
 
@@ -146,6 +149,8 @@ public final class Picker {
 
             mPopupThemeResId = Util.getDefaultPopupTheme(mContext);
             mCaptureItemIconTintColor = mDoneFabIconTintColor = Util.getDefaultIconTintColor(mContext);
+
+            mShouldShowCaptureMenuItem = true;
 
         }
 
@@ -229,6 +234,11 @@ public final class Picker {
 
         public Picker.Builder setCaptureItemIconTintColor(@ColorInt final int color) {
             mCaptureItemIconTintColor = color;
+            return this;
+        }
+
+        public Picker.Builder disableCaptureImageFromCamera() {
+            mShouldShowCaptureMenuItem = false;
             return this;
         }
 
