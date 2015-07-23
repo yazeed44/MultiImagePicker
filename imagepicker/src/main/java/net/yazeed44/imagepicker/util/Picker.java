@@ -2,6 +2,7 @@ package net.yazeed44.imagepicker.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -38,7 +39,8 @@ public final class Picker {
     public final int popupThemeResId;
     public final int captureItemIconTintColor;
     public final int doneFabIconTintColor;
-    public boolean shouldShowCaptureMenuItem;
+    public final boolean shouldShowCaptureMenuItem;
+    public final int checkIconTintColor;
 
 
     private Picker(final Builder builder) {
@@ -60,6 +62,7 @@ public final class Picker {
         captureItemIconTintColor = builder.mCaptureItemIconTintColor;
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
+        checkIconTintColor = builder.mCheckIconTintColor;
 
 
 
@@ -108,7 +111,7 @@ public final class Picker {
         private int mDoneFabIconTintColor;
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
-
+        private int mCheckIconTintColor;
 
 
         //Use (Context,PickListener,themeResId) instead
@@ -151,6 +154,8 @@ public final class Picker {
             mCaptureItemIconTintColor = mDoneFabIconTintColor = Util.getDefaultIconTintColor(mContext);
 
             mShouldShowCaptureMenuItem = true;
+
+            mCheckIconTintColor = Color.WHITE;
 
         }
 
@@ -241,6 +246,12 @@ public final class Picker {
             mShouldShowCaptureMenuItem = false;
             return this;
         }
+
+        public Picker.Builder setCheckIconTintColor(@ColorInt final int color) {
+            mCheckIconTintColor = color;
+            return this;
+        }
+
 
         public Picker build() {
             return new Picker(this);

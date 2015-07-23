@@ -115,12 +115,12 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void initFab() {
-        final Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
-        final Drawable doneIconWrapped = DrawableCompat.wrap(doneIcon);
-        DrawableCompat.setTint(doneIconWrapped, mPickOptions.doneFabIconTintColor);
+        Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
+        doneIcon = DrawableCompat.wrap(doneIcon);
+        DrawableCompat.setTint(doneIcon, mPickOptions.doneFabIconTintColor);
 
         mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
-        mDoneFab.setImageDrawable(doneIconWrapped);
+        mDoneFab.setImageDrawable(doneIcon);
         mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
         mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
 
@@ -407,12 +407,6 @@ public class PickerActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
             Log.i("onPickImage", "You can't check more images");
         }
-
-        /*if (shouldShowDeselectAll()) {
-            //If all the images in the album selected then show de select all menu item
-            showDeselectAll();
-        }*/
-
 
     }
 

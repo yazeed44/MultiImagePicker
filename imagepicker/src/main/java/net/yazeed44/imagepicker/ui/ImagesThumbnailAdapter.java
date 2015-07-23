@@ -1,6 +1,9 @@
 package net.yazeed44.imagepicker.ui;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,25 +25,35 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by yazeed44 on 11/23/14.
  */
-public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnailAdapter.ImagesViewHolder> implements Util.OnClickImage {
+public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnailAdapter.ImageViewHolder> implements Util.OnClickImage {
 
 
     protected final AlbumEntry mAlbum;
     protected final RecyclerView mRecyclerView;
     protected final Picker mPickOptions;
+    protected final Drawable mCheckIcon;
 
 
-    public ImagesThumbnailAdapter(final AlbumEntry album, final RecyclerView fragment, Picker pickOptions) {
+    public ImagesThumbnailAdapter(final AlbumEntry album, final RecyclerView recyclerView, Picker pickOptions) {
         this.mAlbum = album;
-        this.mRecyclerView = fragment;
+        this.mRecyclerView = recyclerView;
         mPickOptions = pickOptions;
+
+        mCheckIcon = createCheckIcon();
+    }
+
+    private Drawable createCheckIcon() {
+        Drawable checkIcon = ContextCompat.getDrawable(mRecyclerView.getContext(), R.drawable.ic_action_done_white);
+        checkIcon = DrawableCompat.wrap(checkIcon);
+        DrawableCompat.setTint(checkIcon, mPickOptions.checkIconTintColor);
+        return checkIcon;
     }
 
     @Override
-    public ImagesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public ImageViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         final View imageLayout = LayoutInflater.from(mRecyclerView.getContext()).inflate(R.layout.element_image, viewGroup, false);
 
-        return new ImagesViewHolder(imageLayout, this);
+        return new ImageViewHolder(imageLayout, this);
     }
 
     @Override
@@ -49,11 +62,11 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     }
 
     @Override
-    public void onBindViewHolder(ImagesViewHolder imagesViewHolder, int position) {
-        final ImageEntry photoEntry = mAlbum.imageList.get(position);
-        setHeight(imagesViewHolder.itemView);
-        displayThumbnail(imagesViewHolder, photoEntry);
-        drawGrid(imagesViewHolder, photoEntry);
+    public void onBindViewHolder(ImageViewHolder imageViewHolder, int position) {
+        final ImageEntry imageEntry = mAlbum.imageList.get(position);
+        setHeight(imageViewHolder.itemView);
+        displayThumbnail(imageViewHolder, imageEntry);
+        drawGrid(imageViewHolder, imageEntry);
 
     }
 
@@ -61,7 +74,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     public void onClickImage(View layout, ImageView thumbnail, ImageView check) {
 
         final int position = Util.getPositionOfChild(layout, R.id.image_layout, mRecyclerView);
-        final ImagesViewHolder holder = (ImagesViewHolder) mRecyclerView.getChildViewHolder(layout);
+        final ImageViewHolder holder = (ImageViewHolder) mRecyclerView.getChildViewHolder(layout);
         pickImage(holder, mAlbum.imageList.get(position));
     }
 
@@ -75,7 +88,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
     }
 
-    public void displayThumbnail(final ImagesViewHolder holder, final ImageEntry photo) {
+    public void displayThumbnail(final ImageViewHolder holder, final ImageEntry photo) {
 
 
         Glide.with(mRecyclerView.getContext())
@@ -88,7 +101,10 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
     }
 
-    public void drawGrid(final ImagesViewHolder holder, final ImageEntry imageEntry) {
+    public void drawGrid(final ImageViewHolder holder, final ImageEntry imageEntry) {
+
+
+        holder.check.setImageDrawable(mCheckIcon);
 
 
         if (isPicked(imageEntry)) {
@@ -113,7 +129,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     }
 
 
-    public void pickImage(final ImagesViewHolder holder, final ImageEntry imageEntry) {
+    public void pickImage(final ImageViewHolder holder, final ImageEntry imageEntry) {
 
         final boolean isPicked = isPicked(imageEntry);
 
@@ -150,11 +166,11 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     }
 
 
-    class ImagesViewHolder extends RecyclerView.ViewHolder {
+    public static class ImageViewHolder extends RecyclerView.ViewHolder {
         private final ImageView thumbnail;
         private final ImageView check;
 
-        public ImagesViewHolder(final View itemView, final Util.OnClickImage listener) {
+        public ImageViewHolder(final View itemView, final Util.OnClickImage listener) {
             super(itemView);
 
             thumbnail = (ImageView) itemView.findViewById(R.id.image_thumbnail);

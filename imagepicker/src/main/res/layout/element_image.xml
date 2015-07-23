@@ -27,7 +27,6 @@
         android:background="@color/alter_image_check_color"
         android:contentDescription="@string/image_check"
         android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:src="@drawable/ic_action_done_white" />
+        android:focusableInTouchMode="false" />
 
 </FrameLayout>
