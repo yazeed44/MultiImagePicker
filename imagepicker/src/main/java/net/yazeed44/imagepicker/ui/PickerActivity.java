@@ -180,6 +180,7 @@ public class PickerActivity extends AppCompatActivity {
         if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
 
             sCheckedImages.add(mCurrentlyDisplayedImage);
+            mCurrentlyDisplayedImage.isPicked = true;
         } else {
 
             //No need to modify sCheckedImages for Multiple images mode
@@ -328,9 +329,10 @@ public class PickerActivity extends AppCompatActivity {
                 }
 
 
-                if (!sCheckedImages.contains(imageEntry)) {
+                if (!imageEntry.isPicked) {
                     //To avoid repeated images
                     sCheckedImages.add(imageEntry);
+                    imageEntry.isPicked = true;
                 }
 
 
@@ -402,6 +404,7 @@ public class PickerActivity extends AppCompatActivity {
         }
 
         if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
+            imageEntry.isPicked = true;
             sCheckedImages.add(imageEntry);
         } else {
             Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
@@ -481,6 +484,7 @@ public class PickerActivity extends AppCompatActivity {
 
     public void onEvent(final Events.OnUnpickImageEvent unpickImageEvent) {
         sCheckedImages.remove(unpickImageEvent.imageEntry);
+        unpickImageEvent.imageEntry.isPicked = false;
 
         updateFab();
         hideDeselectAll();

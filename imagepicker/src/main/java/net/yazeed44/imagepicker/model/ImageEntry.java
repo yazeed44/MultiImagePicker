@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class ImageEntry implements Serializable {
     public final int imageId;
     public final String path;
+    public boolean isPicked = false;
 
     public ImageEntry(final Builder builder) {
         this.path = builder.mPath;

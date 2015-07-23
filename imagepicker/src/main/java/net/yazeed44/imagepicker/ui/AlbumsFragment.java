@@ -67,19 +67,6 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         return mAlbumsRecycler;
     }
 
-    protected void setupRecycler() {
-
-        mAlbumsRecycler.setHasFixedSize(true);
-
-
-        final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_albums));
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-        mAlbumsRecycler.setLayoutManager(gridLayoutManager);
-
-
-    }
-
     @Override
     public void onStart() {
         if (mAlbumList == null) {
@@ -95,21 +82,6 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         }
         super.onStop();
     }
-
-
-    public void setupAdapter() {
-        if (mAlbumList == null) {
-            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
-
-            mSpiceManager.execute(loadingRequest, this);
-        } else {
-
-            mAlbumsRecycler.setAdapter(new AlbumsAdapter(mAlbumList, mAlbumsRecycler, mPickOptions));
-        }
-
-
-    }
-
 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
@@ -134,14 +106,34 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     }
 
+    protected void setupRecycler() {
+
+        mAlbumsRecycler.setHasFixedSize(true);
+
+
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_albums));
+        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        mAlbumsRecycler.setLayoutManager(gridLayoutManager);
+
+
+    }
+
+    public void setupAdapter() {
+        if (mAlbumList == null) {
+            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
+
+            mSpiceManager.execute(loadingRequest, this);
+        } else {
+
+            mAlbumsRecycler.setAdapter(new AlbumsAdapter(mAlbumList, mAlbumsRecycler, mPickOptions));
+        }
+
+
+    }
+
     private boolean hasLoadedSuccessfully(final ArrayList albumList) {
         return albumList != null && albumList.size() > 0;
     }
-
-
-   /* public void onEvent(final Events.OnAttachFabEvent fabEvent){
-        fabEvent.fab.attachToRecyclerView(mAlbumsRecycler);
-    }*/
-
 
 }

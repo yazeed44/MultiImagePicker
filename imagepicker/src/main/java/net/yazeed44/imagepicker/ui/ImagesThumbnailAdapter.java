@@ -105,7 +105,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         holder.check.setImageDrawable(mCheckIcon);
 
 
-        if (isPicked(imageEntry)) {
+        if (imageEntry.isPicked) {
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
             holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
 
@@ -129,9 +129,8 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
     public void pickImage(final ImageViewHolder holder, final ImageEntry imageEntry) {
 
-        final boolean isPicked = isPicked(imageEntry);
 
-        if (isPicked) {
+        if (imageEntry.isPicked) {
             //Unpick
 
             EventBus.getDefault().post(new Events.OnUnpickImageEvent(imageEntry));
@@ -147,22 +146,6 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         drawGrid(holder, imageEntry);
 
     }
-
-
-    public boolean isPicked(final ImageEntry pImageEntry) {
-
-
-        for (final ImageEntry imageEntry : PickerActivity.sCheckedImages) {
-
-            if (imageEntry.equals(pImageEntry)) {
-                return true;
-            }
-
-        }
-
-        return false;
-    }
-
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         private final ImageView thumbnail;
