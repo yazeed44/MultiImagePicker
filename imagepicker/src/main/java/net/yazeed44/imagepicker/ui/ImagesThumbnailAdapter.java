@@ -28,6 +28,8 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     protected final AlbumEntry mAlbum;
     protected final RecyclerView mRecyclerView;
     protected final Picker mPickOptions;
+    
+    protected int sideSize;
 
 
     public ImagesThumbnailAdapter(final AlbumEntry album, final RecyclerView fragment, Picker pickOptions) {
@@ -40,6 +42,9 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     public ImagesViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         final View imageLayout = LayoutInflater.from(mRecyclerView.getContext()).inflate(R.layout.element_image, viewGroup, false);
 
+        sideSize = mRecyclerView.getMeasuredWidth() 
+        / mRecyclerView.getContext().getResources().getInteger(R.integer.num_columns_images);
+        
         return new ImagesViewHolder(imageLayout, this);
     }
 
@@ -67,12 +72,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
 
     public void setHeight(final View convertView) {
-
-
-        final int height = mRecyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.image_height);
-
-        convertView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-
+        convertView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sideSize));
     }
 
     public void displayThumbnail(final ImagesViewHolder holder, final ImageEntry photo) {
