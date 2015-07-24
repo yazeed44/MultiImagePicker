@@ -31,7 +31,7 @@ Gradle Dependency (jCenter)
 ==========================
 Just add the dependency to your build.gradle file
 ```gradle 
-compile 'net.yazeed44.imagepicker:imagepicker:1.1.2' 
+compile 'net.yazeed44.imagepicker:imagepicker:1.1.6' 
 ```
 
 [ ![Download](https://api.bintray.com/packages/yazeed44/maven/multi-image-picker/images/download.svg) ](https://bintray.com/yazeed44/maven/multi-image-picker/_latestVersion)
