@@ -73,6 +73,7 @@ public class PickerActivity extends AppCompatActivity {
         initFab();
         updateFab();
 
+
     }
 
     private void initTheme() {
@@ -82,12 +83,16 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void addToolbarToLayout() {
-        mToolbar.setMinimumHeight(Util.getActionBarHeight(this));
-
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
 
-        appBarLayout.addView(mToolbar, new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        final AppBarLayout mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+
+
+        final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
+        toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+
+        mAppBarLayout.addView(mToolbar, toolbarParams);
+
 
 
         setSupportActionBar(mToolbar);
@@ -98,6 +103,7 @@ public class PickerActivity extends AppCompatActivity {
     protected void onStart() {
         EventBus.getDefault().register(this);
         super.onStart();
+
     }
 
     @Override
@@ -450,6 +456,8 @@ public class PickerActivity extends AppCompatActivity {
         } else {
             hideDeselectAll();
         }
+
+
     }
 
 

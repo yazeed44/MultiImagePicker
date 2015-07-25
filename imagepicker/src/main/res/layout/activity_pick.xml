@@ -1,8 +1,8 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".MainActivity"
     tools:ignore="MergeRootFrame">
 
@@ -10,8 +10,9 @@
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         >
+
+        <!--Gonna add the toolbar in code -->
 
 
     </android.support.design.widget.AppBarLayout>
@@ -21,7 +22,7 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/fab_done"
@@ -34,8 +35,6 @@
             android:src="@drawable/ic_action_done_white"
 
             />
-
-    </FrameLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>
