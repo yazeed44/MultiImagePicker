@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,12 +30,13 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View layout = inflater.inflate(R.layout.fragment_image_pager, container, false);
-        mImagePager = (ViewPager) layout.findViewById(R.id.images_pager);
+        mImagePager = (ViewPager) inflater.inflate(R.layout.fragment_image_pager, container, false);
+
         mImagePager.addOnPageChangeListener(this);
 
-        return layout;
+        return mImagePager;
     }
+
 
     @Override
     public void onResume() {
@@ -55,16 +55,16 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
     @Override
     public void onViewTap(View view, float x, float y) {
 
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
         if (mDoneFab.isVisible()) {
             //Hide everything expect the image
-            actionBar.hide();
+            EventBus.getDefault().post(new Events.OnHidingToolbarEvent());
             mDoneFab.hide();
 
 
         } else {
             //Show fab and actionbar
-            actionBar.show();
+            EventBus.getDefault().post(new Events.OnShowingToolbarEvent());
             mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
             mDoneFab.bringToFront();
@@ -107,7 +107,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         if (mImagePager.getAdapter() != null) {
             return;
         }
-        mImagePager.setAdapter(new ImagePagerAdapter(mSelectedAlbum, getActivity(), this));
+        mImagePager.setAdapter(new ImagePagerAdapter(getActivity(), mSelectedAlbum, this));
         final int imagePosition = mSelectedAlbum.imageList.indexOf(pickImageEvent.imageEntry);
 
         mImagePager.setCurrentItem(imagePosition);

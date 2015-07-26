@@ -118,6 +118,7 @@ public class PickerActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(R.string.albums_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setShowHideAnimationEnabled(true);
     }
 
     public void initFab() {
@@ -500,6 +501,16 @@ public class PickerActivity extends AppCompatActivity {
 
     public void onEvent(final Events.OnChangingDisplayedImageEvent newImageEvent) {
         mCurrentlyDisplayedImage = newImageEvent.currentImage;
+
+    }
+
+    public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
+        // getSupportActionBar().show();
+
+    }
+
+    public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
+        // getSupportActionBar().hide();
 
     }
 
