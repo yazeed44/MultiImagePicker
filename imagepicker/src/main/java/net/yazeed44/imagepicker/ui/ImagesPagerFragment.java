@@ -2,6 +2,8 @@ package net.yazeed44.imagepicker.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -30,13 +32,37 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        EventBus.getDefault().post(new Events.OnShowingToolbarEvent());
+        cancelBehaviorAttr(container);
         mImagePager = (ViewPager) inflater.inflate(R.layout.fragment_image_pager, container, false);
+
 
         mImagePager.addOnPageChangeListener(this);
 
         return mImagePager;
     }
 
+    private void cancelBehaviorAttr(final ViewGroup container) {
+
+        final CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) container.getLayoutParams();
+        layoutParams.setBehavior(null);
+        container.setLayoutParams(layoutParams);
+    }
+
+    private void addBehaviorAttr(final ViewGroup container) {
+        final CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) container.getLayoutParams();
+        layoutParams.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+        container.setLayoutParams(layoutParams);
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        addBehaviorAttr((ViewGroup) mImagePager.getParent());
+        super.onDestroyView();
+
+    }
 
     @Override
     public void onResume() {

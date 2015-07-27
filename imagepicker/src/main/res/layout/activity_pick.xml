@@ -9,7 +9,9 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+
         >
 
         <!--Gonna add the toolbar in code -->

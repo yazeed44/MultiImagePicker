@@ -57,10 +57,10 @@ public final class Events {
         }
     }
 
-    public final static class onAlbumsLoadedEvent {
+    public final static class OnAlbumsLoadedEvent {
         public final ArrayList<AlbumEntry> albumList;
 
-        public onAlbumsLoadedEvent(final ArrayList<AlbumEntry> albumList) {
+        public OnAlbumsLoadedEvent(final ArrayList<AlbumEntry> albumList) {
             this.albumList = albumList;
         }
     }

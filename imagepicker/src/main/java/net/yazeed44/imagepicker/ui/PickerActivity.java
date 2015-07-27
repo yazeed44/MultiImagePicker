@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
@@ -64,6 +66,7 @@ public class PickerActivity extends AppCompatActivity {
         mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
         initTheme();
 
+        // supportRequestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_pick);
@@ -85,13 +88,13 @@ public class PickerActivity extends AppCompatActivity {
     private void addToolbarToLayout() {
 
 
-        final AppBarLayout mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
 
         final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
         toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
 
-        mAppBarLayout.addView(mToolbar, toolbarParams);
+        appBarLayout.addView(mToolbar, toolbarParams);
 
 
 
@@ -505,14 +508,31 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
-        // getSupportActionBar().show();
+
+
+        getSupportActionBar().show();
+
 
     }
+
 
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
-        // getSupportActionBar().hide();
+
+        getSupportActionBar().hide();
+
 
     }
 
+
+    private void onNestedFling() {
+
+        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) frameLayout.getParent();
+
+        final CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) frameLayout.getLayoutParams();
+        final AppBarLayout.ScrollingViewBehavior behavior = (AppBarLayout.ScrollingViewBehavior) params.getBehavior();
+        //behavior.onNestedFling(coordinatorLayout,appBarLayout,null,0,-1000,false);
+        behavior.setTopAndBottomOffset(0);
+    }
 
 }
