@@ -17,7 +17,7 @@ public final class Events {
     }
 
 
-    public static class OnClickAlbumEvent {
+    public final static class OnClickAlbumEvent {
         public final AlbumEntry albumEntry;
 
         public OnClickAlbumEvent(final AlbumEntry albumEntry) {
@@ -25,7 +25,7 @@ public final class Events {
         }
     }
 
-    public static class OnPickImageEvent {
+    public final static class OnPickImageEvent {
         public final ImageEntry imageEntry;
 
         public OnPickImageEvent(final ImageEntry imageEntry) {
@@ -33,7 +33,7 @@ public final class Events {
         }
     }
 
-    public static class OnUnpickImageEvent {
+    public final static class OnUnpickImageEvent {
         public final ImageEntry imageEntry;
 
         public OnUnpickImageEvent(final ImageEntry imageEntry) {
@@ -41,7 +41,7 @@ public final class Events {
         }
     }
 
-    public static class OnAttachFabEvent {
+    public final static class OnAttachFabEvent {
         public final FloatingActionButton fab;
 
         public OnAttachFabEvent(FloatingActionButton fab) {
@@ -49,7 +49,7 @@ public final class Events {
         }
     }
 
-    public static class OnPublishPickOptionsEvent {
+    public final static class OnPublishPickOptionsEvent {
         public final Picker options;
 
         public OnPublishPickOptionsEvent(final Picker options) {
@@ -57,15 +57,15 @@ public final class Events {
         }
     }
 
-    public static class onAlbumsLoadedEvent {
+    public final static class OnAlbumsLoadedEvent {
         public final ArrayList<AlbumEntry> albumList;
 
-        public onAlbumsLoadedEvent(final ArrayList<AlbumEntry> albumList) {
+        public OnAlbumsLoadedEvent(final ArrayList<AlbumEntry> albumList) {
             this.albumList = albumList;
         }
     }
 
-    public static class OnChangingDisplayedImageEvent {
+    public final static class OnChangingDisplayedImageEvent {
         public final ImageEntry currentImage;
 
         public OnChangingDisplayedImageEvent(ImageEntry currentImage) {
@@ -80,5 +80,11 @@ public final class Events {
         public OnUpdateImagesThumbnailEvent() {
 
         }
+    }
+
+    public final static class OnShowingToolbarEvent {
+    }
+
+    public final static class OnHidingToolbarEvent {
     }
 }

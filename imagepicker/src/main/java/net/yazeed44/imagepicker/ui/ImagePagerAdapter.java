@@ -24,7 +24,7 @@ public class ImagePagerAdapter extends PagerAdapter {
     protected final Context mContext;
     protected final PhotoViewAttacher.OnViewTapListener mTapListener;
 
-    public ImagePagerAdapter(final AlbumEntry albumEntry, final Context context, final PhotoViewAttacher.OnViewTapListener tapListener) {
+    public ImagePagerAdapter(final Context context, final AlbumEntry albumEntry, final PhotoViewAttacher.OnViewTapListener tapListener) {
         mAlbumEntry = albumEntry;
         mContext = context;
         mTapListener = tapListener;

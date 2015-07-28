@@ -48,7 +48,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
         if (mAlbumList == null) {
 
-            final Events.onAlbumsLoadedEvent albumLoadedEvent = EventBus.getDefault().getStickyEvent(Events.onAlbumsLoadedEvent.class);
+            final Events.OnAlbumsLoadedEvent albumLoadedEvent = EventBus.getDefault().getStickyEvent(Events.OnAlbumsLoadedEvent.class);
 
             if (albumLoadedEvent != null) {
                 mAlbumList = albumLoadedEvent.albumList;
@@ -95,7 +95,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         if (hasLoadedSuccessfully(albumEntries)) {
             mAlbumList = albumEntries;
 
-            EventBus.getDefault().postSticky(new Events.onAlbumsLoadedEvent(mAlbumList));
+            EventBus.getDefault().postSticky(new Events.OnAlbumsLoadedEvent(mAlbumList));
 
             final AlbumsAdapter albumsAdapter = new AlbumsAdapter(albumEntries, mAlbumsRecycler, mPickOptions);
             mAlbumsRecycler.setAdapter(albumsAdapter);

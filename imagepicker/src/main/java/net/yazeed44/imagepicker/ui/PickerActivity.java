@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -64,6 +65,7 @@ public class PickerActivity extends AppCompatActivity {
         mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
         initTheme();
 
+        // supportRequestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_pick);
@@ -72,6 +74,7 @@ public class PickerActivity extends AppCompatActivity {
         setupAlbums(savedInstanceState);
         initFab();
         updateFab();
+
 
     }
 
@@ -82,12 +85,16 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void addToolbarToLayout() {
-        mToolbar.setMinimumHeight(Util.getActionBarHeight(this));
+
 
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
 
-        appBarLayout.addView(mToolbar, new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
+        toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+
+        appBarLayout.addView(mToolbar, toolbarParams);
+
 
 
         setSupportActionBar(mToolbar);
@@ -98,6 +105,7 @@ public class PickerActivity extends AppCompatActivity {
     protected void onStart() {
         EventBus.getDefault().register(this);
         super.onStart();
+
     }
 
     @Override
@@ -112,6 +120,7 @@ public class PickerActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(R.string.albums_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setShowHideAnimationEnabled(true);
     }
 
     public void initFab() {
@@ -423,7 +432,28 @@ public class PickerActivity extends AppCompatActivity {
             }
         }
 
+
         return isAllImagesSelected;
+    }
+
+    private void handleToolbarVisibility(final boolean show) {
+
+        final AppBarLayout appBarLayout = (AppBarLayout) mToolbar.getParent();
+        final CoordinatorLayout rootLayout = (CoordinatorLayout) appBarLayout.getParent();
+
+        final CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+        final AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+
+        if (show) {
+            //Show appBar
+            behavior.setTopAndBottomOffset(0);
+            behavior.onNestedPreScroll(rootLayout, appBarLayout, null, 0, 1, new int[2]);
+
+        } else {
+            //Hide appBar
+            behavior.onNestedFling(rootLayout, appBarLayout, null, 0, 10000, true);
+        }
+
     }
 
 
@@ -450,6 +480,8 @@ public class PickerActivity extends AppCompatActivity {
         } else {
             hideDeselectAll();
         }
+
+
     }
 
 
@@ -494,6 +526,27 @@ public class PickerActivity extends AppCompatActivity {
         mCurrentlyDisplayedImage = newImageEvent.currentImage;
 
     }
+
+    public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
+
+
+        //getSupportActionBar().show();
+
+
+        handleToolbarVisibility(true);
+
+    }
+
+
+    public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
+
+        // getSupportActionBar().hide();
+
+        handleToolbarVisibility(false);
+
+    }
+
+
 
 
 }
