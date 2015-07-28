@@ -34,7 +34,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         EventBus.getDefault().post(new Events.OnShowingToolbarEvent());
-        cancelBehaviorAttr(container);
+        removeBehaviorAttr(container);
         mImagePager = (ViewPager) inflater.inflate(R.layout.fragment_image_pager, container, false);
 
 
@@ -43,7 +43,8 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         return mImagePager;
     }
 
-    private void cancelBehaviorAttr(final ViewGroup container) {
+    private void removeBehaviorAttr(final ViewGroup container) {
+        //If the behavior hasn't been removed then when collapsing the toolbar the layout will resize which is annoying
 
         final CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) container.getLayoutParams();
         layoutParams.setBehavior(null);
@@ -61,6 +62,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
     public void onDestroyView() {
         addBehaviorAttr((ViewGroup) mImagePager.getParent());
         super.onDestroyView();
+        EventBus.getDefault().post(new Events.OnShowingToolbarEvent());
 
     }
 

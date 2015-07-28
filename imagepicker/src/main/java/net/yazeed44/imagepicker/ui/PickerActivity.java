@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import net.yazeed44.imagepicker.library.R;
@@ -433,7 +432,28 @@ public class PickerActivity extends AppCompatActivity {
             }
         }
 
+
         return isAllImagesSelected;
+    }
+
+    private void handleToolbarVisibility(final boolean show) {
+
+        final AppBarLayout appBarLayout = (AppBarLayout) mToolbar.getParent();
+        final CoordinatorLayout rootLayout = (CoordinatorLayout) appBarLayout.getParent();
+
+        final CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+        final AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+
+        if (show) {
+            //Show appBar
+            behavior.setTopAndBottomOffset(0);
+            behavior.onNestedPreScroll(rootLayout, appBarLayout, null, 0, 1, new int[2]);
+
+        } else {
+            //Hide appBar
+            behavior.onNestedFling(rootLayout, appBarLayout, null, 0, 10000, true);
+        }
+
     }
 
 
@@ -510,29 +530,23 @@ public class PickerActivity extends AppCompatActivity {
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
 
 
-        getSupportActionBar().show();
+        //getSupportActionBar().show();
 
+
+        handleToolbarVisibility(true);
 
     }
 
 
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
 
-        getSupportActionBar().hide();
+        // getSupportActionBar().hide();
 
+        handleToolbarVisibility(false);
 
     }
 
 
-    private void onNestedFling() {
 
-        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
-        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) frameLayout.getParent();
-
-        final CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) frameLayout.getLayoutParams();
-        final AppBarLayout.ScrollingViewBehavior behavior = (AppBarLayout.ScrollingViewBehavior) params.getBehavior();
-        //behavior.onNestedFling(coordinatorLayout,appBarLayout,null,0,-1000,false);
-        behavior.setTopAndBottomOffset(0);
-    }
 
 }
