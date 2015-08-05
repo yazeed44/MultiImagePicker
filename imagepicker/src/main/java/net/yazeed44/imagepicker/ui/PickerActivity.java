@@ -1,6 +1,7 @@
 package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,7 +45,7 @@ public class PickerActivity extends AppCompatActivity {
 
     private Uri mCapturedPhotoUri;
 
-    private com.melnykov.fab.FloatingActionButton mDoneFab;
+    private FloatingActionButton mDoneFab;
     private Picker mPickOptions;
     //For ViewPager
     private ImageEntry mCurrentlyDisplayedImage;
@@ -64,8 +66,6 @@ public class PickerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
         initTheme();
-
-        // supportRequestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_pick);
@@ -128,14 +128,31 @@ public class PickerActivity extends AppCompatActivity {
         doneIcon = DrawableCompat.wrap(doneIcon);
         DrawableCompat.setTint(doneIcon, mPickOptions.doneFabIconTintColor);
 
-        mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
+        mDoneFab = (FloatingActionButton) findViewById(R.id.fab_done);
         mDoneFab.setImageDrawable(doneIcon);
-        mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
-        mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
+        //mDoneFab.setBackgroundTintList(createColorStateForFab());
 
-        EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
+        //TODO  implement  mPickOptions.fabRippleColor
+        mDoneFab.setRippleColor(mPickOptions.fabBackgroundColorWhenPressed);
 
 
+
+    }
+
+    private ColorStateList createColorStateForFab() {
+
+        final int[][] states = new int[][]{
+                new int[]{android.R.attr.state_pressed},
+                new int[]{}
+        };
+
+        final int[] colors = new int[]{
+
+                mPickOptions.fabBackgroundColorWhenPressed,
+                mPickOptions.fabBackgroundColor
+        };
+
+        return new ColorStateList(states, colors);
     }
 
     public void setupAlbums(Bundle savedInstanceState) {
@@ -143,10 +160,10 @@ public class PickerActivity extends AppCompatActivity {
 
             if (savedInstanceState == null) {
 
-                final AlbumsFragment mAlbumsFragment = new AlbumsFragment();
+                final AlbumsFragment albumsFragment = new AlbumsFragment();
 
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, mAlbumsFragment)
+                        .add(R.id.fragment_container, albumsFragment)
                         .commit();
 
 
@@ -316,12 +333,16 @@ public class PickerActivity extends AppCompatActivity {
     private void deselectAllImages() {
 
         for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
-            sCheckedImages.remove(imageEntry);
+            if (imageEntry.isPicked) {
+                sCheckedImages.remove(imageEntry);
+                imageEntry.isPicked = false;
+            }
         }
 
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
 
         hideDeselectAll();
+        updateFab();
 
     }
 
@@ -528,22 +549,23 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
-
-
-        //getSupportActionBar().show();
-
-
         handleToolbarVisibility(true);
 
     }
 
 
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
-
-        // getSupportActionBar().hide();
-
         handleToolbarVisibility(false);
 
+    }
+
+    public void onEvent(final Events.OnShowingFabEvent showingFabEvent) {
+        mDoneFab.show();
+
+    }
+
+    public void onEvent(final Events.OnHidingFabEvent hidingFabEvent) {
+        mDoneFab.hide();
     }
 
 

@@ -26,15 +26,14 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <com.melnykov.fab.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
-            android:layout_margin="@dimen/fab_margin"
+        android:layout_margin="16dp"
             android:clickable="true"
             android:onClick="onClickDone"
-            android:src="@drawable/ic_action_done_white"
 
             />
 

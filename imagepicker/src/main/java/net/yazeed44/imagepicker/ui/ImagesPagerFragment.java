@@ -11,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.melnykov.fab.FloatingActionButton;
-
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
@@ -27,7 +25,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
 
     protected ViewPager mImagePager;
     protected AlbumEntry mSelectedAlbum;
-    protected FloatingActionButton mDoneFab;
+    protected boolean mIsInFocusMode = false;
 
     @Nullable
     @Override
@@ -77,25 +75,27 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         super.onPause();
         EventBus.getDefault().unregister(this);
 
-        mDoneFab.hide();
+        EventBus.getDefault().post(new Events.OnHidingFabEvent());
     }
 
     @Override
     public void onViewTap(View view, float x, float y) {
 
 
-        if (mDoneFab.isVisible()) {
+        if (mIsInFocusMode) {
             //Hide everything expect the image
             EventBus.getDefault().post(new Events.OnHidingToolbarEvent());
-            mDoneFab.hide();
+            EventBus.getDefault().post(new Events.OnHidingFabEvent());
+            mIsInFocusMode = true;
+
 
 
         } else {
             //Show fab and actionbar
             EventBus.getDefault().post(new Events.OnShowingToolbarEvent());
-            mDoneFab.setVisibility(View.VISIBLE);
-            mDoneFab.show();
-            mDoneFab.bringToFront();
+            EventBus.getDefault().post(new Events.OnShowingFabEvent());
+            mIsInFocusMode = false;
+
 
         }
 
@@ -118,6 +118,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
     }
 
     private void updateDisplayedImage(final int index) {
+        //Probable the slight slowness come from imageList.get(index) , should replace the event parameter with index instead of object
         EventBus.getDefault().post(new Events.OnChangingDisplayedImageEvent(mSelectedAlbum.imageList.get(index)));
         //Because index starts from 0
         final int realPosition = index + 1;
@@ -129,9 +130,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
 
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
 
-        mDoneFab.setVisibility(View.VISIBLE);
-        mDoneFab.show();
-        mDoneFab.bringToFront();
+        EventBus.getDefault().post(new Events.OnShowingFabEvent());
         if (mImagePager.getAdapter() != null) {
             return;
         }
@@ -147,10 +146,6 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
 
     public void onEvent(final Events.OnClickAlbumEvent albumEvent) {
         mSelectedAlbum = albumEvent.albumEntry;
-    }
-
-    public void onEvent(final Events.OnAttachFabEvent fabEvent) {
-        mDoneFab = fabEvent.fab;
     }
 
 

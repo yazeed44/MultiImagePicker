@@ -1,7 +1,5 @@
 package net.yazeed44.imagepicker.util;
 
-import com.melnykov.fab.FloatingActionButton;
-
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
 
@@ -41,13 +39,7 @@ public final class Events {
         }
     }
 
-    public final static class OnAttachFabEvent {
-        public final FloatingActionButton fab;
 
-        public OnAttachFabEvent(FloatingActionButton fab) {
-            this.fab = fab;
-        }
-    }
 
     public final static class OnPublishPickOptionsEvent {
         public final Picker options;
@@ -75,8 +67,6 @@ public final class Events {
     }
 
     public static class OnUpdateImagesThumbnailEvent {
-
-
         public OnUpdateImagesThumbnailEvent() {
 
         }
@@ -86,5 +76,11 @@ public final class Events {
     }
 
     public final static class OnHidingToolbarEvent {
+    }
+
+    public final static class OnHidingFabEvent {
+    }
+
+    public final static class OnShowingFabEvent {
     }
 }
