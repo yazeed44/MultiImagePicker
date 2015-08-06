@@ -40,7 +40,7 @@ public class PickerActivity extends AppCompatActivity {
     public static final int NO_LIMIT = -1;
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
-    public static final String KEY_SHOULD_SHOW_UP = "shouldShowUp";
+    public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
 
 
@@ -85,7 +85,7 @@ public class PickerActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(KEY_ACTION_BAR_TITLE, getSupportActionBar().getTitle().toString());
-        outState.putBoolean(KEY_SHOULD_SHOW_UP, mShouldShowUp);
+        outState.putBoolean(KEY_SHOULD_SHOW_ACTIONBAR_UP, mShouldShowUp);
     }
 
     private void initTheme() {
@@ -132,9 +132,11 @@ public class PickerActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().setTitle(R.string.albums_title);
         } else {
-            mShouldShowUp = savedInstanceState.getBoolean(KEY_SHOULD_SHOW_UP);
+            mShouldShowUp = savedInstanceState.getBoolean(KEY_SHOULD_SHOW_ACTIONBAR_UP);
             getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
             getSupportActionBar().setTitle(savedInstanceState.getString(KEY_ACTION_BAR_TITLE));
+
+
         }
 
 
@@ -272,11 +274,26 @@ public class PickerActivity extends AppCompatActivity {
 
         mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
         mDeselectAllMenuItem = menu.findItem(R.id.action_deselect_all);
-        hideSelectAll();
-        hideDeselectAll();
+
+        if (shouldShowDeselectAll()) {
+            showDeselectAll();
+        } else {
+            hideDeselectAll();
+        }
+
+        if (shouldShowSelectAll()) {
+            showSelectAll();
+        } else {
+            hideSelectAll();
+        }
 
 
         return true;
+    }
+
+    private boolean shouldShowSelectAll() {
+        final Fragment imageThumbnailFragment = getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG);
+        return imageThumbnailFragment != null && imageThumbnailFragment.isVisible() && !mPickOptions.pickMode.equals(Picker.PickMode.SINGLE_IMAGE);
     }
 
     private void initCaptureMenuItem(final Menu menu) {
@@ -331,16 +348,22 @@ public class PickerActivity extends AppCompatActivity {
     private void deselectAllImages() {
 
         for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
+            imageEntry.isPicked = false;
             sCheckedImages.remove(imageEntry);
         }
 
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
 
         hideDeselectAll();
+        updateFab();
 
     }
 
     private void selectAllImages() {
+
+        if (mSelectedAlbum == null) {
+            mSelectedAlbum = EventBus.getDefault().getStickyEvent(Events.OnClickAlbumEvent.class).albumEntry;
+        }
 
         if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
 
@@ -368,7 +391,9 @@ public class PickerActivity extends AppCompatActivity {
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
         updateFab();
 
-        showDeselectAll();
+        if (shouldShowDeselectAll()) {
+            showDeselectAll();
+        }
 
 
     }
@@ -460,6 +485,11 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private boolean shouldShowDeselectAll() {
+
+        if (mSelectedAlbum == null) {
+            return false;
+        }
+
         boolean isAllImagesSelected = true;
         for (final ImageEntry albumChildImage : mSelectedAlbum.imageList) {
 
@@ -469,8 +499,9 @@ public class PickerActivity extends AppCompatActivity {
             }
         }
 
+        final Fragment imageThumbnailFragment = getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG);
 
-        return isAllImagesSelected;
+        return isAllImagesSelected && imageThumbnailFragment != null && imageThumbnailFragment.isVisible();
     }
 
     private void handleToolbarVisibility(final boolean show) {
@@ -499,9 +530,17 @@ public class PickerActivity extends AppCompatActivity {
         mSelectedAlbum = albumEvent.albumEntry;
 
 
+        final ImagesThumbnailFragment imagesThumbnailFragment;
+
+
+        if (getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG) != null) {
+            imagesThumbnailFragment = (ImagesThumbnailFragment) getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG);
+        } else {
+            imagesThumbnailFragment = new ImagesThumbnailFragment();
+        }
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new ImagesThumbnailFragment(), ImagesThumbnailFragment.TAG)
+                .replace(R.id.fragment_container, imagesThumbnailFragment, ImagesThumbnailFragment.TAG)
                 .addToBackStack(ImagesThumbnailFragment.TAG)
                 .commit();
 
