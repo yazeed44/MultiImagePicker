@@ -21,9 +21,9 @@ import de.greenrobot.event.EventBus;
  */
 public class ImagesThumbnailFragment extends Fragment {
 
+    public static final String TAG = ImagesThumbnailFragment.class.getSimpleName();
     protected RecyclerView mImagesRecycler;
     protected Picker mPickOptions;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

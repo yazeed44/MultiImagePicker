@@ -30,7 +30,7 @@ import de.greenrobot.event.EventBus;
  * Created by yazeed44 on 11/22/14.
  */
 public class AlbumsFragment extends Fragment implements RequestListener<ArrayList> {
-    public static final String TAG = "Albums Fragment";
+    public static final String TAG = AlbumsFragment.class.getSimpleName();
     protected RecyclerView mAlbumsRecycler;
     protected SpiceManager mSpiceManager = new SpiceManager(OfflineSpiceService.class);
     protected ArrayList<AlbumEntry> mAlbumList;
