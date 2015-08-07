@@ -25,6 +25,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
  */
 public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.OnViewTapListener, ViewPager.OnPageChangeListener {
 
+    public static final String TAG = ImagesPagerFragment.class.getSimpleName();
     protected ViewPager mImagePager;
     protected AlbumEntry mSelectedAlbum;
     protected FloatingActionButton mDoneFab;
@@ -108,8 +109,10 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
 
     @Override
     public void onPageSelected(int position) {
+
         updateDisplayedImage(position);
 
+        EventBus.getDefault().postSticky(new Events.OnPickImageEvent(mSelectedAlbum.imageList.get(position)));
     }
 
     @Override
