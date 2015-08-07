@@ -2,10 +2,8 @@ package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
@@ -21,6 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.commonsware.cwac.cam2.CameraActivity;
+
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
@@ -29,6 +29,7 @@ import net.yazeed44.imagepicker.util.Picker;
 import net.yazeed44.imagepicker.util.Util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -41,10 +42,13 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
+
+    private static final int REQUEST_PORTRAIT_RFC = 1337;
+    private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
+    private static final int REQUEST_LANDSCAPE_RFC = REQUEST_PORTRAIT_RFC + 2;
+    private static final int REQUEST_LANDSCAPE_FFC = REQUEST_PORTRAIT_RFC + 3;
+
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
-
-
-    private Uri mCapturedPhotoUri;
 
     private boolean mShouldShowUp = false;
 
@@ -231,25 +235,36 @@ public class PickerActivity extends AppCompatActivity {
 
     public void capturePhoto() {
 
-        final File captureFolder = new File(Environment.getExternalStorageDirectory(), "capture" + System.currentTimeMillis() + ".png");
+        final File captureImageFile = new File(Environment.getExternalStorageDirectory() + "/capture" + System.currentTimeMillis() + ".png");
 
-        captureFolder.mkdirs();
 
-        mCapturedPhotoUri = Uri.fromFile(captureFolder);
+        try {
+            captureImageFile.createNewFile();
 
-        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedPhotoUri);
-        startActivityForResult(captureIntent, 0);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("capturePhoto", e.getMessage());
+        }
+
+        final Intent captureIntent = new CameraActivity.IntentBuilder(this)
+                .skipConfirm()
+                .debug()
+                .to(captureImageFile)
+                .build();
+
+        startActivityForResult(captureIntent, REQUEST_PORTRAIT_FFC);
+
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == RESULT_OK && requestCode == 0 && data == null) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_PORTRAIT_FFC) {
             //For capturing image from camera
 
-            sCheckedImages.add(ImageEntry.from(mCapturedPhotoUri));
+            sCheckedImages.add(ImageEntry.from(data.getData()));
             updateFab();
 
         } else {
