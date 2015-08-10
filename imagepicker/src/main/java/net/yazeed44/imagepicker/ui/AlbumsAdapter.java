@@ -1,5 +1,6 @@
 package net.yazeed44.imagepicker.ui;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,13 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
     public final RecyclerView mRecycler;
     protected final ArrayList<AlbumEntry> mAlbumList;
     protected final Picker mPickOptions;
+    private final Fragment mFragment;
 
-    public AlbumsAdapter(final ArrayList<AlbumEntry> albums, RecyclerView mRecycler, Picker pickOptions) {
+    public AlbumsAdapter(final Fragment fragment, final ArrayList<AlbumEntry> albums, final RecyclerView mRecycler) {
+        mFragment = fragment;
         this.mAlbumList = albums;
         this.mRecycler = mRecycler;
-        mPickOptions = pickOptions;
+        mPickOptions = EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class).options;
     }
 
 
@@ -46,8 +49,9 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
 
     @Override
     public void onBindViewHolder(AlbumViewHolder holder, int position) {
+        final AlbumEntry albumEntry = mAlbumList.get(position);
         setHeight(holder.itemView);
-        setupAlbum(holder, mAlbumList.get(position));
+        setupAlbum(holder, albumEntry);
 
     }
 
@@ -85,7 +89,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
         holder.name.setText(album.name);
         holder.count.setText(album.imageList.size() + "");
 
-        Glide.with(mRecycler.getContext())
+        Glide.with(mFragment)
                 .load(album.coverImage.path)
                 .asBitmap()
                 .centerCrop()
@@ -95,7 +99,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
     }
 
 
-    class AlbumViewHolder extends RecyclerView.ViewHolder {
+    static class AlbumViewHolder extends RecyclerView.ViewHolder {
         protected final ImageView thumbnail;
         protected final TextView count;
         protected final TextView name;

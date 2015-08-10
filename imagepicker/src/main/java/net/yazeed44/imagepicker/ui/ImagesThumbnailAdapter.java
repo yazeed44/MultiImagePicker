@@ -2,6 +2,7 @@ package net.yazeed44.imagepicker.ui;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
@@ -33,9 +34,11 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     protected final Picker mPickOptions;
 
     protected final Drawable mCheckIcon;
+    protected final Fragment mFragment;
 
 
-    public ImagesThumbnailAdapter(final AlbumEntry album, final RecyclerView recyclerView, Picker pickOptions) {
+    public ImagesThumbnailAdapter(final Fragment fragment, final AlbumEntry album, final RecyclerView recyclerView, Picker pickOptions) {
+        mFragment = fragment;
         this.mAlbum = album;
         this.mRecyclerView = recyclerView;
         mPickOptions = pickOptions;
@@ -89,7 +92,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     public void displayThumbnail(final ImageViewHolder holder, final ImageEntry photo) {
 
 
-        Glide.with(mRecyclerView.getContext())
+        Glide.with(mFragment)
                 .load(photo.path)
                 .asBitmap()
                 .centerCrop()

@@ -64,7 +64,7 @@ public class ImagesThumbnailFragment extends Fragment {
 
 
     public void onEvent(final Events.OnClickAlbumEvent event) {
-        mImagesRecycler.setAdapter(new ImagesThumbnailAdapter(event.albumEntry, mImagesRecycler, mPickOptions));
+        mImagesRecycler.setAdapter(new ImagesThumbnailAdapter(this, event.albumEntry, mImagesRecycler, mPickOptions));
     }
 
 

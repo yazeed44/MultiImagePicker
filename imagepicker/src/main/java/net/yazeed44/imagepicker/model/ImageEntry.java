@@ -41,6 +41,7 @@ public class ImageEntry implements Serializable {
 
     public static class Builder {
 
+        public static int count = -1;
         private final String mPath;
         private int mImageId;
 
@@ -50,7 +51,9 @@ public class ImageEntry implements Serializable {
 
         public static Builder from(final Uri uri) {
 
-            return new Builder(uri.getPath());
+            return new Builder(uri.getPath())
+                    .imageId(count--)
+                    ;
 
         }
 

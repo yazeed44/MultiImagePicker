@@ -138,7 +138,7 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
         if (mImagePager.getAdapter() != null) {
             return;
         }
-        mImagePager.setAdapter(new ImagePagerAdapter(getActivity(), mSelectedAlbum, this));
+        mImagePager.setAdapter(new ImagePagerAdapter(this, mSelectedAlbum, this));
         final int imagePosition = mSelectedAlbum.imageList.indexOf(pickImageEvent.imageEntry);
 
         mImagePager.setCurrentItem(imagePosition);

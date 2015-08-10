@@ -55,6 +55,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
             }
 
 
+
         }
 
 
@@ -97,7 +98,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
             EventBus.getDefault().postSticky(new Events.OnAlbumsLoadedEvent(mAlbumList));
 
-            final AlbumsAdapter albumsAdapter = new AlbumsAdapter(albumEntries, mAlbumsRecycler, mPickOptions);
+            final AlbumsAdapter albumsAdapter = new AlbumsAdapter(this, albumEntries, mAlbumsRecycler);
             mAlbumsRecycler.setAdapter(albumsAdapter);
 
 
@@ -109,8 +110,6 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     protected void setupRecycler() {
 
         mAlbumsRecycler.setHasFixedSize(true);
-
-
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.num_columns_albums));
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -126,7 +125,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
             mSpiceManager.execute(loadingRequest, this);
         } else {
 
-            mAlbumsRecycler.setAdapter(new AlbumsAdapter(mAlbumList, mAlbumsRecycler, mPickOptions));
+            mAlbumsRecycler.setAdapter(new AlbumsAdapter(this, mAlbumList, mAlbumsRecycler));
         }
 
 
