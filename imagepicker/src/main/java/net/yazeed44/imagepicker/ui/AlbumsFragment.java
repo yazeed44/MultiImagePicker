@@ -70,9 +70,10 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     @Override
     public void onStart() {
-        if (mAlbumList == null) {
-            mSpiceManager.start(getActivity());
-        }
+        mSpiceManager.start(getActivity());
+
+        EventBus.getDefault().registerSticky(this);
+
         super.onStart();
     }
 
@@ -81,6 +82,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         if (mSpiceManager.isStarted()) {
             mSpiceManager.shouldStop();
         }
+        EventBus.getDefault().unregister(this);
         super.onStop();
     }
 
@@ -91,15 +93,17 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     }
 
     @Override
-    public void onRequestSuccess(ArrayList albumEntries) {
+    public void onRequestSuccess(final ArrayList albumEntries) {
 
         if (hasLoadedSuccessfully(albumEntries)) {
             mAlbumList = albumEntries;
 
-            EventBus.getDefault().postSticky(new Events.OnAlbumsLoadedEvent(mAlbumList));
-
             final AlbumsAdapter albumsAdapter = new AlbumsAdapter(this, albumEntries, mAlbumsRecycler);
             mAlbumsRecycler.setAdapter(albumsAdapter);
+
+            EventBus.getDefault().postSticky(new Events.OnAlbumsLoadedEvent(mAlbumList));
+
+
 
 
         }
@@ -133,6 +137,16 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     private boolean hasLoadedSuccessfully(final ArrayList albumList) {
         return albumList != null && albumList.size() > 0;
+    }
+
+    public void onEvent(final Events.OnReloadAlbumsEvent reloadAlbums) {
+        EventBus.getDefault().removeStickyEvent(Events.OnAlbumsLoadedEvent.class);
+        mAlbumList = null;
+        setupAdapter();
+    }
+
+    public void onEvent(final Events.OnPerformClickOnCapturedImagesAlbumEvent clickCapturedImagesAlbum) {
+
     }
 
 }

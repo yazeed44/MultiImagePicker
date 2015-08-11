@@ -2,6 +2,8 @@ package net.yazeed44.imagepicker.ui;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
@@ -42,12 +44,9 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
-
+    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory("captured_images").getAbsolutePath();
     private static final int REQUEST_PORTRAIT_RFC = 1337;
     private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
-    private static final int REQUEST_LANDSCAPE_RFC = REQUEST_PORTRAIT_RFC + 2;
-    private static final int REQUEST_LANDSCAPE_FFC = REQUEST_PORTRAIT_RFC + 3;
-
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
 
     private boolean mShouldShowUp = false;
@@ -235,7 +234,8 @@ public class PickerActivity extends AppCompatActivity {
 
     public void capturePhoto() {
 
-        final File captureImageFile = new File(Environment.getExternalStorageDirectory() + "/capture" + System.currentTimeMillis() + ".png");
+
+        final File captureImageFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".png");
 
 
         try {
@@ -263,12 +263,44 @@ public class PickerActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && requestCode == REQUEST_PORTRAIT_FFC) {
             //For capturing image from camera
+            refreshMediaScanner(data.getData().getPath());
 
-            sCheckedImages.add(ImageEntry.from(data.getData()));
+            final ImageEntry capturedImage = ImageEntry.from(data.getData());
+            capturedImage.isPicked = true;
+            sCheckedImages.add(capturedImage);
+
+
+
             updateFab();
 
         } else {
             Log.i("onActivityResult", "User canceled the camera activity");
+        }
+    }
+
+    private void refreshMediaScanner(final String imagePath) {
+        MediaScannerConnection.scanFile(this,
+                new String[]{imagePath}, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {
+                        reloadAlbums();
+
+                        Log.d("onActivityResult", "New image should appear in camera folder");
+                    }
+                });
+    }
+
+    private void reloadAlbums() {
+
+        EventBus.getDefault().postSticky(new Events.OnReloadAlbumsEvent());
+
+
+        if (isImagesThumbnailShown()) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            getSupportFragmentManager().popBackStack(ImagesThumbnailFragment.TAG, 0);
+            getSupportFragmentManager().popBackStack();
         }
     }
 

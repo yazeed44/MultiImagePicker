@@ -74,8 +74,7 @@ public final class Events {
         }
     }
 
-    public static class OnUpdateImagesThumbnailEvent {
-
+    public final static class OnUpdateImagesThumbnailEvent {
 
         public OnUpdateImagesThumbnailEvent() {
 
@@ -86,5 +85,12 @@ public final class Events {
     }
 
     public final static class OnHidingToolbarEvent {
+    }
+
+    public final static class OnReloadAlbumsEvent {
+
+    }
+
+    public final static class OnPerformClickOnCapturedImagesAlbumEvent {
     }
 }

@@ -26,6 +26,7 @@ public final class Util {
 
     public static final TypedValue TYPED_VALUE = new TypedValue();
 
+
     private Util() {
         throw new AssertionError();
     }
@@ -45,9 +46,9 @@ public final class Util {
 
         final ArrayList<AlbumEntry> albumsSorted = new ArrayList<AlbumEntry>();
 
-        HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
+        final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
         AlbumEntry allPhotosAlbum = null;
-        String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
+        final String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
         Integer cameraAlbumId = null;
         Cursor cursor = null;
 

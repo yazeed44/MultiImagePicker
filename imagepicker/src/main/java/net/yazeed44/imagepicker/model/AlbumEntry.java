@@ -18,7 +18,7 @@ public class AlbumEntry implements Serializable {
         this.coverImage = coverImage;
     }
 
-    public void addPhoto(ImageEntry photoEntry) {
-        imageList.add(photoEntry);
+    public void addPhoto(ImageEntry imageEntry) {
+        imageList.add(imageEntry);
     }
 }
