@@ -5,6 +5,5 @@
 
     <dimen name="album_height">160dp</dimen>
 
-    <dimen name="image_height">110dp</dimen>
 
 </resources>

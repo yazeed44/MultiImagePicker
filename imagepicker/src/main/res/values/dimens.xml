@@ -5,7 +5,7 @@
 
 
     <dimen name="album_height">180dp</dimen>
-    <dimen name="image_height">120dp</dimen>
+
 
     <dimen name="image_spacing">2dp</dimen>
     <dimen name="image_checked_padding">4dp</dimen>
