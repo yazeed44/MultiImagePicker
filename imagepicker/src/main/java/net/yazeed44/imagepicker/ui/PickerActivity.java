@@ -266,14 +266,6 @@ public class PickerActivity extends AppCompatActivity {
             //For capturing image from camera
             refreshMediaScanner(data.getData().getPath());
 
-            //final ImageEntry capturedImage = ImageEntry.from(data.getData());
-            //capturedImage.isPicked = true;
-            //sCheckedImages.add(capturedImage);
-
-
-
-            updateFab();
-
         } else {
             Log.i("onActivityResult", "User canceled the camera activity");
         }

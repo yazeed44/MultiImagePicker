@@ -105,6 +105,23 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
             EventBus.getDefault().postSticky(new Events.OnAlbumsLoadedEvent(mAlbumList));
 
 
+            if (!mShouldPerformClickOnCapturedAlbum) {
+                return;
+            }
+
+            mAlbumsRecycler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    if (!mAlbumsRecycler.hasPendingAdapterUpdates()) {
+                        pickLatestCapturedImage();
+                        mShouldPerformClickOnCapturedAlbum = false;
+                    } else {
+                        mAlbumsRecycler.postDelayed(this, 100);
+                    }
+
+                }
+            }, 100);
 
 
 
@@ -149,20 +166,18 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
         setupAdapter();
     }
 
-    public void onEvent(final Events.OnAlbumsAdapterFullyLoaded loadEvent) {
+    private void pickLatestCapturedImage() {
 
-        if (mShouldPerformClickOnCapturedAlbum) {
+
 
             for (final AlbumEntry albumEntry : mAlbumList) {
                 if (albumEntry.name.equals(PickerActivity.CAPTURED_IMAGES_ALBUM_NAME)) {
                     mAlbumsRecycler.getChildAt(mAlbumList.indexOf(albumEntry)).performClick();
-                    EventBus.getDefault().post(new Events.OnPickImageEvent(albumEntry.imageList.get(0)));
+                    EventBus.getDefault().postSticky(new Events.OnPickImageEvent(albumEntry.imageList.get(0)));
 
                 }
             }
 
-            mShouldPerformClickOnCapturedAlbum = false;
-        }
 
     }
 

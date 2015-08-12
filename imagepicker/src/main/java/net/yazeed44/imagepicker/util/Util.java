@@ -76,7 +76,7 @@ public final class Util {
                     if (!PickerActivity.sCheckedImages.isEmpty()) {
 
                         for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
-                            if (checkedImage.equals(imageEntry)) {
+                            if (checkedImage.path.equals(imageEntry.path)) {
                                 imageEntry.isPicked = true;
                             }
                         }

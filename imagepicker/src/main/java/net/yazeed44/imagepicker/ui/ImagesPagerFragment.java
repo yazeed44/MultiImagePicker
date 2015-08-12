@@ -112,7 +112,6 @@ public class ImagesPagerFragment extends Fragment implements PhotoViewAttacher.O
 
         updateDisplayedImage(position);
 
-        EventBus.getDefault().postSticky(new Events.OnPickImageEvent(mSelectedAlbum.imageList.get(position)));
     }
 
     @Override

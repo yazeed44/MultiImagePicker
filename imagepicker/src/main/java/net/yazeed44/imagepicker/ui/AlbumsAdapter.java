@@ -53,10 +53,6 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
         setHeight(holder.itemView);
         setupAlbum(holder, albumEntry);
 
-        if (position == mAlbumList.size() - 1) {
-            EventBus.getDefault().post(new Events.OnAlbumsAdapterFullyLoaded());
-        }
-
     }
 
     @Override
