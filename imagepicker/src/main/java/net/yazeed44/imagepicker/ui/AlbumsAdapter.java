@@ -32,10 +32,10 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
     protected final Picker mPickOptions;
     private final Fragment mFragment;
 
-    public AlbumsAdapter(final Fragment fragment, final ArrayList<AlbumEntry> albums, final RecyclerView mRecycler) {
+    public AlbumsAdapter(final Fragment fragment, final ArrayList<AlbumEntry> albums, final RecyclerView recyclerView) {
         mFragment = fragment;
         this.mAlbumList = albums;
-        this.mRecycler = mRecycler;
+        this.mRecycler = recyclerView;
         mPickOptions = EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class).options;
     }
 
@@ -89,15 +89,15 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
         holder.name.setText(album.name);
         holder.count.setText(album.imageList.size() + "");
 
+        holder.detailsLayout.setBackgroundColor(mPickOptions.albumBackgroundColor);
+
         Glide.with(mFragment)
                 .load(album.coverImage.path)
                 .asBitmap()
                 .centerCrop()
                 .into(holder.thumbnail);
 
-        holder.detailsLayout.setBackgroundColor(mPickOptions.albumBackgroundColor);
     }
-
 
     static class AlbumViewHolder extends RecyclerView.ViewHolder {
         protected final ImageView thumbnail;

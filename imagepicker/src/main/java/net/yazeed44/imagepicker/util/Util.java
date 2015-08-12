@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.ui.PickerActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public final class Util {
 
 
     public static final TypedValue TYPED_VALUE = new TypedValue();
+
 
     private Util() {
         throw new AssertionError();
@@ -45,9 +47,9 @@ public final class Util {
 
         final ArrayList<AlbumEntry> albumsSorted = new ArrayList<AlbumEntry>();
 
-        HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
+        final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
         AlbumEntry allPhotosAlbum = null;
-        String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
+        final String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
         Integer cameraAlbumId = null;
         Cursor cursor = null;
 
@@ -69,6 +71,15 @@ public final class Util {
 
                     if (imageEntry.path == null || imageEntry.path.length() == 0) {
                         continue;
+                    }
+
+                    if (!PickerActivity.sCheckedImages.isEmpty()) {
+
+                        for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
+                            if (checkedImage.path.equals(imageEntry.path)) {
+                                imageEntry.isPicked = true;
+                            }
+                        }
                     }
 
 

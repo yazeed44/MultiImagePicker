@@ -38,15 +38,15 @@ public class ImagesThumbnailFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
         EventBus.getDefault().registerSticky(this);
+        super.onStart();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
         EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     protected void setupRecycler() {
