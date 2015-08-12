@@ -44,7 +44,8 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
-    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory("captured_images").getAbsolutePath();
+    public static final String CAPTURED_IMAGES_ALBUM_NAME = "captured_images";
+    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
     private static final int REQUEST_PORTRAIT_RFC = 1337;
     private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
@@ -265,9 +266,9 @@ public class PickerActivity extends AppCompatActivity {
             //For capturing image from camera
             refreshMediaScanner(data.getData().getPath());
 
-            final ImageEntry capturedImage = ImageEntry.from(data.getData());
-            capturedImage.isPicked = true;
-            sCheckedImages.add(capturedImage);
+            //final ImageEntry capturedImage = ImageEntry.from(data.getData());
+            //capturedImage.isPicked = true;
+            //sCheckedImages.add(capturedImage);
 
 
 
@@ -284,7 +285,14 @@ public class PickerActivity extends AppCompatActivity {
                 new MediaScannerConnection.OnScanCompletedListener() {
                     @Override
                     public void onScanCompleted(String path, Uri uri) {
-                        reloadAlbums();
+
+                        PickerActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                reloadAlbums();
+                            }
+                        });
+
 
                         Log.d("onActivityResult", "New image should appear in camera folder");
                     }
@@ -293,15 +301,19 @@ public class PickerActivity extends AppCompatActivity {
 
     private void reloadAlbums() {
 
-        EventBus.getDefault().postSticky(new Events.OnReloadAlbumsEvent());
+
 
 
         if (isImagesThumbnailShown()) {
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStackImmediate();
         } else {
-            getSupportFragmentManager().popBackStack(ImagesThumbnailFragment.TAG, 0);
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStackImmediate(ImagesThumbnailFragment.TAG, 0);
+            getSupportFragmentManager().popBackStackImmediate();
         }
+
+        EventBus.getDefault().post(new Events.OnReloadAlbumsEvent());
+
+
     }
 
     @Override
@@ -656,18 +668,12 @@ public class PickerActivity extends AppCompatActivity {
 
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
 
-
-        //getSupportActionBar().show();
-
-
         handleToolbarVisibility(true);
 
     }
 
 
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
-
-        // getSupportActionBar().hide();
 
         handleToolbarVisibility(false);
 

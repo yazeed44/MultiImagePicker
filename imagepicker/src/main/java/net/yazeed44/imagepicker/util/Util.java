@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.ui.PickerActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,6 +71,15 @@ public final class Util {
 
                     if (imageEntry.path == null || imageEntry.path.length() == 0) {
                         continue;
+                    }
+
+                    if (!PickerActivity.sCheckedImages.isEmpty()) {
+
+                        for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
+                            if (checkedImage.equals(imageEntry)) {
+                                imageEntry.isPicked = true;
+                            }
+                        }
                     }
 
 

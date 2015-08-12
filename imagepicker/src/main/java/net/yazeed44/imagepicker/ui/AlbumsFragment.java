@@ -35,6 +35,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     protected SpiceManager mSpiceManager = new SpiceManager(OfflineSpiceService.class);
     protected ArrayList<AlbumEntry> mAlbumList;
     protected Picker mPickOptions;
+    protected boolean mShouldPerformClickOnCapturedAlbum = false;
 
 
     @Override
@@ -72,7 +73,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     public void onStart() {
         mSpiceManager.start(getActivity());
 
-        EventBus.getDefault().registerSticky(this);
+        EventBus.getDefault().register(this);
 
         super.onStart();
     }
@@ -102,6 +103,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
             mAlbumsRecycler.setAdapter(albumsAdapter);
 
             EventBus.getDefault().postSticky(new Events.OnAlbumsLoadedEvent(mAlbumList));
+
 
 
 
@@ -140,12 +142,27 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     }
 
     public void onEvent(final Events.OnReloadAlbumsEvent reloadAlbums) {
+        mShouldPerformClickOnCapturedAlbum = true;
+
         EventBus.getDefault().removeStickyEvent(Events.OnAlbumsLoadedEvent.class);
         mAlbumList = null;
         setupAdapter();
     }
 
-    public void onEvent(final Events.OnPerformClickOnCapturedImagesAlbumEvent clickCapturedImagesAlbum) {
+    public void onEvent(final Events.OnAlbumsAdapterFullyLoaded loadEvent) {
+
+        if (mShouldPerformClickOnCapturedAlbum) {
+
+            for (final AlbumEntry albumEntry : mAlbumList) {
+                if (albumEntry.name.equals(PickerActivity.CAPTURED_IMAGES_ALBUM_NAME)) {
+                    mAlbumsRecycler.getChildAt(mAlbumList.indexOf(albumEntry)).performClick();
+                    EventBus.getDefault().post(new Events.OnPickImageEvent(albumEntry.imageList.get(0)));
+
+                }
+            }
+
+            mShouldPerformClickOnCapturedAlbum = false;
+        }
 
     }
 

@@ -93,4 +93,8 @@ public final class Events {
 
     public final static class OnPerformClickOnCapturedImagesAlbumEvent {
     }
+
+    public final static class OnAlbumsAdapterFullyLoaded {
+
+    }
 }
