@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.images.thumbnails;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -14,9 +14,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import net.yazeed44.imagepicker.domain.AlbumEntry;
+import net.yazeed44.imagepicker.domain.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
-import net.yazeed44.imagepicker.model.ImageEntry;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.Picker;
 import net.yazeed44.imagepicker.util.Util;

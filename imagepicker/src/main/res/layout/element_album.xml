@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<net.yazeed44.imagepicker.ui.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<net.yazeed44.imagepicker.ui.common.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/selectableItemBackground"
@@ -67,4 +67,4 @@
     </RelativeLayout>
 
 
-</net.yazeed44.imagepicker.ui.SquareFrameLayout>
+</net.yazeed44.imagepicker.ui.common.SquareFrameLayout>

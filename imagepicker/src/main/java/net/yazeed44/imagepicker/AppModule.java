@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.module;
+package net.yazeed44.imagepicker;
 
 import android.content.Context;
 

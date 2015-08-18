@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.images.pager;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
@@ -8,8 +8,8 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import net.yazeed44.imagepicker.model.AlbumEntry;
-import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.domain.AlbumEntry;
+import net.yazeed44.imagepicker.domain.ImageEntry;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;

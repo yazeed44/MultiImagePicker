@@ -1,7 +1,6 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.albums;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +13,10 @@ import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
+import net.yazeed44.imagepicker.domain.AlbumEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
+import net.yazeed44.imagepicker.ui.common.BaseFragment;
+import net.yazeed44.imagepicker.ui.common.PickerActivity;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.LoadingAlbumsRequest;
 import net.yazeed44.imagepicker.util.OfflineSpiceService;
@@ -29,7 +30,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by yazeed44 on 11/22/14.
  */
-public class AlbumsFragment extends Fragment implements RequestListener<ArrayList> {
+public class AlbumsFragment extends BaseFragment implements RequestListener<ArrayList> {
     public static final String TAG = AlbumsFragment.class.getSimpleName();
     protected RecyclerView mAlbumsRecycler;
     protected SpiceManager mSpiceManager = new SpiceManager(OfflineSpiceService.class);

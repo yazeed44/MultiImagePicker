@@ -11,10 +11,10 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 
+import net.yazeed44.imagepicker.domain.AlbumEntry;
+import net.yazeed44.imagepicker.domain.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
-import net.yazeed44.imagepicker.model.ImageEntry;
-import net.yazeed44.imagepicker.ui.PickerActivity;
+import net.yazeed44.imagepicker.ui.common.PickerActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

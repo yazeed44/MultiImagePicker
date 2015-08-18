@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.images.pager;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 
 import com.melnykov.fab.FloatingActionButton;
 
+import net.yazeed44.imagepicker.domain.AlbumEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.util.Events;
 
 import de.greenrobot.event.EventBus;

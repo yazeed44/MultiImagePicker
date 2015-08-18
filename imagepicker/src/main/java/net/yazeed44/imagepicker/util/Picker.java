@@ -9,9 +9,9 @@ import android.support.annotation.StyleRes;
 import android.support.v4.graphics.ColorUtils;
 import android.util.TypedValue;
 
+import net.yazeed44.imagepicker.domain.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.ImageEntry;
-import net.yazeed44.imagepicker.ui.PickerActivity;
+import net.yazeed44.imagepicker.ui.common.PickerActivity;
 
 import java.util.ArrayList;
 

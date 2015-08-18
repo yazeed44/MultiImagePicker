@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.model;
+package net.yazeed44.imagepicker.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;

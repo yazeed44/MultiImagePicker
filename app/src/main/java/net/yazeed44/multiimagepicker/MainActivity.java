@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
-import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.domain.ImageEntry;
 import net.yazeed44.imagepicker.sample.R;
 import net.yazeed44.imagepicker.util.Picker;
 

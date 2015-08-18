@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.common;
 
 import android.content.Context;
 import android.util.AttributeSet;

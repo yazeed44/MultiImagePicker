@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.common;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -23,9 +23,12 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.cam2.CameraActivity;
 
+import net.yazeed44.imagepicker.domain.AlbumEntry;
+import net.yazeed44.imagepicker.domain.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
-import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.ui.albums.AlbumsFragment;
+import net.yazeed44.imagepicker.ui.images.pager.ImagesPagerFragment;
+import net.yazeed44.imagepicker.ui.images.thumbnails.ImagesThumbnailFragment;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.Picker;
 import net.yazeed44.imagepicker.util.Util;

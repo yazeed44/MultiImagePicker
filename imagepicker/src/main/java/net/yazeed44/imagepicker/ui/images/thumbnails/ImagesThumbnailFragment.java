@@ -1,4 +1,4 @@
-package net.yazeed44.imagepicker.ui;
+package net.yazeed44.imagepicker.ui.images.thumbnails;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.yazeed44.imagepicker.library.R;
+import net.yazeed44.imagepicker.ui.common.SpacesItemDecoration;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.Picker;
 
