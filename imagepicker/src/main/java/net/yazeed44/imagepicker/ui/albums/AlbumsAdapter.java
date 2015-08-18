@@ -108,7 +108,6 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
 
         public AlbumViewHolder(final View itemView, final Util.OnClickAlbum listener) {
             super(itemView);
-
             thumbnail = (ImageView) itemView.findViewById(R.id.album_thumbnail);
             count = (TextView) itemView.findViewById(R.id.album_count);
             name = (TextView) itemView.findViewById(R.id.album_name);

@@ -3,6 +3,7 @@ package net.yazeed44.imagepicker.util;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
@@ -67,7 +68,7 @@ public final class Util {
                     String bucketName = cursor.getString(bucketNameColumn);
 
 
-                    final ImageEntry imageEntry = ImageEntry.from(cursor);
+                    final ImageEntry imageEntry = createImageEntryFrom(cursor).build();
 
                     if (imageEntry.path == null || imageEntry.path.length() == 0) {
                         continue;
@@ -182,6 +183,22 @@ public final class Util {
             return Color.WHITE;
 
         }
+    }
+
+    public static ImageEntry.Builder createImageEntryFrom(final Cursor cursor) {
+        final int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+        final int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+
+        final int imageId = cursor.getInt(imageIdColumn);
+        final String path = cursor.getString(dataColumn);
+
+        return new ImageEntry.Builder(path)
+                .imageId(imageId)
+                ;
+    }
+
+    public static ImageEntry.Builder createImageEntryFrom(final Uri uri) {
+        return new ImageEntry.Builder(uri.getPath());
     }
 
     public interface OnClickImage {
