@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/yazeed44/MultiImagePicker'
     gitUrl = 'https://github.com/yazeed44/MultiImagePicker.git'
 
-    libraryVersion = '1.2.0'
+    libraryVersion = '1.2.1'
 
     developerId = 'yazeed44'
     developerName = 'Yazeed ahmed almagushi'
