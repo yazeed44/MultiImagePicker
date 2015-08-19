@@ -1,5 +1,7 @@
 package net.yazeed44.imagepicker.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.commonsware.cwac.cam2.CameraActivity;
+import com.commonsware.cwac.cam2.VideoRecorderActivity;
 
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
@@ -233,6 +236,32 @@ public class PickerActivity extends AppCompatActivity {
 
     }
 
+    public void startCamera() {
+        if(!mPickOptions.videosEnabled){
+            capturePhoto();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose Camera")
+                .setItems(new String[]{"Photo Camera", "Video Camera"}, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(which == 0){
+                            capturePhoto();
+                        }else{
+                            captureVideo();
+                        }
+                    }
+                });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // Do nothing
+            }
+        });
+        builder.create().show();
+    }
+
     public void capturePhoto() {
 
 
@@ -258,6 +287,29 @@ public class PickerActivity extends AppCompatActivity {
 
     }
 
+    public void captureVideo() {
+
+
+        final File captureVideoFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".mp4");
+
+
+        try {
+            captureVideoFile.createNewFile();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("captureVideo", e.getMessage());
+        }
+
+        final Intent captureIntent = new VideoRecorderActivity.IntentBuilder(this)
+                .debug()
+                .to(captureVideoFile)
+                .build();
+
+        startActivityForResult(captureIntent, REQUEST_PORTRAIT_FFC);
+
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -384,7 +436,7 @@ public class PickerActivity extends AppCompatActivity {
 
 
         if (itemId == R.id.action_take_photo) {
-            capturePhoto();
+            startCamera();
 
         } else if (itemId == R.id.action_select_all) {
             selectAllImages();

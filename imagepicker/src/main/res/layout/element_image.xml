@@ -29,4 +29,12 @@
         android:focusable="false"
         android:focusableInTouchMode="false" />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_video_icon"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:visibility="gone"
+        android:id="@+id/image_video_icon"/>
+
 </FrameLayout>
