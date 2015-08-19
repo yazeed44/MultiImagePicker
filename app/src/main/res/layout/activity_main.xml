@@ -24,6 +24,12 @@
         android:onClick="onClickPickImageSingle"
         android:text="@string/btn_pick_single_image" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickPickImageWithVideos"
+        android:text="@string/btn_pick_with_videos" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/images_sample"
 

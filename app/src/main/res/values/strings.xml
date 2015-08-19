@@ -19,5 +19,6 @@
     <string name="btn_pick_multiple_images_with_limit">Pick Multiple images (6 is the limit)</string>
     <string name="btn_pick_single_image">Pick single image</string>
     <string name="btn_pick_multiple_image_infinite">Pick multiple images (No limit)</string>
+    <string name="btn_pick_with_videos">Pick multiple images (with video)</string>
 
 </resources>

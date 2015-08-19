@@ -79,6 +79,15 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
     }
 
+    public void onClickPickImageWithVideos(View view) {
+        new Picker.Builder(this, this, R.style.MIP_theme)
+                .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
+                .setVideosEnabled(true)
+                .build()
+                .startActivity();
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
