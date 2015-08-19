@@ -82,6 +82,7 @@ public final class Util {
             }
         }
 
+        for(AlbumEntry album : albumsSorted) album.sortImagesByTimeDesc();
 
         return albumsSorted;
 
