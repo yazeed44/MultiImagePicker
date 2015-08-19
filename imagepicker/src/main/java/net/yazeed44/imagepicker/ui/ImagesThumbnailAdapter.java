@@ -99,7 +99,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
                 .into(holder.thumbnail)
         ;
 
-
+        holder.videoIcon.setVisibility(photo.isVideo ? View.VISIBLE : View.GONE);
     }
 
     public void drawGrid(final ImageViewHolder holder, final ImageEntry imageEntry) {
@@ -153,12 +153,14 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         private final ImageView thumbnail;
         private final ImageView check;
+        private final ImageView videoIcon;
 
         public ImageViewHolder(final View itemView, final Util.OnClickImage listener) {
             super(itemView);
 
             thumbnail = (ImageView) itemView.findViewById(R.id.image_thumbnail);
             check = (ImageView) itemView.findViewById(R.id.image_check);
+            videoIcon = (ImageView) itemView.findViewById(R.id.image_video_icon);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
