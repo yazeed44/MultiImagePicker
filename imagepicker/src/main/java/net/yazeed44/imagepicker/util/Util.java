@@ -32,7 +32,7 @@ public final class Util {
         throw new AssertionError();
     }
 
-    public static ArrayList<AlbumEntry> getAlbums(final Context context) {
+    public static ArrayList<AlbumEntry> getAlbums(final Context context, final Picker mPickerOptions) {
 
 
         final String[] projectionPhotos = {
@@ -44,73 +44,41 @@ public final class Util {
                 MediaStore.Images.Media.ORIENTATION
         };
 
+        final String[] projectionVideos = {
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.BUCKET_ID,
+                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Video.Media.DATA,
+                MediaStore.Video.Media.DATE_TAKEN
+        };
+
 
         final ArrayList<AlbumEntry> albumsSorted = new ArrayList<AlbumEntry>();
 
         final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
         AlbumEntry allPhotosAlbum = null;
-        final String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
-        Integer cameraAlbumId = null;
         Cursor cursor = null;
+        Cursor videoCursor = null;
 
         try {
 
             cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     , projectionPhotos, "", null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
-            if (cursor != null) {
-
-                int bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-                final int bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
-
-                while (cursor.moveToNext()) {
-                    int bucketId = cursor.getInt(bucketIdColumn);
-                    String bucketName = cursor.getString(bucketNameColumn);
-
-
-                    final ImageEntry imageEntry = ImageEntry.from(cursor);
-
-                    if (imageEntry.path == null || imageEntry.path.length() == 0) {
-                        continue;
-                    }
-
-                    if (!PickerActivity.sCheckedImages.isEmpty()) {
-
-                        for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
-                            if (checkedImage.path.equals(imageEntry.path)) {
-                                imageEntry.isPicked = true;
-                            }
-                        }
-                    }
-
-
-                    if (allPhotosAlbum == null) {
-                        allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos), imageEntry);
-                        albumsSorted.add(0, allPhotosAlbum);
-                    }
-                    if (allPhotosAlbum != null) {
-                        allPhotosAlbum.addPhoto(imageEntry);
-                    }
-                    AlbumEntry albumEntry = albums.get(bucketId);
-                    if (albumEntry == null) {
-                        albumEntry = new AlbumEntry(bucketId, bucketName, imageEntry);
-                        albums.put(bucketId, albumEntry);
-                        if (cameraAlbumId == null && cameraFolder != null && imageEntry.path != null && imageEntry.path.startsWith(cameraFolder)) {
-                            albumsSorted.add(0, albumEntry);
-                            cameraAlbumId = bucketId;
-                        } else {
-                            albumsSorted.add(albumEntry);
-                        }
-                    }
-                    albumEntry.addPhoto(imageEntry);
-                }
-
-
+            allPhotosAlbum = traverseCursor(context, cursor, allPhotosAlbum, albumsSorted, albums, false);
+            if(mPickerOptions.videosEnabled){
+                videoCursor = MediaStore.Video.query(context.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                        , projectionVideos);
+                traverseCursor(context, videoCursor, allPhotosAlbum, albumsSorted, albums, true);
             }
+
         } catch (Exception ex) {
             Log.e("getAlbums", ex.getMessage());
         } finally {
             if (cursor != null) {
                 cursor.close();
+            }
+            if (videoCursor != null) {
+                videoCursor.close();
             }
         }
 
@@ -119,6 +87,60 @@ public final class Util {
 
     }
 
+    private static AlbumEntry traverseCursor(final Context context, final Cursor cursor, AlbumEntry allPhotosAlbum, final ArrayList<AlbumEntry> albumsSorted, final HashMap<Integer, AlbumEntry> albums, final boolean isVideoCursor){
+        if (cursor != null) {
+            final String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
+            Integer cameraAlbumId = null;
+            int bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+            final int bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+
+            while (cursor.moveToNext()) {
+                int bucketId = cursor.getInt(bucketIdColumn);
+                String bucketName = cursor.getString(bucketNameColumn);
+
+                final ImageEntry imageEntry = ImageEntry.from(cursor);
+                if(isVideoCursor) imageEntry.isVideo = true;
+
+                if (imageEntry.path == null || imageEntry.path.length() == 0) {
+                    continue;
+                }
+
+                if (!PickerActivity.sCheckedImages.isEmpty()) {
+
+                    for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
+                        if (checkedImage.path.equals(imageEntry.path)) {
+                            imageEntry.isPicked = true;
+                        }
+                    }
+                }
+
+
+                if (allPhotosAlbum == null) {
+                    allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos), imageEntry);
+                    albumsSorted.add(0, allPhotosAlbum);
+                }
+                if (allPhotosAlbum != null) {
+                    allPhotosAlbum.addPhoto(imageEntry);
+                }
+                AlbumEntry albumEntry = albums.get(bucketId);
+                if (albumEntry == null) {
+                    albumEntry = new AlbumEntry(bucketId, bucketName, imageEntry);
+                    albums.put(bucketId, albumEntry);
+                    if (cameraAlbumId == null && cameraFolder != null && imageEntry.path != null && imageEntry.path.startsWith(cameraFolder)) {
+                        albumsSorted.add(0, albumEntry);
+                        cameraAlbumId = bucketId;
+                    } else {
+                        albumsSorted.add(albumEntry);
+                    }
+                }
+                albumEntry.addPhoto(imageEntry);
+            }
+
+            return allPhotosAlbum;
+        }
+
+        return null;
+    }
 
     public static int getPositionOfChild(final View child, final int childParentId, final RecyclerView recyclerView) {
 

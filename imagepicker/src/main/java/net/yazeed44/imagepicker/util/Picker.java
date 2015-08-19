@@ -41,7 +41,7 @@ public final class Picker {
     public final int doneFabIconTintColor;
     public final boolean shouldShowCaptureMenuItem;
     public final int checkIconTintColor;
-
+    public final boolean videosEnabled;
 
     private Picker(final Builder builder) {
         context = builder.mContext;
@@ -63,7 +63,7 @@ public final class Picker {
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
-
+        videosEnabled = builder.videosEnabled;
 
 
     }
@@ -112,7 +112,7 @@ public final class Picker {
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
-
+        private boolean videosEnabled;
 
         //Use (Context,PickListener,themeResId) instead
         @Deprecated
@@ -156,7 +156,7 @@ public final class Picker {
             mShouldShowCaptureMenuItem = true;
 
             mCheckIconTintColor = Color.WHITE;
-
+            videosEnabled = false;
         }
 
 
@@ -252,6 +252,10 @@ public final class Picker {
             return this;
         }
 
+        public Picker.Builder setVideosEnabled(boolean enabled){
+            videosEnabled = enabled;
+            return this;
+        }
 
         public Picker build() {
             return new Picker(this);
