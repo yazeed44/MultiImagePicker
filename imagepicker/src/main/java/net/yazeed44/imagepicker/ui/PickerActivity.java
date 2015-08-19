@@ -303,6 +303,7 @@ public class PickerActivity extends AppCompatActivity {
         }
 
         final Intent captureIntent = new VideoRecorderActivity.IntentBuilder(this)
+                .durationLimit(mPickOptions.videoLengthLimit)
                 .debug()
                 .to(captureVideoFile)
                 .build();
