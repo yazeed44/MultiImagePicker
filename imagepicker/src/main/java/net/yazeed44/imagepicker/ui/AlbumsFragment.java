@@ -143,7 +143,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     public void setupAdapter() {
         if (mAlbumList == null) {
-            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
+            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity(), mPickOptions);
 
             mSpiceManager.execute(loadingRequest, this);
         } else {

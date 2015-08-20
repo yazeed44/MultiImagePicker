@@ -2,6 +2,8 @@ package net.yazeed44.imagepicker.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by yazeed44 on 6/14/15.
@@ -20,5 +22,13 @@ public class AlbumEntry implements Serializable {
 
     public void addPhoto(ImageEntry imageEntry) {
         imageList.add(imageEntry);
+    }
+    public void sortImagesByTimeDesc() {
+        Collections.sort(imageList, new Comparator<ImageEntry>() {
+            @Override
+            public int compare(ImageEntry lhs, ImageEntry rhs) {
+                return (lhs.dateTakenUnixTime - rhs.dateTakenUnixTime) > 0 ? 1 : -1;
+            }
+        });
     }
 }
