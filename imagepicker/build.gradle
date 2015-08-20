@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/yazeed44/MultiImagePicker'
     gitUrl = 'https://github.com/yazeed44/MultiImagePicker.git'
 
-    libraryVersion = '1.2.1'
+    libraryVersion = '1.2.2'
 
     developerId = 'yazeed44'
     developerName = 'Yazeed ahmed almagushi'
@@ -27,7 +27,7 @@ ext {
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '23.0.0 rc3'
+    buildToolsVersion '23.0.0'
 
     defaultConfig {
         minSdkVersion 15
