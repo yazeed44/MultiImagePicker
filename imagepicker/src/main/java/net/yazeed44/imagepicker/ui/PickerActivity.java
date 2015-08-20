@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -303,7 +304,7 @@ public class PickerActivity extends AppCompatActivity {
         }
 
         final Intent captureIntent = new VideoRecorderActivity.IntentBuilder(this)
-                .durationLimit(mPickOptions.videoLengthLimit)
+//                .durationLimit(mPickOptions.videoLengthLimit)
                 .debug()
                 .to(captureVideoFile)
                 .build();
@@ -664,7 +665,16 @@ public class PickerActivity extends AppCompatActivity {
 
 
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
-
+        if (mPickOptions.videosEnabled && mPickOptions.videoLengthLimit > 0){
+            // Check to see if the selected video is too long in length
+            MediaPlayer mp = MediaPlayer.create(this, Uri.parse(pickImageEvent.imageEntry.path));
+            int duration = mp.getDuration();
+            mp.release();
+            if(duration > (mPickOptions.videoLengthLimit * 1000)){
+                Toast.makeText(this, getResources().getString(R.string.video_too_long).replace("$", String.valueOf(mPickOptions.videoLengthLimit)), Toast.LENGTH_SHORT).show();
+                return; // Don't allow selection
+            }
+        }
 
         if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES) {
             handleMultipleModeAddition(pickImageEvent.imageEntry);
