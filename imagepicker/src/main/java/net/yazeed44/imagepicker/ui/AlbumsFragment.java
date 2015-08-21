@@ -20,6 +20,7 @@ import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.LoadingAlbumsRequest;
 import net.yazeed44.imagepicker.util.OfflineSpiceService;
 import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.Util;
 
 import java.util.ArrayList;
 
@@ -172,8 +173,9 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
             for (final AlbumEntry albumEntry : mAlbumList) {
                 if (albumEntry.name.equals(PickerActivity.CAPTURED_IMAGES_ALBUM_NAME)) {
+                    EventBus.getDefault().postSticky(new Events.OnPickImageEvent(Util.getAllPhotosAlbum(mAlbumList).imageList.get(0)));
                     mAlbumsRecycler.getChildAt(mAlbumList.indexOf(albumEntry)).performClick();
-                    EventBus.getDefault().postSticky(new Events.OnPickImageEvent(albumEntry.imageList.get(0)));
+
 
                 }
             }

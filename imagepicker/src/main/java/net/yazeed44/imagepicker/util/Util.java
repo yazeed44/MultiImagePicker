@@ -34,6 +34,7 @@ public final class Util {
 
     public static ArrayList<AlbumEntry> getAlbums(final Context context, final Picker mPickerOptions) {
 
+        long timeToLoadAlbums = System.currentTimeMillis();
 
         final String[] projectionPhotos = {
                 MediaStore.Images.Media._ID,
@@ -82,10 +83,45 @@ public final class Util {
             }
         }
 
-        for(AlbumEntry album : albumsSorted) album.sortImagesByTimeDesc();
+        for (AlbumEntry album : albumsSorted) {
+            album.sortImagesByTimeDesc();
+        }
+
+        setPickedFlagForPickedImages(albumsSorted);
+
+        timeToLoadAlbums = System.currentTimeMillis() - timeToLoadAlbums;
+
+        Log.i("TimeToLoadAlbums", timeToLoadAlbums + "");
 
         return albumsSorted;
 
+    }
+
+    private static void setPickedFlagForPickedImages(final ArrayList<AlbumEntry> albumsSorted) {
+        //Check all photos album
+        final AlbumEntry allPhotosAlbum = getAllPhotosAlbum(albumsSorted);
+
+        if (allPhotosAlbum == null) {
+            return;
+        }
+
+        if (!PickerActivity.sCheckedImages.isEmpty() && !allPhotosAlbum.imageList.isEmpty()) {
+
+            for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
+                for (final ImageEntry imageEntry : allPhotosAlbum.imageList) {
+                    imageEntry.isPicked = imageEntry.equals(checkedImage);
+                }
+            }
+        }
+    }
+
+    public static AlbumEntry getAllPhotosAlbum(final ArrayList<AlbumEntry> albumEntries) {
+        for (final AlbumEntry albumEntry : albumEntries) {
+            if (albumEntry.id == 0) {
+                return albumEntry;
+            }
+        }
+        return null;
     }
 
     private static AlbumEntry traverseCursor(final Context context, final Cursor cursor, AlbumEntry allPhotosAlbum, final ArrayList<AlbumEntry> albumsSorted, final HashMap<Integer, AlbumEntry> albums, final boolean isVideoCursor){
@@ -105,16 +141,6 @@ public final class Util {
                 if (imageEntry.path == null || imageEntry.path.length() == 0) {
                     continue;
                 }
-
-                if (!PickerActivity.sCheckedImages.isEmpty()) {
-
-                    for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
-                        if (checkedImage.path.equals(imageEntry.path)) {
-                            imageEntry.isPicked = true;
-                        }
-                    }
-                }
-
 
                 if (allPhotosAlbum == null) {
                     allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos), imageEntry);

@@ -27,7 +27,7 @@ public class AlbumEntry implements Serializable {
         Collections.sort(imageList, new Comparator<ImageEntry>() {
             @Override
             public int compare(ImageEntry lhs, ImageEntry rhs) {
-                return (lhs.dateTakenUnixTime - rhs.dateTakenUnixTime) > 0 ? 1 : -1;
+                return (int) (rhs.dateTakenUnixTime - lhs.dateTakenUnixTime);
             }
         });
     }

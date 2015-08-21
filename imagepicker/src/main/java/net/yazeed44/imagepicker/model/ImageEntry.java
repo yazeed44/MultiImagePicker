@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by yazeed44 on 6/14/15.
@@ -33,7 +32,7 @@ public class ImageEntry implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof ImageEntry && imageId == ((ImageEntry) o).imageId;
+        return o instanceof ImageEntry && ((ImageEntry) o).path.equals(path);
     }
 
     @Override
@@ -73,6 +72,7 @@ public class ImageEntry implements Serializable {
 
             return new ImageEntry.Builder(path)
                     .imageId(imageId)
+                    .dateTaken(dateTaken)
                     ;
 
         }
