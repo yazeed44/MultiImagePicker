@@ -40,7 +40,7 @@ public final class Util {
                 MediaStore.Images.Media.BUCKET_ID,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                 MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DATE_ADDED,
+                MediaStore.Images.Media.DATE_MODIFIED,
                 MediaStore.Images.Media.ORIENTATION
         };
 
@@ -49,7 +49,7 @@ public final class Util {
                 MediaStore.Video.Media.BUCKET_ID,
                 MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
                 MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.DATE_ADDED
+                MediaStore.Video.Media.DATE_MODIFIED
         };
 
 
@@ -63,7 +63,7 @@ public final class Util {
         try {
 
             cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    , projectionPhotos, "", null, MediaStore.Images.Media.DATE_ADDED + " DESC");
+                    , projectionPhotos, "", null, MediaStore.Images.Media.DATE_MODIFIED + " DESC");
             allPhotosAlbum = traverseCursor(context, cursor, allPhotosAlbum, albumsSorted, albums, false);
             if (pickOptions.videosEnabled) {
                 videoCursor = MediaStore.Video.query(context.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI

@@ -64,7 +64,7 @@ public class ImageEntry implements Serializable {
         public static Builder from(final Cursor cursor) {
             final int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             final int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            final int dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
+            final int dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
 
             final int imageId = cursor.getInt(imageIdColumn);
             final String path = cursor.getString(dataColumn);
