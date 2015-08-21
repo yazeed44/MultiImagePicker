@@ -26,12 +26,6 @@ android {
 
 }
 
-/*repositories {
-    maven {
-        url 'https://dl.bintray.com/yazeed44/maven/'
-    }
-}*/
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':imagepicker')
