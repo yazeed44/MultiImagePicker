@@ -139,17 +139,15 @@ public final class Util {
                 }
 
                 if (allPhotosAlbum == null) {
-                    allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos), imageEntry);
+                    allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos));
                     albumsSorted.add(0, allPhotosAlbum);
                 }
-                if (allPhotosAlbum != null) {
-                    allPhotosAlbum.addPhoto(imageEntry);
-                }
+                allPhotosAlbum.addPhoto(imageEntry);
                 AlbumEntry albumEntry = albums.get(bucketId);
                 if (albumEntry == null) {
-                    albumEntry = new AlbumEntry(bucketId, bucketName, imageEntry);
+                    albumEntry = new AlbumEntry(bucketId, bucketName);
                     albums.put(bucketId, albumEntry);
-                    if (cameraAlbumId == null && CAMERA_FOLDER != null && imageEntry.path != null && imageEntry.path.startsWith(CAMERA_FOLDER)) {
+                    if (cameraAlbumId == null && imageEntry.path.startsWith(CAMERA_FOLDER)) {
                         albumsSorted.add(0, albumEntry);
                         cameraAlbumId = bucketId;
                     } else {

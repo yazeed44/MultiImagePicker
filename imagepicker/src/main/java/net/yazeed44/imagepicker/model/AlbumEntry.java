@@ -11,13 +11,13 @@ import java.util.Comparator;
 public class AlbumEntry implements Serializable {
     public final int id;
     public final String name;
-    public final ImageEntry coverImage;
     public final ArrayList<ImageEntry> imageList = new ArrayList<>();
+    public ImageEntry coverImage;
 
-    public AlbumEntry(int albumId, String albumName, ImageEntry coverImage) {
+
+    public AlbumEntry(int albumId, String albumName) {
         this.id = albumId;
         this.name = albumName;
-        this.coverImage = coverImage;
     }
 
     public void addPhoto(ImageEntry imageEntry) {
@@ -30,5 +30,7 @@ public class AlbumEntry implements Serializable {
                 return (int) (rhs.dateAdded - lhs.dateAdded);
             }
         });
+
+        coverImage = imageList.get(0);
     }
 }
