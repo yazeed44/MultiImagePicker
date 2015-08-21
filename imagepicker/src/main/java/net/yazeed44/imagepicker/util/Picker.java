@@ -64,8 +64,8 @@ public final class Picker {
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
-        videosEnabled = builder.videosEnabled;
-        videoLengthLimit = builder.videoLengthLimit;
+        videosEnabled = builder.mVideosEnabled;
+        videoLengthLimit = builder.mVideoLengthLimit;
 
     }
 
@@ -113,8 +113,8 @@ public final class Picker {
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
-        private boolean videosEnabled;
-        private int videoLengthLimit;
+        private boolean mVideosEnabled;
+        private int mVideoLengthLimit;
 
         //Use (Context,PickListener,themeResId) instead
         @Deprecated
@@ -158,8 +158,8 @@ public final class Picker {
             mShouldShowCaptureMenuItem = true;
 
             mCheckIconTintColor = Color.WHITE;
-            videosEnabled = false;
-            videoLengthLimit = 0; // No limit
+            mVideosEnabled = false;
+            mVideoLengthLimit = 0; // No limit
         }
 
 
@@ -255,13 +255,13 @@ public final class Picker {
             return this;
         }
 
-        public Picker.Builder setVideosEnabled(boolean enabled){
-            videosEnabled = enabled;
+        public Picker.Builder setVideosEnabled(final boolean enabled) {
+            mVideosEnabled = enabled;
             return this;
         }
 
-        public Picker.Builder setVideoLengthLimit(int limit){
-            videoLengthLimit = limit;
+        public Picker.Builder setVideoLengthLimitInMilliSeconds(final int limit) {
+            mVideoLengthLimit = limit;
             return this;
         }
 

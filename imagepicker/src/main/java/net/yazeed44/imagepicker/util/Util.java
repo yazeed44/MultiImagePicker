@@ -32,9 +32,7 @@ public final class Util {
         throw new AssertionError();
     }
 
-    public static ArrayList<AlbumEntry> getAlbums(final Context context, final Picker mPickerOptions) {
-
-        long timeToLoadAlbums = System.currentTimeMillis();
+    public static ArrayList<AlbumEntry> getAlbums(final Context context, final Picker pickOptions) {
 
         final String[] projectionPhotos = {
                 MediaStore.Images.Media._ID,
@@ -54,7 +52,7 @@ public final class Util {
         };
 
 
-        final ArrayList<AlbumEntry> albumsSorted = new ArrayList<AlbumEntry>();
+        final ArrayList<AlbumEntry> albumsSorted = new ArrayList<>();
 
         final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
         AlbumEntry allPhotosAlbum = null;
@@ -66,7 +64,7 @@ public final class Util {
             cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     , projectionPhotos, "", null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
             allPhotosAlbum = traverseCursor(context, cursor, allPhotosAlbum, albumsSorted, albums, false);
-            if(mPickerOptions.videosEnabled){
+            if (pickOptions.videosEnabled) {
                 videoCursor = MediaStore.Video.query(context.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                         , projectionVideos);
                 traverseCursor(context, videoCursor, allPhotosAlbum, albumsSorted, albums, true);
@@ -88,10 +86,6 @@ public final class Util {
         }
 
         setPickedFlagForPickedImages(albumsSorted);
-
-        timeToLoadAlbums = System.currentTimeMillis() - timeToLoadAlbums;
-
-        Log.i("TimeToLoadAlbums", timeToLoadAlbums + "");
 
         return albumsSorted;
 

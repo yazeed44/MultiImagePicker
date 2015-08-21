@@ -78,15 +78,12 @@ public class PickerActivity extends AppCompatActivity {
         mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
         initTheme();
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_pick);
         addToolbarToLayout();
         initActionbar(savedInstanceState);
         setupAlbums(savedInstanceState);
         initFab();
         updateFab();
-
-
     }
 
     @Override
@@ -103,17 +100,12 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void addToolbarToLayout() {
-
-
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-
 
         final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
         toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
 
         appBarLayout.addView(mToolbar, toolbarParams);
-
-
 
         setSupportActionBar(mToolbar);
     }
@@ -216,7 +208,6 @@ public class PickerActivity extends AppCompatActivity {
             sCheckedImages.add(mCurrentlyDisplayedImage);
             mCurrentlyDisplayedImage.isPicked = true;
         } else {
-
             //No need to modify sCheckedImages for Multiple images mode
         }
 
@@ -254,7 +245,7 @@ public class PickerActivity extends AppCompatActivity {
                         }
                     }
                 });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // Do nothing
@@ -264,15 +255,9 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void capturePhoto() {
-
-
         final File captureImageFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".png");
-
-
         try {
             captureImageFile.createNewFile();
-
-
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("capturePhoto", e.getMessage());
@@ -289,22 +274,16 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void captureVideo() {
-
-
         final File captureVideoFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".mp4");
-
-
         try {
             captureVideoFile.createNewFile();
-
-
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("captureVideo", e.getMessage());
         }
 
         final Intent captureIntent = new VideoRecorderActivity.IntentBuilder(this)
-                .durationLimit(mPickOptions.videoLengthLimit * 1000)
+                .durationLimit(mPickOptions.videoLengthLimit)
                 .debug()
                 .to(captureVideoFile)
                 .build();
@@ -346,10 +325,6 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void reloadAlbums() {
-
-
-
-
         if (isImagesThumbnailShown()) {
             getSupportFragmentManager().popBackStackImmediate();
         } else {
@@ -486,13 +461,8 @@ public class PickerActivity extends AppCompatActivity {
                     sCheckedImages.add(imageEntry);
                     imageEntry.isPicked = true;
                 }
-
-
             }
-
         }
-
-
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
         updateFab();
 
@@ -665,13 +635,13 @@ public class PickerActivity extends AppCompatActivity {
 
 
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
-        if (mPickOptions.videosEnabled && mPickOptions.videoLengthLimit > 0){
+        if (mPickOptions.videosEnabled && mPickOptions.videoLengthLimit > 0 && pickImageEvent.imageEntry.isVideo) {
             // Check to see if the selected video is too long in length
-            MediaPlayer mp = MediaPlayer.create(this, Uri.parse(pickImageEvent.imageEntry.path));
-            int duration = mp.getDuration();
+            final MediaPlayer mp = MediaPlayer.create(this, Uri.parse(pickImageEvent.imageEntry.path));
+            final int duration = mp.getDuration();
             mp.release();
-            if(duration > (mPickOptions.videoLengthLimit * 1000)){
-                Toast.makeText(this, getResources().getString(R.string.video_too_long).replace("$", String.valueOf(mPickOptions.videoLengthLimit)), Toast.LENGTH_SHORT).show();
+            if (duration > (mPickOptions.videoLengthLimit)) {
+                Toast.makeText(this, getResources().getString(R.string.video_too_long).replace("$", String.valueOf(mPickOptions.videoLengthLimit / 1000)), Toast.LENGTH_SHORT).show();
                 return; // Don't allow selection
             }
         }
@@ -722,16 +692,12 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
-
         handleToolbarVisibility(true);
-
     }
 
 
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
-
         handleToolbarVisibility(false);
-
     }
 
 
