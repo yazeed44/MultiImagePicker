@@ -1,6 +1,7 @@
 package net.yazeed44.imagepicker.ui;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -107,7 +108,6 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
         holder.check.setImageDrawable(mCheckIcon);
 
-
         if (imageEntry.isPicked) {
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
             holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
@@ -127,6 +127,11 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
             holder.check.setVisibility(View.GONE);
         }
+
+        if (imageEntry.isVideo) {
+            holder.thumbnail.setColorFilter(mPickOptions.videoThumbnailOverlayColor, PorterDuff.Mode.MULTIPLY);
+        }
+
     }
 
 
