@@ -12,14 +12,14 @@ import java.io.Serializable;
 public class ImageEntry implements Serializable {
     public final int imageId;
     public final String path;
-    public long dateTakenUnixTime;
+    public final long dateAdded;
     public boolean isPicked = false;
     public boolean isVideo = false;
 
     public ImageEntry(final Builder builder) {
         this.path = builder.mPath;
         this.imageId = builder.mImageId;
-        this.dateTakenUnixTime = builder.dateTakenUnixTime;
+        this.dateAdded = builder.mDateAdded;
     }
 
     public static ImageEntry from(final Cursor cursor) {
@@ -47,7 +47,7 @@ public class ImageEntry implements Serializable {
         public static int count = -1;
         private final String mPath;
         private int mImageId;
-        private long dateTakenUnixTime;
+        private long mDateAdded;
 
         public Builder(final String path) {
             this.mPath = path;
@@ -64,15 +64,15 @@ public class ImageEntry implements Serializable {
         public static Builder from(final Cursor cursor) {
             final int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             final int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            final int dateTakenColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
+            final int dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
 
             final int imageId = cursor.getInt(imageIdColumn);
             final String path = cursor.getString(dataColumn);
-            final long dateTaken = cursor.getLong(dateTakenColumn);
+            final long dateAdded = cursor.getLong(dateAddedColumn);
 
             return new ImageEntry.Builder(path)
                     .imageId(imageId)
-                    .dateTaken(dateTaken)
+                    .dateAdded(dateAdded)
                     ;
 
         }
@@ -83,8 +83,8 @@ public class ImageEntry implements Serializable {
             return this;
         }
 
-        public Builder dateTaken(long timestamp) {
-            this.dateTakenUnixTime = timestamp;
+        public Builder dateAdded(long timestamp) {
+            this.mDateAdded = timestamp;
             return this;
         }
 

@@ -26,6 +26,7 @@ public final class Util {
 
 
     public static final TypedValue TYPED_VALUE = new TypedValue();
+    public static final String CAMERA_FOLDER = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
 
 
     private Util() {
@@ -39,7 +40,7 @@ public final class Util {
                 MediaStore.Images.Media.BUCKET_ID,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                 MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DATE_TAKEN,
+                MediaStore.Images.Media.DATE_ADDED,
                 MediaStore.Images.Media.ORIENTATION
         };
 
@@ -48,7 +49,7 @@ public final class Util {
                 MediaStore.Video.Media.BUCKET_ID,
                 MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
                 MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.DATE_TAKEN
+                MediaStore.Video.Media.DATE_ADDED
         };
 
 
@@ -62,7 +63,7 @@ public final class Util {
         try {
 
             cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    , projectionPhotos, "", null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
+                    , projectionPhotos, "", null, MediaStore.Images.Media.DATE_ADDED + " DESC");
             allPhotosAlbum = traverseCursor(context, cursor, allPhotosAlbum, albumsSorted, albums, false);
             if (pickOptions.videosEnabled) {
                 videoCursor = MediaStore.Video.query(context.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -81,11 +82,13 @@ public final class Util {
             }
         }
 
-        for (AlbumEntry album : albumsSorted) {
+        setPickedFlagForPickedImages(albumsSorted);
+
+        for (final AlbumEntry album : albumsSorted) {
             album.sortImagesByTimeDesc();
         }
 
-        setPickedFlagForPickedImages(albumsSorted);
+
 
         return albumsSorted;
 
@@ -120,7 +123,6 @@ public final class Util {
 
     private static AlbumEntry traverseCursor(final Context context, final Cursor cursor, AlbumEntry allPhotosAlbum, final ArrayList<AlbumEntry> albumsSorted, final HashMap<Integer, AlbumEntry> albums, final boolean isVideoCursor){
         if (cursor != null) {
-            final String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
             Integer cameraAlbumId = null;
             int bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
             final int bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
@@ -130,7 +132,7 @@ public final class Util {
                 String bucketName = cursor.getString(bucketNameColumn);
 
                 final ImageEntry imageEntry = ImageEntry.from(cursor);
-                if(isVideoCursor) imageEntry.isVideo = true;
+                imageEntry.isVideo = isVideoCursor;
 
                 if (imageEntry.path == null || imageEntry.path.length() == 0) {
                     continue;
@@ -147,7 +149,7 @@ public final class Util {
                 if (albumEntry == null) {
                     albumEntry = new AlbumEntry(bucketId, bucketName, imageEntry);
                     albums.put(bucketId, albumEntry);
-                    if (cameraAlbumId == null && cameraFolder != null && imageEntry.path != null && imageEntry.path.startsWith(cameraFolder)) {
+                    if (cameraAlbumId == null && CAMERA_FOLDER != null && imageEntry.path != null && imageEntry.path.startsWith(CAMERA_FOLDER)) {
                         albumsSorted.add(0, albumEntry);
                         cameraAlbumId = bucketId;
                     } else {
