@@ -238,9 +238,9 @@ public class PickerActivity extends AppCompatActivity {
         builder.setTitle("Choose Camera")
                 .setItems(new String[]{"Photo Camera", "Video Camera"}, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if(which == 0){
+                        if (which == 0) {
                             capturePhoto();
-                        }else{
+                        } else {
                             captureVideo();
                         }
                     }
@@ -255,13 +255,8 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void capturePhoto() {
-        final File captureImageFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".png");
-        try {
-            captureImageFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("capturePhoto", e.getMessage());
-        }
+
+        final File captureImageFile = createTemporaryFileForCapturing(".png");
 
         final Intent captureIntent = new CameraActivity.IntentBuilder(this)
                 .skipConfirm()
@@ -273,14 +268,21 @@ public class PickerActivity extends AppCompatActivity {
 
     }
 
-    public void captureVideo() {
-        final File captureVideoFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".mp4");
+    private File createTemporaryFileForCapturing(final String extension) {
+        final File captureTempFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + extension);
         try {
-            captureVideoFile.createNewFile();
+            captureTempFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("captureVideo", e.getMessage());
+            Log.e("capture", e.getMessage());
         }
+
+        return captureTempFile;
+    }
+
+    public void captureVideo() {
+        final File captureVideoFile = createTemporaryFileForCapturing(".mp4");
+
 
         final Intent captureIntent = new VideoRecorderActivity.IntentBuilder(this)
                 .durationLimit(mPickOptions.videoLengthLimit)
