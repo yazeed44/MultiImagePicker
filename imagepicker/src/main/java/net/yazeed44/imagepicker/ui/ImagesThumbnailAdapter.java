@@ -35,6 +35,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     protected final Picker mPickOptions;
 
     protected final Drawable mCheckIcon;
+    protected final Drawable mVideoIcon;
     protected final Fragment mFragment;
 
 
@@ -45,6 +46,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         mPickOptions = pickOptions;
 
         mCheckIcon = createCheckIcon();
+        mVideoIcon = createVideoIcon();
     }
 
     private Drawable createCheckIcon() {
@@ -52,6 +54,16 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         checkIcon = DrawableCompat.wrap(checkIcon);
         DrawableCompat.setTint(checkIcon, mPickOptions.checkIconTintColor);
         return checkIcon;
+    }
+
+    private Drawable createVideoIcon() {
+        if (!mPickOptions.videosEnabled) {
+            return null;
+        }
+        Drawable videoIcon = ContextCompat.getDrawable(mRecyclerView.getContext(), R.drawable.ic_play_arrow);
+        videoIcon = DrawableCompat.wrap(videoIcon);
+        DrawableCompat.setTint(videoIcon, mPickOptions.videoIconTintColor);
+        return videoIcon;
     }
 
     @Override
@@ -100,7 +112,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
                 .into(holder.thumbnail)
         ;
 
-        holder.videoIcon.setVisibility(photo.isVideo ? View.VISIBLE : View.GONE);
+
     }
 
     public void drawGrid(final ImageViewHolder holder, final ImageEntry imageEntry) {
@@ -130,6 +142,8 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
         if (imageEntry.isVideo) {
             holder.thumbnail.setColorFilter(mPickOptions.videoThumbnailOverlayColor, PorterDuff.Mode.MULTIPLY);
+            holder.videoIcon.setImageDrawable(mVideoIcon);
+            holder.videoIcon.setVisibility(View.VISIBLE);
         }
 
     }

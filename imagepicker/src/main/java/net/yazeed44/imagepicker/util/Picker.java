@@ -44,6 +44,7 @@ public final class Picker {
     public final boolean videosEnabled;
     public final int videoLengthLimit;
     public final int videoThumbnailOverlayColor;
+    public final int videoIconTintColor;
 
     private Picker(final Builder builder) {
         context = builder.mContext;
@@ -68,6 +69,7 @@ public final class Picker {
         videosEnabled = builder.mVideosEnabled;
         videoLengthLimit = builder.mVideoLengthLimit;
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
+        videoIconTintColor = builder.mVideoIconTintColor;
 
     }
 
@@ -118,6 +120,7 @@ public final class Picker {
         private boolean mVideosEnabled;
         private int mVideoLengthLimit;
         private int mVideoThumbnailOverlayColor;
+        private int mVideoIconTintColor;
 
         //Use (Context,PickListener,themeResId) instead
         @Deprecated
@@ -165,6 +168,7 @@ public final class Picker {
             mVideoLengthLimit = 0; // No limit
 
             mVideoThumbnailOverlayColor = mContext.getResources().getColor(R.color.alter_video_thumbnail_overlay);
+            mVideoIconTintColor = Color.WHITE;
         }
 
 
@@ -272,6 +276,11 @@ public final class Picker {
 
         public Picker.Builder setVideoThumbnailOverlayColor(@ColorInt final int color) {
             mVideoThumbnailOverlayColor = color;
+            return this;
+        }
+
+        public Picker.Builder setVideoIconTintColor(@ColorInt final int color) {
+            mVideoIconTintColor = color;
             return this;
         }
 
