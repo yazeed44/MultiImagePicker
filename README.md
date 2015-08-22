@@ -36,6 +36,18 @@ compile 'net.yazeed44.imagepicker:imagepicker:1.2.1'
 
 [ ![Download](https://api.bintray.com/packages/yazeed44/maven/multi-image-picker/images/download.svg) ](https://bintray.com/yazeed44/maven/multi-image-picker/_latestVersion)
 
+Also don't forget to add [cwac-cam2](https://github.com/commonsguy/cwac-cam2) repository by declaring this in your ```build.gradle```
+
+```gradle
+repositories {
+    maven {
+        url "https://repo.commonsware.com.s3.amazonaws.com"
+    }
+}
+
+```
+
+
 ### If jCenter is Having Issues (the library can't be resolved)
 
 Add this to your app's build.gradle file:
