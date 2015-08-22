@@ -234,9 +234,9 @@ public class PickerActivity extends AppCompatActivity {
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose Camera")
-                .setItems(new String[]{"Photo Camera", "Video Camera"}, new DialogInterface.OnClickListener() {
+
+        new AlertDialog.Builder(this).setTitle(R.string.dialog_choose_camera_title)
+                .setItems(new String[]{getResources().getString(R.string.dialog_choose_camera_item_0), getResources().getString(R.string.dialog_choose_camera_item_1)}, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
                             capturePhoto();
@@ -244,14 +244,10 @@ public class PickerActivity extends AppCompatActivity {
                             captureVideo();
                         }
                     }
-                });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                // Do nothing
-            }
-        });
-        builder.create().show();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+
     }
 
     public void capturePhoto() {
