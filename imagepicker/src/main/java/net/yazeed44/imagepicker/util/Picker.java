@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.util.TypedValue;
 
@@ -149,12 +151,12 @@ public final class Picker {
             final TypedValue typedValue = new TypedValue();
             initUsingColorAccent(typedValue);
 
-            mImageBackgroundColor = mContext.getResources().getColor(R.color.alter_unchecked_image_background);
-            mImageCheckColor = mContext.getResources().getColor(R.color.alter_image_check_color);
-            mCheckedImageOverlayColor = mContext.getResources().getColor(R.color.alter_checked_photo_overlay);
-            mAlbumBackgroundColor = mContext.getResources().getColor(R.color.alter_album_background);
-            mAlbumNameTextColor = mContext.getResources().getColor(R.color.alter_album_name_text_color);
-            mAlbumImagesCountTextColor = mContext.getResources().getColor(R.color.alter_album_images_count_text_color);
+            mImageBackgroundColor = getColor(R.color.alter_unchecked_image_background);
+            mImageCheckColor = getColor(R.color.alter_image_check_color);
+            mCheckedImageOverlayColor = getColor(R.color.alter_checked_photo_overlay);
+            mAlbumBackgroundColor = getColor(R.color.alter_album_background);
+            mAlbumNameTextColor = getColor(R.color.alter_album_name_text_color);
+            mAlbumImagesCountTextColor = getColor(R.color.alter_album_images_count_text_color);
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
             mPickMode = PickMode.MULTIPLE_IMAGES;
 
@@ -167,8 +169,12 @@ public final class Picker {
             mVideosEnabled = false;
             mVideoLengthLimit = 0; // No limit
 
-            mVideoThumbnailOverlayColor = mContext.getResources().getColor(R.color.alter_video_thumbnail_overlay);
+            mVideoThumbnailOverlayColor = getColor(R.color.alter_video_thumbnail_overlay);
             mVideoIconTintColor = Color.WHITE;
+        }
+
+        private int getColor(@ColorRes final int colorRes) {
+            return ContextCompat.getColor(mContext, colorRes);
         }
 
 
