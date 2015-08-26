@@ -119,6 +119,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
 
         holder.check.setImageDrawable(mCheckIcon);
+        holder.videoIcon.setVisibility(View.GONE);
 
         if (imageEntry.isPicked) {
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
