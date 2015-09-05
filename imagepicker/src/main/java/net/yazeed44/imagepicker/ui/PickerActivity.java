@@ -44,8 +44,8 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
-    public static final String CAPTURED_IMAGES_ALBUM_NAME = "captured_images";
-    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
+    public static String CAPTURED_IMAGES_ALBUM_NAME;
+    public static String CAPTURED_IMAGES_DIR;
     private static final int REQUEST_PORTRAIT_RFC = 1337;
     private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
@@ -75,14 +75,17 @@ public class PickerActivity extends AppCompatActivity {
         initTheme();
         super.onCreate(savedInstanceState);
 
+        //Grab intent extras here.
+        //camera_image_path will always be set so no need to check if the key exists.
+        CAPTURED_IMAGES_ALBUM_NAME = getIntent().getExtras().getString("camera_image_path");
+        CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
+
         setContentView(R.layout.activity_pick);
         addToolbarToLayout();
         initActionbar(savedInstanceState);
         setupAlbums(savedInstanceState);
         initFab();
         updateFab();
-
-
     }
 
     @Override

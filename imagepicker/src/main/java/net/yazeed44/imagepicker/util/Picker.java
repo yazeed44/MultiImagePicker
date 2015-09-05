@@ -1,8 +1,10 @@
 package net.yazeed44.imagepicker.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
@@ -41,6 +43,7 @@ public final class Picker {
     public final int doneFabIconTintColor;
     public final boolean shouldShowCaptureMenuItem;
     public final int checkIconTintColor;
+    public final String mCameraImagePath;
 
 
     private Picker(final Builder builder) {
@@ -63,9 +66,7 @@ public final class Picker {
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
-
-
-
+        mCameraImagePath = builder.mCameraImagePath;
     }
 
     public void startActivity() {
@@ -73,9 +74,9 @@ public final class Picker {
         EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
 
         final Intent intent = new Intent(context, PickerActivity.class);
+        intent.putExtra("camera_image_path", mCameraImagePath);
 
         context.startActivity(intent);
-
     }
 
 
@@ -112,6 +113,7 @@ public final class Picker {
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
+        private String mCameraImagePath;
 
 
         //Use (Context,PickListener,themeResId) instead
@@ -141,12 +143,12 @@ public final class Picker {
             final TypedValue typedValue = new TypedValue();
             initUsingColorAccent(typedValue);
 
-            mImageBackgroundColor = mContext.getResources().getColor(R.color.alter_unchecked_image_background);
-            mImageCheckColor = mContext.getResources().getColor(R.color.alter_image_check_color);
-            mCheckedImageOverlayColor = mContext.getResources().getColor(R.color.alter_checked_photo_overlay);
-            mAlbumBackgroundColor = mContext.getResources().getColor(R.color.alter_album_background);
-            mAlbumNameTextColor = mContext.getResources().getColor(R.color.alter_album_name_text_color);
-            mAlbumImagesCountTextColor = mContext.getResources().getColor(R.color.alter_album_images_count_text_color);
+            mImageBackgroundColor = this.getColor(R.color.alter_unchecked_image_background);
+            mImageCheckColor = this.getColor(R.color.alter_image_check_color);
+            mCheckedImageOverlayColor = this.getColor(R.color.alter_checked_photo_overlay);
+            mAlbumBackgroundColor = this.getColor(R.color.alter_album_background);
+            mAlbumNameTextColor = this.getColor(R.color.alter_album_name_text_color);
+            mAlbumImagesCountTextColor = this.getColor(R.color.alter_album_images_count_text_color);
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
             mPickMode = PickMode.MULTIPLE_IMAGES;
 
@@ -157,6 +159,7 @@ public final class Picker {
 
             mCheckIconTintColor = Color.WHITE;
 
+            mCameraImagePath = "captured_images";
         }
 
 
@@ -252,11 +255,25 @@ public final class Picker {
             return this;
         }
 
+        public Picker.Builder setCameraImageFolder(final String path) {
+            mCameraImagePath = path;
+            return this;
+        }
+
 
         public Picker build() {
             return new Picker(this);
         }
 
+        //Marshmallow deprecated getColor.
+        @SuppressWarnings("deprecation")
+        @TargetApi(Build.VERSION_CODES.M)
+        public int getColor(int color) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return mContext.getResources().getColor(color, null);
+            }
 
+            return mContext.getResources().getColor(color);
+        }
     }
 }
