@@ -41,6 +41,7 @@ public final class Picker {
     public final int doneFabIconTintColor;
     public final boolean shouldShowCaptureMenuItem;
     public final int checkIconTintColor;
+    public final boolean backBtnInMainActivity;
 
 
     private Picker(final Builder builder) {
@@ -63,6 +64,7 @@ public final class Picker {
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
+        backBtnInMainActivity = builder.mBackBtnInMainActivity;
 
 
 
@@ -112,6 +114,7 @@ public final class Picker {
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
+        private boolean mBackBtnInMainActivity;
 
 
         //Use (Context,PickListener,themeResId) instead
@@ -249,6 +252,11 @@ public final class Picker {
 
         public Picker.Builder setCheckIconTintColor(@ColorInt final int color) {
             mCheckIconTintColor = color;
+            return this;
+        }
+
+        public Picker.Builder setBackBtnInMainActivity(final boolean backBtn) {
+            mBackBtnInMainActivity = backBtn;
             return this;
         }
 
