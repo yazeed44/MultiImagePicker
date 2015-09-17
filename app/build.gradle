@@ -26,8 +26,14 @@ android {
 
 }
 
+
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':imagepicker')
-    compile 'com.afollestad:material-dialogs:0.7.8.1'
+    compile 'com.github.afollestad:material-dialogs:0.7.9.1'
 }
