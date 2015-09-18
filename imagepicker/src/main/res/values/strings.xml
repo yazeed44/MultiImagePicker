@@ -12,5 +12,10 @@
     <string name="image_position_in_view_pager">% of $</string>
     <string name="action_select_all">Select all</string>
     <string name="action_deselect_all">Deselect all</string>
+    <string name="video_too_long">Video too long. Videos must be $ seconds or less in length</string>
+    <string name="image_video_icon_desc">Indicates this thumbnail as video</string>
+    <string name="dialog_choose_camera_title">Choose camera</string>
+    <string name="dialog_choose_camera_item_0">Photo camera</string>
+    <string name="dialog_choose_camera_item_1">Video camera</string>
 
 </resources>

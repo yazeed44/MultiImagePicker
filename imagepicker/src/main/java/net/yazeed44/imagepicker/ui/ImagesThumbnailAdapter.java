@@ -1,6 +1,7 @@
 package net.yazeed44.imagepicker.ui;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -34,6 +35,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     protected final Picker mPickOptions;
 
     protected final Drawable mCheckIcon;
+    protected final Drawable mVideoIcon;
     protected final Fragment mFragment;
 
 
@@ -44,6 +46,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         mPickOptions = pickOptions;
 
         mCheckIcon = createCheckIcon();
+        mVideoIcon = createVideoIcon();
     }
 
     private Drawable createCheckIcon() {
@@ -51,6 +54,16 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         checkIcon = DrawableCompat.wrap(checkIcon);
         DrawableCompat.setTint(checkIcon, mPickOptions.checkIconTintColor);
         return checkIcon;
+    }
+
+    private Drawable createVideoIcon() {
+        if (!mPickOptions.videosEnabled) {
+            return null;
+        }
+        Drawable videoIcon = ContextCompat.getDrawable(mRecyclerView.getContext(), R.drawable.ic_play_arrow);
+        videoIcon = DrawableCompat.wrap(videoIcon);
+        DrawableCompat.setTint(videoIcon, mPickOptions.videoIconTintColor);
+        return videoIcon;
     }
 
     @Override
@@ -106,7 +119,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
 
         holder.check.setImageDrawable(mCheckIcon);
-
+        holder.videoIcon.setVisibility(View.GONE);
 
         if (imageEntry.isPicked) {
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
@@ -127,6 +140,13 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
             holder.check.setVisibility(View.GONE);
         }
+
+        if (imageEntry.isVideo) {
+            holder.thumbnail.setColorFilter(mPickOptions.videoThumbnailOverlayColor, PorterDuff.Mode.MULTIPLY);
+            holder.videoIcon.setImageDrawable(mVideoIcon);
+            holder.videoIcon.setVisibility(View.VISIBLE);
+        }
+
     }
 
 
@@ -153,12 +173,14 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         private final ImageView thumbnail;
         private final ImageView check;
+        private final ImageView videoIcon;
 
         public ImageViewHolder(final View itemView, final Util.OnClickImage listener) {
             super(itemView);
 
             thumbnail = (ImageView) itemView.findViewById(R.id.image_thumbnail);
             check = (ImageView) itemView.findViewById(R.id.image_check);
+            videoIcon = (ImageView) itemView.findViewById(R.id.image_video_icon);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

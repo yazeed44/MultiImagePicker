@@ -20,6 +20,7 @@ import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.LoadingAlbumsRequest;
 import net.yazeed44.imagepicker.util.OfflineSpiceService;
 import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.Util;
 
 import java.util.ArrayList;
 
@@ -54,17 +55,10 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
             if (albumLoadedEvent != null) {
                 mAlbumList = albumLoadedEvent.albumList;
             }
-
-
-
         }
 
-
         setupAdapter();
-
-
         setupRecycler();
-        setupAdapter();
 
         return mAlbumsRecycler;
     }
@@ -122,11 +116,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
                 }
             }, 100);
-
-
-
         }
-
 
     }
 
@@ -143,15 +133,13 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     public void setupAdapter() {
         if (mAlbumList == null) {
-            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity());
+            final LoadingAlbumsRequest loadingRequest = new LoadingAlbumsRequest(getActivity(), mPickOptions);
 
             mSpiceManager.execute(loadingRequest, this);
         } else {
 
             mAlbumsRecycler.setAdapter(new AlbumsAdapter(this, mAlbumList, mAlbumsRecycler));
         }
-
-
     }
 
     private boolean hasLoadedSuccessfully(final ArrayList albumList) {
@@ -167,14 +155,10 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
     }
 
     private void pickLatestCapturedImage() {
-
-
-
             for (final AlbumEntry albumEntry : mAlbumList) {
                 if (albumEntry.name.equals(PickerActivity.CAPTURED_IMAGES_ALBUM_NAME)) {
+                    EventBus.getDefault().postSticky(new Events.OnPickImageEvent(Util.getAllPhotosAlbum(mAlbumList).imageList.get(0)));
                     mAlbumsRecycler.getChildAt(mAlbumList.indexOf(albumEntry)).performClick();
-                    EventBus.getDefault().postSticky(new Events.OnPickImageEvent(albumEntry.imageList.get(0)));
-
                 }
             }
 
