@@ -129,11 +129,12 @@ public class PickerActivity extends AppCompatActivity {
 
 
         if (savedInstanceState == null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mShouldShowUp = mPickOptions.backBtnInMainActivity;
+            getSupportActionBar().setDisplayHomeAsUpEnabled(mPickOptions.backBtnInMainActivity);
             getSupportActionBar().setTitle(R.string.albums_title);
         } else {
             mShouldShowUp = savedInstanceState.getBoolean(KEY_SHOULD_SHOW_ACTIONBAR_UP);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp && mPickOptions.backBtnInMainActivity);
             getSupportActionBar().setTitle(savedInstanceState.getString(KEY_ACTION_BAR_TITLE));
 
 
@@ -479,7 +480,7 @@ public class PickerActivity extends AppCompatActivity {
             //Return to albums fragment
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
-            mShouldShowUp = false;
+            mShouldShowUp = mPickOptions.backBtnInMainActivity;
             getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
             hideSelectAll();
             hideDeselectAll();

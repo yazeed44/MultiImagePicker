@@ -12,7 +12,7 @@ ext {
     siteUrl = 'https://github.com/yazeed44/MultiImagePicker'
     gitUrl = 'https://github.com/yazeed44/MultiImagePicker.git'
 
-    libraryVersion = '1.2.1'
+    libraryVersion = '1.2.2'
 
     developerId = 'yazeed44'
     developerName = 'Yazeed ahmed almagushi'
@@ -61,7 +61,7 @@ dependencies {
     compile 'com.melnykov:floatingactionbutton:1.3.0'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.github.chrisbanes.photoview:library:1.2.3'
-    compile 'com.commonsware.cwac:cam2:0.2.0'
+    compile 'com.commonsware.cwac:cam2:0.2.3'
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'

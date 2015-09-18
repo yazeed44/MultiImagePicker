@@ -47,6 +47,7 @@ public final class Picker {
     public final int videoLengthLimit;
     public final int videoThumbnailOverlayColor;
     public final int videoIconTintColor;
+    public final boolean backBtnInMainActivity;
 
     private Picker(final Builder builder) {
         context = builder.mContext;
@@ -72,6 +73,7 @@ public final class Picker {
         videoLengthLimit = builder.mVideoLengthLimit;
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
+        backBtnInMainActivity = builder.mBackBtnInMainActivity;
 
     }
 
@@ -123,6 +125,7 @@ public final class Picker {
         private int mVideoLengthLimit;
         private int mVideoThumbnailOverlayColor;
         private int mVideoIconTintColor;
+        private boolean mBackBtnInMainActivity;
 
         //Use (Context,PickListener,themeResId) instead
         @Deprecated
@@ -267,6 +270,11 @@ public final class Picker {
 
         public Picker.Builder setCheckIconTintColor(@ColorInt final int color) {
             mCheckIconTintColor = color;
+            return this;
+        }
+
+        public Picker.Builder setBackBtnInMainActivity(final boolean backBtn) {
+            mBackBtnInMainActivity = backBtn;
             return this;
         }
 
