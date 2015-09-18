@@ -184,8 +184,6 @@ public final class Picker {
         private void initUsingColorAccent(final TypedValue typedValue) {
             mContext.getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
             mImageBackgroundColorWhenChecked = mFabBackgroundColor = typedValue.data;
-
-
         }
 
 
