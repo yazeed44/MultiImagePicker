@@ -39,3 +39,6 @@ dependencies {
         transitive = true
     }
 }
+
+// Remove comment to exclude cwac-cam2 dependency to make the capture feature unavailable
+//configurations.compile.exclude module: 'cam2'
