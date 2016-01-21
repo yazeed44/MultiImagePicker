@@ -1,6 +1,14 @@
+
+# IDE files
+.idea/
+*.iml
+
+# Project build and temp files
 .gradle
+build/
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+
+# OS specific files
 .DS_Store
-/build
+.fuse_hidden*
+
