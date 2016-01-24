@@ -24,12 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.commonsware.cwac.cam2.CameraActivity;
-import com.commonsware.cwac.cam2.VideoRecorderActivity;
-
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.util.CameraSupport;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.Picker;
 import net.yazeed44.imagepicker.util.Util;
@@ -230,6 +228,11 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void startCamera() {
+
+        if (!CameraSupport.isEnabled()) {
+            return;
+        }
+
         if(!mPickOptions.videosEnabled){
             capturePhoto();
             return;
@@ -252,17 +255,8 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void capturePhoto() {
-
         final File captureImageFile = createTemporaryFileForCapturing(".png");
-
-        final Intent captureIntent = new CameraActivity.IntentBuilder(this)
-                .skipConfirm()
-                .debug()
-                .to(captureImageFile)
-                .build();
-
-        startActivityForResult(captureIntent, REQUEST_PORTRAIT_FFC);
-
+        CameraSupport.startPhotoCaptureActivity(this, captureImageFile, REQUEST_PORTRAIT_FFC);
     }
 
     private File createTemporaryFileForCapturing(final String extension) {
@@ -279,16 +273,8 @@ public class PickerActivity extends AppCompatActivity {
 
     public void captureVideo() {
         final File captureVideoFile = createTemporaryFileForCapturing(".mp4");
-
-
-        final Intent captureIntent = new VideoRecorderActivity.IntentBuilder(this)
-                .durationLimit(mPickOptions.videoLengthLimit)
-                .debug()
-                .to(captureVideoFile)
-                .build();
-
-        startActivityForResult(captureIntent, REQUEST_PORTRAIT_FFC);
-
+        CameraSupport.startVideoCaptureActivity(this,
+                captureVideoFile, mPickOptions.videoLengthLimit, REQUEST_PORTRAIT_FFC);
     }
 
     @Override
@@ -376,14 +362,15 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void initCaptureMenuItem(final Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
-        Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
-        captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
+        if (CameraSupport.isEnabled()) {
+            getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+            Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
+            captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
 
-        DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
+            DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
 
-        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
-
+            menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
+        }
     }
 
     private void hideDeselectAll() {
