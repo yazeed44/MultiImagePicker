@@ -46,8 +46,8 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
-    public static final String CAPTURED_IMAGES_ALBUM_NAME = "captured_images";
-    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
+    public static String CAPTURED_IMAGES_ALBUM_NAME = "captured_images";
+    public static String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
     private static final int REQUEST_PORTRAIT_RFC = 1337;
     private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
@@ -56,6 +56,7 @@ public class PickerActivity extends AppCompatActivity {
 
     private com.melnykov.fab.FloatingActionButton mDoneFab;
     private Picker mPickOptions;
+
     //For ViewPager
     private ImageEntry mCurrentlyDisplayedImage;
     private AlbumEntry mSelectedAlbum;
@@ -76,12 +77,14 @@ public class PickerActivity extends AppCompatActivity {
         mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
         initTheme();
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_pick);
         addToolbarToLayout();
         initActionbar(savedInstanceState);
         setupAlbums(savedInstanceState);
         initFab();
         updateFab();
+        initCaptureImagesDir();
     }
 
     @Override
@@ -252,6 +255,14 @@ public class PickerActivity extends AppCompatActivity {
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
 
+    }
+
+    private void initCaptureImagesDir() {
+        if (mPickOptions.mCameraImagePath != null) {
+            CAPTURED_IMAGES_ALBUM_NAME = mPickOptions.mCameraImagePath;
+            CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
+        }
+        Log.d("ImagesFolder", CAPTURED_IMAGES_DIR);
     }
 
     public void capturePhoto() {

@@ -1,8 +1,10 @@
 package net.yazeed44.imagepicker.util;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -43,6 +45,7 @@ public final class Picker {
     public final int doneFabIconTintColor;
     public final boolean shouldShowCaptureMenuItem;
     public final int checkIconTintColor;
+    public final String mCameraImagePath;
     public final boolean videosEnabled;
     public final int videoLengthLimit;
     public final int videoThumbnailOverlayColor;
@@ -69,12 +72,12 @@ public final class Picker {
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
+        mCameraImagePath = builder.mCameraImagePath;
         videosEnabled = builder.mVideosEnabled;
         videoLengthLimit = builder.mVideoLengthLimit;
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
-
     }
 
     public void startActivity() {
@@ -82,9 +85,9 @@ public final class Picker {
         EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
 
         final Intent intent = new Intent(context, PickerActivity.class);
+        intent.putExtra("camera_image_path", mCameraImagePath);
 
         context.startActivity(intent);
-
     }
 
 
@@ -121,6 +124,7 @@ public final class Picker {
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
+        private String mCameraImagePath;
         private boolean mVideosEnabled;
         private int mVideoLengthLimit;
         private int mVideoThumbnailOverlayColor;
@@ -160,6 +164,7 @@ public final class Picker {
             mAlbumBackgroundColor = getColor(R.color.alter_album_background);
             mAlbumNameTextColor = getColor(R.color.alter_album_name_text_color);
             mAlbumImagesCountTextColor = getColor(R.color.alter_album_images_count_text_color);
+
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
             mPickMode = PickMode.MULTIPLE_IMAGES;
 
@@ -271,6 +276,11 @@ public final class Picker {
             return this;
         }
 
+        public Picker.Builder setCapturesImageDir(final String path) {
+            mCameraImagePath = path;
+            return this;
+        }
+
         public Picker.Builder setBackBtnInMainActivity(final boolean backBtn) {
             mBackBtnInMainActivity = backBtn;
             return this;
@@ -299,7 +309,5 @@ public final class Picker {
         public Picker build() {
             return new Picker(this);
         }
-
-
     }
 }
