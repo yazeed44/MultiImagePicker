@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -26,97 +27,189 @@ public final class Util {
 
 
     public static final TypedValue TYPED_VALUE = new TypedValue();
+    public static final String CAMERA_FOLDER = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
 
 
     private Util() {
         throw new AssertionError();
     }
 
-    public static ArrayList<AlbumEntry> getAlbums(final Context context) {
+    public static ArrayList<AlbumEntry> getAlbums(final Context context, final Picker pickOptions) {
+        final ArrayList<AlbumEntry> albumsSorted = new ArrayList<>();
 
+        final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
+        AlbumEntry allPhotosAlbum = null;
+
+
+        Cursor imagesCursor = null;
+        Cursor videosCursor = null;
+        try {
+
+            imagesCursor = queryImages(context);
+
+            allPhotosAlbum = iterateCursor(context, imagesCursor, allPhotosAlbum, albumsSorted, albums, false);
+            if (pickOptions.videosEnabled) {
+
+                videosCursor = queryVideos(context);
+                iterateCursor(context, videosCursor, allPhotosAlbum, albumsSorted, albums, true);
+            }
+
+        } catch (Exception ex) {
+            Log.e("getAlbums", ex.getMessage());
+        } finally {
+
+            closeCursors(imagesCursor, videosCursor);
+
+        }
+
+        setPickedFlagForPickedImages(albumsSorted);
+
+        for (final AlbumEntry album : albumsSorted) {
+            album.sortImagesByTimeDesc();
+        }
+
+
+        return albumsSorted;
+
+    }
+
+    private static void closeCursors(final Cursor imagesCursor, final Cursor videosCursor) {
+
+        if (imagesCursor != null) {
+            imagesCursor.close();
+        }
+        if (videosCursor != null) {
+            videosCursor.close();
+        }
+    }
+
+    private static Cursor queryImages(final Context context) {
 
         final String[] projectionPhotos = {
                 MediaStore.Images.Media._ID,
                 MediaStore.Images.Media.BUCKET_ID,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                 MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.DATE_TAKEN,
+                MediaStore.Images.Media.DATE_MODIFIED,
                 MediaStore.Images.Media.ORIENTATION
         };
 
+        return MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                , projectionPhotos, "", null, MediaStore.Images.Media.DATE_MODIFIED + " DESC");
+    }
 
-        final ArrayList<AlbumEntry> albumsSorted = new ArrayList<AlbumEntry>();
+    private static Cursor queryVideos(final Context context) {
+        final String[] projectionVideos = {
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.BUCKET_ID,
+                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,
+                MediaStore.Video.Media.DATA,
+                MediaStore.Video.Media.DATE_MODIFIED
+        };
 
-        final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
-        AlbumEntry allPhotosAlbum = null;
-        final String cameraFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
-        Integer cameraAlbumId = null;
-        Cursor cursor = null;
+        return MediaStore.Video.query(context.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                , projectionVideos);
+    }
 
-        try {
+    private static void setPickedFlagForPickedImages(final ArrayList<AlbumEntry> albumsSorted) {
+        //Check all photos album
+        final AlbumEntry allPhotosAlbum = getAllPhotosAlbum(albumsSorted);
 
-            cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    , projectionPhotos, "", null, MediaStore.Images.Media.DATE_TAKEN + " DESC");
-            if (cursor != null) {
-
-                int bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-                final int bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
-
-                while (cursor.moveToNext()) {
-                    int bucketId = cursor.getInt(bucketIdColumn);
-                    String bucketName = cursor.getString(bucketNameColumn);
-
-
-                    final ImageEntry imageEntry = ImageEntry.from(cursor);
-
-                    if (imageEntry.path == null || imageEntry.path.length() == 0) {
-                        continue;
-                    }
-
-                    if (!PickerActivity.sCheckedImages.isEmpty()) {
-
-                        for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
-                            if (checkedImage.path.equals(imageEntry.path)) {
-                                imageEntry.isPicked = true;
-                            }
-                        }
-                    }
-
-
-                    if (allPhotosAlbum == null) {
-                        allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos), imageEntry);
-                        albumsSorted.add(0, allPhotosAlbum);
-                    }
-                    if (allPhotosAlbum != null) {
-                        allPhotosAlbum.addPhoto(imageEntry);
-                    }
-                    AlbumEntry albumEntry = albums.get(bucketId);
-                    if (albumEntry == null) {
-                        albumEntry = new AlbumEntry(bucketId, bucketName, imageEntry);
-                        albums.put(bucketId, albumEntry);
-                        if (cameraAlbumId == null && cameraFolder != null && imageEntry.path != null && imageEntry.path.startsWith(cameraFolder)) {
-                            albumsSorted.add(0, albumEntry);
-                            cameraAlbumId = bucketId;
-                        } else {
-                            albumsSorted.add(albumEntry);
-                        }
-                    }
-                    albumEntry.addPhoto(imageEntry);
-                }
-
-
-            }
-        } catch (Exception ex) {
-            Log.e("getAlbums", ex.getMessage());
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        if (allPhotosAlbum == null) {
+            return;
         }
 
+        if (!PickerActivity.sCheckedImages.isEmpty() && !allPhotosAlbum.imageList.isEmpty()) {
 
-        return albumsSorted;
+            for (final ImageEntry checkedImage : PickerActivity.sCheckedImages) {
+                for (final ImageEntry imageEntry : allPhotosAlbum.imageList) {
+                    imageEntry.isPicked = imageEntry.equals(checkedImage);
+                }
+            }
+        }
+    }
 
+    public static AlbumEntry getAllPhotosAlbum(final ArrayList<AlbumEntry> albumEntries) {
+        for (final AlbumEntry albumEntry : albumEntries) {
+            if (albumEntry.id == 0) {
+                return albumEntry;
+            }
+        }
+        return null;
+    }
+
+    private static AlbumEntry iterateCursor(final Context context, final Cursor cursor, AlbumEntry allPhotosAlbum, final ArrayList<AlbumEntry> albumsSorted, final HashMap<Integer, AlbumEntry> albums, final boolean isVideoCursor) {
+
+        if (cursor == null) return null;
+
+        final int bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+        final int bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
+
+        while (cursor.moveToNext()) {
+
+            final ImageEntry imageEntry = getImageFromCursor(cursor, isVideoCursor);
+
+            if (imageEntry.path == null || imageEntry.path.length() == 0) {
+                continue;
+
+            }
+
+            allPhotosAlbum = createAllPhotosAlbumIfDoesntExist(context, allPhotosAlbum, albumsSorted);
+            allPhotosAlbum.addPhoto(imageEntry);
+
+            final int bucketId = cursor.getInt(bucketIdColumn);
+            final String bucketName = cursor.getString(bucketNameColumn);
+            AlbumEntry albumEntry = albums.get(bucketId);
+            if (albumEntry == null) {
+                albumEntry = createNewAlbumAndAddItToArray(albums, bucketId, bucketName);
+
+                if (shouldCreateCameraAlbum(imageEntry)) {
+                    addCameraAlbumToArray(albumsSorted, albumEntry);
+
+                } else {
+                    albumsSorted.add(albumEntry);
+                }
+            }
+
+
+            albumEntry.addPhoto(imageEntry);
+        }
+
+        return allPhotosAlbum;
+
+
+    }
+
+    private static void addCameraAlbumToArray(final ArrayList<AlbumEntry> albumsSorted, final AlbumEntry albumEntry) {
+        albumsSorted.add(0, albumEntry);
+    }
+
+    private static boolean shouldCreateCameraAlbum(final ImageEntry imageEntry) {
+        return imageEntry.path.startsWith(CAMERA_FOLDER);
+    }
+
+    @NonNull
+    private static AlbumEntry createNewAlbumAndAddItToArray(final HashMap<Integer, AlbumEntry> albums, final int bucketId, final String bucketName) {
+
+        final AlbumEntry albumEntry = new AlbumEntry(bucketId, bucketName);
+        albums.put(bucketId, albumEntry);
+        return albumEntry;
+    }
+
+    @NonNull
+    private static ImageEntry getImageFromCursor(final Cursor cursor, final boolean isVideoCursor) {
+        final ImageEntry imageEntry = ImageEntry.from(cursor);
+        imageEntry.isVideo = isVideoCursor;
+        return imageEntry;
+    }
+
+    @NonNull
+    private static AlbumEntry createAllPhotosAlbumIfDoesntExist(Context context, AlbumEntry allPhotosAlbum, ArrayList<AlbumEntry> albumsSorted) {
+        if (allPhotosAlbum == null) {
+            allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos));
+            addCameraAlbumToArray(albumsSorted, allPhotosAlbum);
+        }
+        return allPhotosAlbum;
     }
 
 

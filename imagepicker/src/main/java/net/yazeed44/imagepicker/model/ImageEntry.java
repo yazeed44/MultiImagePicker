@@ -12,11 +12,14 @@ import java.io.Serializable;
 public class ImageEntry implements Serializable {
     public final int imageId;
     public final String path;
+    public final long dateAdded;
     public boolean isPicked = false;
+    public boolean isVideo = false;
 
     public ImageEntry(final Builder builder) {
         this.path = builder.mPath;
         this.imageId = builder.mImageId;
+        this.dateAdded = builder.mDateAdded;
     }
 
     public static ImageEntry from(final Cursor cursor) {
@@ -29,7 +32,7 @@ public class ImageEntry implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof ImageEntry && imageId == ((ImageEntry) o).imageId;
+        return o instanceof ImageEntry && ((ImageEntry) o).path.equals(path);
     }
 
     @Override
@@ -44,6 +47,7 @@ public class ImageEntry implements Serializable {
         public static int count = -1;
         private final String mPath;
         private int mImageId;
+        private long mDateAdded;
 
         public Builder(final String path) {
             this.mPath = path;
@@ -60,12 +64,15 @@ public class ImageEntry implements Serializable {
         public static Builder from(final Cursor cursor) {
             final int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             final int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+            final int dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
 
             final int imageId = cursor.getInt(imageIdColumn);
             final String path = cursor.getString(dataColumn);
+            final long dateAdded = cursor.getLong(dateAddedColumn);
 
             return new ImageEntry.Builder(path)
                     .imageId(imageId)
+                    .dateAdded(dateAdded)
                     ;
 
         }
@@ -73,6 +80,11 @@ public class ImageEntry implements Serializable {
 
         public Builder imageId(int imageId) {
             this.mImageId = imageId;
+            return this;
+        }
+
+        public Builder dateAdded(long timestamp) {
+            this.mDateAdded = timestamp;
             return this;
         }
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">이미지 선택</string>
+    <string name="album_thumbnail">앨범 썸네일</string>
+    <string name="image_thumbnail">이미지 썸네일</string>
+    <string name="action_take_photo">사진 촬영</string>
+    <string name="all_photos">모든 사진</string>
+    <string name="image_check">이미지 선택</string>
+    <string name="albums_title">앨범들</string>
+    <string name="you_cant_check_more_images">더 이상 이미지를 선택하실 수 없습니다.</string>
+    <string name="image_position_in_view_pager">$ 중 %</string>
+    <string name="action_select_all">전체 선택</string>
+    <string name="action_deselect_all">선택 해제</string>
+    <string name="video_too_long">영상이 너무 깁니다. 영상은 $ 초 이하의 동영상만 선택가능합니다.</string>
+    <string name="image_video_icon_desc">영상은 이와같은 썸네일로 표시됩니다.</string>
+    <string name="dialog_choose_camera_title">케메라 선택</string>
+    <string name="dialog_choose_camera_item_0">사진 촬영</string>
+    <string name="dialog_choose_camera_item_1">동영상 촬영</string>
+
+</resources>

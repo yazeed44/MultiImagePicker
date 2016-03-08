@@ -1,7 +1,9 @@
 package net.yazeed44.imagepicker.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,11 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.commonsware.cwac.cam2.CameraActivity;
-
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.model.AlbumEntry;
 import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.util.CameraSupport;
 import net.yazeed44.imagepicker.util.Events;
 import net.yazeed44.imagepicker.util.Picker;
 import net.yazeed44.imagepicker.util.Util;
@@ -44,8 +46,8 @@ public class PickerActivity extends AppCompatActivity {
 
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
-    public static String CAPTURED_IMAGES_ALBUM_NAME;
-    public static String CAPTURED_IMAGES_DIR;
+    public static String CAPTURED_IMAGES_ALBUM_NAME = "captured_images";
+    public static String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
     private static final int REQUEST_PORTRAIT_RFC = 1337;
     private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
@@ -54,6 +56,7 @@ public class PickerActivity extends AppCompatActivity {
 
     private com.melnykov.fab.FloatingActionButton mDoneFab;
     private Picker mPickOptions;
+
     //For ViewPager
     private ImageEntry mCurrentlyDisplayedImage;
     private AlbumEntry mSelectedAlbum;
@@ -75,17 +78,13 @@ public class PickerActivity extends AppCompatActivity {
         initTheme();
         super.onCreate(savedInstanceState);
 
-        //Grab intent extras here.
-        //camera_image_path will always be set so no need to check if the key exists.
-        CAPTURED_IMAGES_ALBUM_NAME = getIntent().getExtras().getString("camera_image_path");
-        CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
-
         setContentView(R.layout.activity_pick);
         addToolbarToLayout();
         initActionbar(savedInstanceState);
         setupAlbums(savedInstanceState);
         initFab();
         updateFab();
+        initCaptureImagesDir();
     }
 
     @Override
@@ -102,17 +101,12 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void addToolbarToLayout() {
-
-
         final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-
 
         final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
         toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
 
         appBarLayout.addView(mToolbar, toolbarParams);
-
-
 
         setSupportActionBar(mToolbar);
     }
@@ -136,11 +130,12 @@ public class PickerActivity extends AppCompatActivity {
 
 
         if (savedInstanceState == null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            mShouldShowUp = mPickOptions.backBtnInMainActivity;
+            getSupportActionBar().setDisplayHomeAsUpEnabled(mPickOptions.backBtnInMainActivity);
             getSupportActionBar().setTitle(R.string.albums_title);
         } else {
             mShouldShowUp = savedInstanceState.getBoolean(KEY_SHOULD_SHOW_ACTIONBAR_UP);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp && mPickOptions.backBtnInMainActivity);
             getSupportActionBar().setTitle(savedInstanceState.getString(KEY_ACTION_BAR_TITLE));
 
 
@@ -215,7 +210,6 @@ public class PickerActivity extends AppCompatActivity {
             sCheckedImages.add(mCurrentlyDisplayedImage);
             mCurrentlyDisplayedImage.isPicked = true;
         } else {
-
             //No need to modify sCheckedImages for Multiple images mode
         }
 
@@ -236,31 +230,63 @@ public class PickerActivity extends AppCompatActivity {
 
     }
 
-    public void capturePhoto() {
+    public void startCamera() {
 
-
-        final File captureImageFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + ".png");
-
-
-        try {
-            captureImageFile.createNewFile();
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("capturePhoto", e.getMessage());
+        if (!CameraSupport.isEnabled()) {
+            return;
         }
 
-        final Intent captureIntent = new CameraActivity.IntentBuilder(this)
-                .skipConfirm()
-                .debug()
-                .to(captureImageFile)
-                .build();
+        if(!mPickOptions.videosEnabled){
+            capturePhoto();
+            return;
+        }
 
-        startActivityForResult(captureIntent, REQUEST_PORTRAIT_FFC);
+
+        new AlertDialog.Builder(this).setTitle(R.string.dialog_choose_camera_title)
+                .setItems(new String[]{getResources().getString(R.string.dialog_choose_camera_item_0), getResources().getString(R.string.dialog_choose_camera_item_1)}, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            capturePhoto();
+                        } else {
+                            captureVideo();
+                        }
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
 
     }
 
+    private void initCaptureImagesDir() {
+        if (mPickOptions.mCameraImagePath != null) {
+            CAPTURED_IMAGES_ALBUM_NAME = mPickOptions.mCameraImagePath;
+            CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
+        }
+        Log.d("ImagesFolder", CAPTURED_IMAGES_DIR);
+    }
+
+    public void capturePhoto() {
+        final File captureImageFile = createTemporaryFileForCapturing(".png");
+        CameraSupport.startPhotoCaptureActivity(this, captureImageFile, REQUEST_PORTRAIT_FFC);
+    }
+
+    private File createTemporaryFileForCapturing(final String extension) {
+        final File captureTempFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + extension);
+        try {
+            captureTempFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("capture", e.getMessage());
+        }
+
+        return captureTempFile;
+    }
+
+    public void captureVideo() {
+        final File captureVideoFile = createTemporaryFileForCapturing(".mp4");
+        CameraSupport.startVideoCaptureActivity(this,
+                captureVideoFile, mPickOptions.videoLengthLimit, REQUEST_PORTRAIT_FFC);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -295,10 +321,6 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void reloadAlbums() {
-
-
-
-
         if (isImagesThumbnailShown()) {
             getSupportFragmentManager().popBackStackImmediate();
         } else {
@@ -351,14 +373,15 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void initCaptureMenuItem(final Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
-        Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
-        captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
+        if (CameraSupport.isEnabled()) {
+            getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+            Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
+            captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
 
-        DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
+            DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
 
-        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
-
+            menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
+        }
     }
 
     private void hideDeselectAll() {
@@ -387,7 +410,7 @@ public class PickerActivity extends AppCompatActivity {
 
 
         if (itemId == R.id.action_take_photo) {
-            capturePhoto();
+            startCamera();
 
         } else if (itemId == R.id.action_select_all) {
             selectAllImages();
@@ -435,13 +458,8 @@ public class PickerActivity extends AppCompatActivity {
                     sCheckedImages.add(imageEntry);
                     imageEntry.isPicked = true;
                 }
-
-
             }
-
         }
-
-
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
         updateFab();
 
@@ -460,7 +478,7 @@ public class PickerActivity extends AppCompatActivity {
             //Return to albums fragment
             getSupportFragmentManager().popBackStack();
             getSupportActionBar().setTitle(R.string.albums_title);
-            mShouldShowUp = false;
+            mShouldShowUp = mPickOptions.backBtnInMainActivity;
             getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
             hideSelectAll();
             hideDeselectAll();
@@ -614,7 +632,16 @@ public class PickerActivity extends AppCompatActivity {
 
 
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
-
+        if (mPickOptions.videosEnabled && mPickOptions.videoLengthLimit > 0 && pickImageEvent.imageEntry.isVideo) {
+            // Check to see if the selected video is too long in length
+            final MediaPlayer mp = MediaPlayer.create(this, Uri.parse(pickImageEvent.imageEntry.path));
+            final int duration = mp.getDuration();
+            mp.release();
+            if (duration > (mPickOptions.videoLengthLimit)) {
+                Toast.makeText(this, getResources().getString(R.string.video_too_long).replace("$", String.valueOf(mPickOptions.videoLengthLimit / 1000)), Toast.LENGTH_SHORT).show();
+                return; // Don't allow selection
+            }
+        }
 
         if (mPickOptions.pickMode == Picker.PickMode.MULTIPLE_IMAGES) {
             handleMultipleModeAddition(pickImageEvent.imageEntry);
@@ -662,16 +689,12 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
-
         handleToolbarVisibility(true);
-
     }
 
 
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
-
         handleToolbarVisibility(false);
-
     }
 
 

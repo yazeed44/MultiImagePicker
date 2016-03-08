@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StyleRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.util.TypedValue;
 
@@ -44,7 +46,11 @@ public final class Picker {
     public final boolean shouldShowCaptureMenuItem;
     public final int checkIconTintColor;
     public final String mCameraImagePath;
-
+    public final boolean videosEnabled;
+    public final int videoLengthLimit;
+    public final int videoThumbnailOverlayColor;
+    public final int videoIconTintColor;
+    public final boolean backBtnInMainActivity;
 
     private Picker(final Builder builder) {
         context = builder.mContext;
@@ -67,6 +73,11 @@ public final class Picker {
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
         mCameraImagePath = builder.mCameraImagePath;
+        videosEnabled = builder.mVideosEnabled;
+        videoLengthLimit = builder.mVideoLengthLimit;
+        videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
+        videoIconTintColor = builder.mVideoIconTintColor;
+        backBtnInMainActivity = builder.mBackBtnInMainActivity;
     }
 
     public void startActivity() {
@@ -114,7 +125,11 @@ public final class Picker {
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
         private String mCameraImagePath;
-
+        private boolean mVideosEnabled;
+        private int mVideoLengthLimit;
+        private int mVideoThumbnailOverlayColor;
+        private int mVideoIconTintColor;
+        private boolean mBackBtnInMainActivity;
 
         //Use (Context,PickListener,themeResId) instead
         @Deprecated
@@ -143,12 +158,13 @@ public final class Picker {
             final TypedValue typedValue = new TypedValue();
             initUsingColorAccent(typedValue);
 
-            mImageBackgroundColor = this.getColor(R.color.alter_unchecked_image_background);
-            mImageCheckColor = this.getColor(R.color.alter_image_check_color);
-            mCheckedImageOverlayColor = this.getColor(R.color.alter_checked_photo_overlay);
-            mAlbumBackgroundColor = this.getColor(R.color.alter_album_background);
-            mAlbumNameTextColor = this.getColor(R.color.alter_album_name_text_color);
-            mAlbumImagesCountTextColor = this.getColor(R.color.alter_album_images_count_text_color);
+            mImageBackgroundColor = getColor(R.color.alter_unchecked_image_background);
+            mImageCheckColor = getColor(R.color.alter_image_check_color);
+            mCheckedImageOverlayColor = getColor(R.color.alter_checked_photo_overlay);
+            mAlbumBackgroundColor = getColor(R.color.alter_album_background);
+            mAlbumNameTextColor = getColor(R.color.alter_album_name_text_color);
+            mAlbumImagesCountTextColor = getColor(R.color.alter_album_images_count_text_color);
+
             mFabBackgroundColorWhenPressed = ColorUtils.setAlphaComponent(mFabBackgroundColor, (int) (android.graphics.Color.alpha(mFabBackgroundColor) * 0.8f));
             mPickMode = PickMode.MULTIPLE_IMAGES;
 
@@ -158,16 +174,21 @@ public final class Picker {
             mShouldShowCaptureMenuItem = true;
 
             mCheckIconTintColor = Color.WHITE;
+            mVideosEnabled = false;
+            mVideoLengthLimit = 0; // No limit
 
-            mCameraImagePath = "captured_images";
+            mVideoThumbnailOverlayColor = getColor(R.color.alter_video_thumbnail_overlay);
+            mVideoIconTintColor = Color.WHITE;
+        }
+
+        private int getColor(@ColorRes final int colorRes) {
+            return ContextCompat.getColor(mContext, colorRes);
         }
 
 
         private void initUsingColorAccent(final TypedValue typedValue) {
             mContext.getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
             mImageBackgroundColorWhenChecked = mFabBackgroundColor = typedValue.data;
-
-
         }
 
 
@@ -255,25 +276,38 @@ public final class Picker {
             return this;
         }
 
-        public Picker.Builder setCameraImageFolder(final String path) {
+        public Picker.Builder setCapturesImageDir(final String path) {
             mCameraImagePath = path;
             return this;
         }
 
+        public Picker.Builder setBackBtnInMainActivity(final boolean backBtn) {
+            mBackBtnInMainActivity = backBtn;
+            return this;
+        }
+
+        public Picker.Builder setVideosEnabled(final boolean enabled) {
+            mVideosEnabled = enabled;
+            return this;
+        }
+
+        public Picker.Builder setVideoLengthLimitInMilliSeconds(final int limit) {
+            mVideoLengthLimit = limit;
+            return this;
+        }
+
+        public Picker.Builder setVideoThumbnailOverlayColor(@ColorInt final int color) {
+            mVideoThumbnailOverlayColor = color;
+            return this;
+        }
+
+        public Picker.Builder setVideoIconTintColor(@ColorInt final int color) {
+            mVideoIconTintColor = color;
+            return this;
+        }
 
         public Picker build() {
             return new Picker(this);
-        }
-
-        //Marshmallow deprecated getColor.
-        @SuppressWarnings("deprecation")
-        @TargetApi(Build.VERSION_CODES.M)
-        public int getColor(int color) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                return mContext.getResources().getColor(color, null);
-            }
-
-            return mContext.getResources().getColor(color);
         }
     }
 }

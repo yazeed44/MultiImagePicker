@@ -31,7 +31,7 @@ Gradle Dependency (jCenter)
 ==========================
 Just add the dependency to your build.gradle file
 ```gradle 
-compile 'net.yazeed44.imagepicker:imagepicker:1.2.1'
+compile 'net.yazeed44.imagepicker:imagepicker:1.3.1'
 ```
 
 [ ![Download](https://api.bintray.com/packages/yazeed44/maven/multi-image-picker/images/download.svg) ](https://bintray.com/yazeed44/maven/multi-image-picker/_latestVersion)
@@ -66,44 +66,50 @@ It's easy
 
 -Define a style that uses a toolbar instead of actionbar , if you have already has a style who does that skip this step
 ```xml
-
 <style name="MIP_theme" parent="AppTheme">
 
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
 
-
-
-
-    </style>
+</style>
 ```
 
 ```java
 private void pickImages(){
        
-       //You can change many settings in builder like limit , Pick mode and colors
-        new Picker.Builder(this,new MyPickListener(),R.style.MIP_theme)
+    //You can change many settings in builder like limit , Pick mode and colors
+    new Picker.Builder(this,new MyPickListener(),R.style.MIP_theme)
         .build()
         .startActivity();
-        
-    }
+
+}
     
-private class MyPickListener implements Picker.PickListener
-{
-@Override
-public void onPickedSuccessfully(final ArrayList<ImageEntry> images)
-{
+private class MyPickListener implements Picker.PickListener {
 
-doSomethingWithImages(images);
-}
+    @Override
+    public void onPickedSuccessfully(final ArrayList<ImageEntry> images) {
+        doSomethingWithImages(images);
+    }
 
-@Override
-public void onCancel(){
-//User cancled the pick activity
-}
+    @Override
+    public void onCancel() {
+        //User canceled the pick activity
+    }
 }
 ```
 
+## Make Photo/Video capture optional
+
+In order to capture photos and videos the library depends on [cwac-cam2](https://github.com/commonsguy/cwac-cam2) library.
+If you just want to pick images from gallery you can disable the capture feature by excluding the `cwac-cam2` library from your module:
+
+```gradle
+compile('net.yazeed44.imagepicker:imagepicker:1.3.1') {
+    exclude module: 'cam2'
+}
+// or
+configurations.compile.exclude module: 'cam2'
+```
 
 ##Contribution
 

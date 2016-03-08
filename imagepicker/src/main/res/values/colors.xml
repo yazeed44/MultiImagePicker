@@ -21,5 +21,7 @@
     <color name="alter_album_images_count_text_color">#a5a49f</color>
     <color name="alter_checked_image_overlay">#a97f7f7f</color>
 
+    <color name="alter_video_thumbnail_overlay">#9b9b9b</color>
+
 
 </resources>
