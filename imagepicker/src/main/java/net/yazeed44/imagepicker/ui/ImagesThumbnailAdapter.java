@@ -35,6 +35,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
     protected final Picker mPickOptions;
 
     protected final Drawable mCheckIcon;
+    protected final Drawable mUncheckedIcon;
     protected final Drawable mVideoIcon;
     protected final Fragment mFragment;
 
@@ -46,6 +47,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         mPickOptions = pickOptions;
 
         mCheckIcon = createCheckIcon();
+        mUncheckedIcon = createUncheckedIcon();
         mVideoIcon = createVideoIcon();
     }
 
@@ -54,6 +56,13 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
         checkIcon = DrawableCompat.wrap(checkIcon);
         DrawableCompat.setTint(checkIcon, mPickOptions.checkIconTintColor);
         return checkIcon;
+    }
+
+    private Drawable createUncheckedIcon() {
+        Drawable uncheckedIcon = ContextCompat.getDrawable(mRecyclerView.getContext(), R.drawable.ic_action_done_white);
+        uncheckedIcon = DrawableCompat.wrap(uncheckedIcon);
+        DrawableCompat.setTint(uncheckedIcon, mPickOptions.checkIconUncheckedTintColor);
+        return uncheckedIcon;
     }
 
     private Drawable createVideoIcon() {
@@ -117,21 +126,21 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
     public void drawGrid(final ImageViewHolder holder, final ImageEntry imageEntry) {
 
-
-        holder.check.setImageDrawable(mCheckIcon);
         holder.videoIcon.setVisibility(View.GONE);
 
         if (imageEntry.isPicked) {
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
-            holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
 
+            holder.check.setImageDrawable(mCheckIcon);
+            holder.check.setBackgroundColor(mPickOptions.imageBackgroundColorWhenChecked);
 
             holder.thumbnail.setColorFilter(mPickOptions.checkedImageOverlayColor);
             final int padding = mRecyclerView.getContext().getResources().getDimensionPixelSize(R.dimen.image_checked_padding);
             holder.itemView.setPadding(padding, padding, padding, padding);
         } else {
-
+            holder.check.setImageDrawable(mUncheckedIcon);
             holder.check.setBackgroundColor(mPickOptions.imageCheckColor);
+
             holder.itemView.setBackgroundColor(mPickOptions.imageBackgroundColor);
             holder.thumbnail.setColorFilter(Color.TRANSPARENT);
             holder.itemView.setPadding(0, 0, 0, 0);
