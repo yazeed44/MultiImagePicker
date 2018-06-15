@@ -1,10 +1,4 @@
-#Notice
--Picker.Builder(Context,Listener) has been replaced with (Context,Listener,themeResId) and it's highely recommended to use the new constructor
-
--``` onPickedSuccessfully(String[] paths)``` has been replaced with ``` onPickedSuccessfully(ArrayList<ImageEntry> images)```
-
--The sample in google play and screenshots are out-of-date , will update them on 1.2 or 1.3 version
-
+Base on yazeed44 lib with lots of change and fix
 MultiImagePicker
 ================
 
