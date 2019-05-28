@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
             Glide.with(MainActivity.this)
                     .load(path)
-                    .asBitmap()
                     .into(imageView);
 
 

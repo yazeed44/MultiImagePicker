@@ -25,6 +25,7 @@ import de.greenrobot.event.EventBus;
 public final class Picker {
 
     public final int limit;
+    public final String limitMessage;
     public final Context context;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
@@ -53,6 +54,7 @@ public final class Picker {
     private Picker(final Builder builder) {
         context = builder.mContext;
         limit = builder.mLimit;
+        limitMessage = builder.mLimitMessage;
         fabBackgroundColor = builder.mFabBackgroundColor;
         fabBackgroundColorWhenPressed = builder.mFabBackgroundColorWhenPressed;
         imageBackgroundColorWhenChecked = builder.mImageBackgroundColorWhenChecked;
@@ -108,6 +110,7 @@ public final class Picker {
         private final PickListener mPickListener;
         private final int mThemeResId;
         private int mLimit = PickerActivity.NO_LIMIT;
+        private String mLimitMessage;
         private int mFabBackgroundColor;
         private int mFabBackgroundColorWhenPressed;
         private int mImageBackgroundColorWhenChecked;
@@ -197,6 +200,16 @@ public final class Picker {
          */
         public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
+            return this;
+        }
+
+        public Picker.Builder setMessageForLimit(final int resId) {
+            mLimitMessage = mContext.getString(resId);
+            return this;
+        }
+
+        public Picker.Builder setMessageForLimit(final String message) {
+            mLimitMessage = message;
             return this;
         }
 

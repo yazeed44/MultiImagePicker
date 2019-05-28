@@ -116,10 +116,8 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
 
         Glide.with(mFragment)
                 .load(photo.path)
-                .asBitmap()
                 .centerCrop()
-                .into(holder.thumbnail)
-        ;
+                .into(holder.thumbnail);
 
 
     }
