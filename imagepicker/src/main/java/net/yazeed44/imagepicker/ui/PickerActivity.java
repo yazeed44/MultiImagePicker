@@ -98,7 +98,7 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void addToolbarToLayout() {
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        final AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
 
         final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
         toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
@@ -146,7 +146,7 @@ public class PickerActivity extends AppCompatActivity {
         doneIcon = DrawableCompat.wrap(doneIcon);
         DrawableCompat.setTint(doneIcon, mPickOptions.doneFabIconTintColor);
 
-        mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
+        mDoneFab = findViewById(R.id.fab_done);
         mDoneFab.setImageDrawable(doneIcon);
         mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
         mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
@@ -335,8 +335,6 @@ public class PickerActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
 
 
-
-
         mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
         mDeselectAllMenuItem = menu.findItem(R.id.action_deselect_all);
 
@@ -437,7 +435,7 @@ public class PickerActivity extends AppCompatActivity {
 
                 if (mPickOptions.limit != NO_LIMIT && sCheckedImages.size() + 1 > mPickOptions.limit) {
                     //Hit the limit
-                    Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,mPickOptions.limitMessage, Toast.LENGTH_SHORT).show();
                     break;
                 }
 
@@ -539,7 +537,7 @@ public class PickerActivity extends AppCompatActivity {
             imageEntry.isPicked = true;
             sCheckedImages.add(imageEntry);
         } else {
-            Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, mPickOptions.limitMessage, Toast.LENGTH_SHORT).show();
             Log.i("onPickImage", "You can't check more images");
         }
 
@@ -584,7 +582,6 @@ public class PickerActivity extends AppCompatActivity {
         }
 
     }
-
 
 
     public void onEvent(final Events.OnClickAlbumEvent albumEvent) {
@@ -685,8 +682,6 @@ public class PickerActivity extends AppCompatActivity {
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
         handleToolbarVisibility(false);
     }
-
-
 
 
 }

@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
         new Picker.Builder(this, this, R.style.MIP_theme)
                 .setPickMode(Picker.PickMode.MULTIPLE_IMAGES)
                 .setLimit(6)
+                .setMessageForLimit("You can't check more than 6 images")
                 .build()
                 .startActivity();
     }
@@ -177,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
             Glide.with(MainActivity.this)
                     .load(path)
-                    .asBitmap()
                     .into(imageView);
 
 

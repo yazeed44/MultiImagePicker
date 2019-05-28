@@ -25,6 +25,7 @@ import de.greenrobot.event.EventBus;
 public final class Picker {
 
     public final int limit;
+    public final String limitMessage;
     public final Context context;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
@@ -43,6 +44,7 @@ public final class Picker {
     public final int doneFabIconTintColor;
     public final boolean shouldShowCaptureMenuItem;
     public final int checkIconTintColor;
+    public final int checkIconUncheckedTintColor;
     public final boolean videosEnabled;
     public final int videoLengthLimit;
     public final int videoThumbnailOverlayColor;
@@ -52,6 +54,7 @@ public final class Picker {
     private Picker(final Builder builder) {
         context = builder.mContext;
         limit = builder.mLimit;
+        limitMessage = builder.mLimitMessage;
         fabBackgroundColor = builder.mFabBackgroundColor;
         fabBackgroundColorWhenPressed = builder.mFabBackgroundColorWhenPressed;
         imageBackgroundColorWhenChecked = builder.mImageBackgroundColorWhenChecked;
@@ -69,6 +72,7 @@ public final class Picker {
         doneFabIconTintColor = builder.mDoneFabIconTintColor;
         shouldShowCaptureMenuItem = builder.mShouldShowCaptureMenuItem;
         checkIconTintColor = builder.mCheckIconTintColor;
+        checkIconUncheckedTintColor = builder.mCheckIconUncheckedTintColor;
         videosEnabled = builder.mVideosEnabled;
         videoLengthLimit = builder.mVideoLengthLimit;
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
@@ -106,6 +110,7 @@ public final class Picker {
         private final PickListener mPickListener;
         private final int mThemeResId;
         private int mLimit = PickerActivity.NO_LIMIT;
+        private String mLimitMessage;
         private int mFabBackgroundColor;
         private int mFabBackgroundColorWhenPressed;
         private int mImageBackgroundColorWhenChecked;
@@ -121,6 +126,7 @@ public final class Picker {
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
         private int mCheckIconTintColor;
+        private int mCheckIconUncheckedTintColor;
         private boolean mVideosEnabled;
         private int mVideoLengthLimit;
         private int mVideoThumbnailOverlayColor;
@@ -169,6 +175,8 @@ public final class Picker {
             mShouldShowCaptureMenuItem = true;
 
             mCheckIconTintColor = Color.WHITE;
+            mCheckIconUncheckedTintColor = Color.WHITE;
+
             mVideosEnabled = false;
             mVideoLengthLimit = 0; // No limit
 
@@ -192,6 +200,16 @@ public final class Picker {
          */
         public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
+            return this;
+        }
+
+        public Picker.Builder setMessageForLimit(final int resId) {
+            mLimitMessage = mContext.getString(resId);
+            return this;
+        }
+
+        public Picker.Builder setMessageForLimit(final String message) {
+            mLimitMessage = message;
             return this;
         }
 
@@ -268,6 +286,11 @@ public final class Picker {
 
         public Picker.Builder setCheckIconTintColor(@ColorInt final int color) {
             mCheckIconTintColor = color;
+            return this;
+        }
+
+        public Picker.Builder setCheckIconUncheckedTintColor(@ColorInt final int color) {
+            mCheckIconUncheckedTintColor = color;
             return this;
         }
 
