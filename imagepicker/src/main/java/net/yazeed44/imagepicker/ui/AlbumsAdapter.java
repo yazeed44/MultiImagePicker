@@ -93,7 +93,6 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
 
         Glide.with(mFragment)
                 .load(album.coverImage.path)
-                .asBitmap()
                 .centerCrop()
                 .into(holder.thumbnail);
 
