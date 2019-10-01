@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<net.yazeed44.imagepicker.ui.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/image_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,6 +16,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
 
+        android:scaleType="centerCrop"
 
         />
 
@@ -37,4 +38,4 @@
         android:contentDescription="@string/image_video_icon_desc"
         android:visibility="gone" />
 
-</FrameLayout>
+</net.yazeed44.imagepicker.ui.SquareFrameLayout>

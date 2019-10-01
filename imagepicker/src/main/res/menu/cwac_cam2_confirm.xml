@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:id="@+id/cwac_cam2_retry"
+        android:showAsAction="always"
+        android:icon="@drawable/cwac_cam2_ic_refresh_white"
+        android:title="@string/cwac_cam2_retry" />
+  <item android:id="@+id/cwac_cam2_ok"
+        android:showAsAction="always"
+        android:icon="@drawable/cwac_cam2_ic_check_white"
+        android:title="@string/cwac_cam2_ok" />
+</menu>

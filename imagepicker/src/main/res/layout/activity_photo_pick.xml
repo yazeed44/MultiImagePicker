@@ -1,0 +1,45 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MergeRootFrame">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/album_toolbar"
+            style="@style/MyToolbar"
+            android:layout_width="match_parent"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:layout_height="48dp"
+            android:background="?attr/colorPrimary">
+            <TextView
+                android:id="@+id/done_text"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/btn_height"
+                android:layout_gravity="right"
+                android:layout_marginRight="@dimen/margin_text"
+                android:background="@drawable/btn_round_green_selector"
+                android:enabled="false"
+                android:gravity="center"
+                android:text="@string/done"
+                android:textColor="@color/white_text_selector"
+                android:textSize="@dimen/small_text_size" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

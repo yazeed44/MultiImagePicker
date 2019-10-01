@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:fab="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <FrameLayout
+    android:id="@+id/cwac_cam2_preview_stack"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.commonsware.cwac.cam2.CameraView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+    <com.commonsware.cwac.cam2.RuleOfThirdsOverlay
+      android:id="@+id/rule_of_thirds"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="gone" />
+  </FrameLayout>
+
+  <ProgressBar
+    android:id="@+id/cwac_cam2_progress"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:visibility="visible" />
+
+  <com.github.clans.fab.FloatingActionButton
+    android:id="@+id/cwac_cam2_picture"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:layout_marginBottom="16dp"
+    android:layout_marginRight="16dp"
+    android:src="@drawable/cwac_cam2_ic_action_camera"
+    fab:fab_colorNormal="@color/cwac_cam2_picture_fab"
+    fab:fab_colorPressed="@color/cwac_cam2_picture_fab_pressed" />
+
+  <com.github.clans.fab.FloatingActionMenu
+    android:id="@+id/cwac_cam2_settings"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@id/cwac_cam2_picture"
+    android:layout_alignParentRight="true"
+    android:layout_marginBottom="4dp"
+    android:layout_marginRight="16dp"
+    fab:menu_colorNormal="@color/cwac_cam2_secondary_fab"
+    fab:menu_colorPressed="@color/cwac_cam2_secondary_fab_pressed"
+    fab:menu_icon="@drawable/cwac_cam2_ic_action_settings">
+
+    <com.github.clans.fab.FloatingActionButton
+      android:id="@+id/cwac_cam2_switch_camera"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:src="@drawable/cwac_cam2_ic_switch_camera"
+      fab:fab_colorNormal="@color/cwac_cam2_secondary_fab"
+      fab:fab_colorPressed="@color/cwac_cam2_secondary_fab_pressed"
+      fab:fab_size="mini" />
+
+  </com.github.clans.fab.FloatingActionMenu>
+
+  <SeekBar
+    android:id="@+id/cwac_cam2_zoom"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="8dp"
+    android:layout_toLeftOf="@id/cwac_cam2_picture"
+    android:layout_toStartOf="@id/cwac_cam2_picture"
+    android:max="100"
+    android:visibility="gone" />
+
+  <Chronometer
+    android:id="@+id/chrono"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginEnd="@dimen/cwac_cam2_fragment_chrono_margin"
+    android:layout_marginRight="@dimen/cwac_cam2_fragment_chrono_margin"
+    android:layout_marginTop="@dimen/cwac_cam2_fragment_chrono_margin"
+    android:background="@color/cwac_cam2_chrono_background"
+    android:padding="4dp"
+    android:visibility="gone" />
+
+  <com.commonsware.cwac.cam2.ReverseChronometer
+    android:id="@+id/rchrono"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginEnd="@dimen/cwac_cam2_fragment_chrono_margin"
+    android:layout_marginRight="@dimen/cwac_cam2_fragment_chrono_margin"
+    android:layout_marginTop="@dimen/cwac_cam2_fragment_chrono_margin"
+    android:background="@color/cwac_cam2_chrono_background"
+    android:padding="4dp"
+    android:visibility="gone" />
+</RelativeLayout>

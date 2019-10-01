@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context="net.yazeed44.multiimagepicker.MainActivity">
 
     <Button
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
         android:onClick="onClickPickImageWithVideos"
         android:text="@string/btn_pick_with_videos" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/images_sample"
 
         android:layout_width="match_parent"

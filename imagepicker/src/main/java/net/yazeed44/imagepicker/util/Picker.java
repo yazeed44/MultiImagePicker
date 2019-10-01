@@ -3,29 +3,33 @@ package net.yazeed44.imagepicker.util;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StyleRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
 import android.util.TypedValue;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+
+import net.yazeed44.imagepicker.data.Events;
+import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.ImageEntry;
 import net.yazeed44.imagepicker.ui.PickerActivity;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import de.greenrobot.event.EventBus;
-
 /**
- * Created by yazeed44 on 6/14/15.
+ * Created by yazeed44
+ * on 6/14/15.
  */
 public final class Picker {
 
     public final int limit;
-    public final Context context;
+    public final WeakReference<Context> context;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
     public final int imageBackgroundColorWhenChecked;
@@ -48,9 +52,12 @@ public final class Picker {
     public final int videoThumbnailOverlayColor;
     public final int videoIconTintColor;
     public final boolean backBtnInMainActivity;
+    public final boolean shouldShowItemAfterPick;
+    public float aspectRatioX = -1;
+    public float aspectRatioY = -1;
 
     private Picker(final Builder builder) {
-        context = builder.mContext;
+        context = new WeakReference<>(builder.mContext);
         limit = builder.mLimit;
         fabBackgroundColor = builder.mFabBackgroundColor;
         fabBackgroundColorWhenPressed = builder.mFabBackgroundColorWhenPressed;
@@ -74,23 +81,23 @@ public final class Picker {
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
-
+        shouldShowItemAfterPick = builder.shouldShowItemAfterPick;
+        aspectRatioX = builder.aspectRatioX;
+        aspectRatioY = builder.aspectRatioY;
     }
 
     public void startActivity() {
-
-        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
-
-        final Intent intent = new Intent(context, PickerActivity.class);
-
-        context.startActivity(intent);
-
+        if (context.get() != null) {
+            EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
+            final Intent intent = new Intent(context.get(), PickerActivity.class);
+            PickerActivity.mPickOptions = this;
+            context.get().startActivity(intent);
+        }
     }
 
 
     public enum PickMode {
-
-        SINGLE_IMAGE, MULTIPLE_IMAGES
+        SINGLE_IMAGE, MULTIPLE_IMAGES, SINGLE_VIDEO, MULTIPLE_VIDEOS, MIX
     }
 
     public interface PickListener {
@@ -100,39 +107,51 @@ public final class Picker {
 
     }
 
-    public static class Builder {
+    public static final class Builder {
 
         private final Context mContext;
         private final PickListener mPickListener;
         private final int mThemeResId;
+        private boolean shouldShowItemAfterPick;
         private int mLimit = PickerActivity.NO_LIMIT;
         private int mFabBackgroundColor;
+        @ColorInt
         private int mFabBackgroundColorWhenPressed;
+        @ColorInt
         private int mImageBackgroundColorWhenChecked;
+        @ColorInt
         private int mImageBackgroundColor;
+        @ColorInt
         private int mImageCheckColor;
+        @ColorInt
         private int mCheckedImageOverlayColor;
+        @ColorInt
         private int mAlbumImagesCountTextColor;
+        @ColorInt
         private int mAlbumBackgroundColor;
+        @ColorInt
         private int mAlbumNameTextColor;
         private PickMode mPickMode;
         private int mPopupThemeResId;
+        @ColorInt
         private int mDoneFabIconTintColor;
+        @ColorInt
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
+        @ColorInt
         private int mCheckIconTintColor;
         private boolean mVideosEnabled;
         private int mVideoLengthLimit;
+        @ColorInt
         private int mVideoThumbnailOverlayColor;
+        @ColorInt
         private int mVideoIconTintColor;
-        private boolean mBackBtnInMainActivity;
+        private boolean mBackBtnInMainActivity=true;
+        private float aspectRatioX = -1;
+        private float aspectRatioY = -1;
 
-        //Use (Context,PickListener,themeResId) instead
-        @Deprecated
         public Builder(final Context context, final PickListener listener) {
-
-
-            mThemeResId = R.style.Theme_AppCompat_Light_NoActionBar;
+            mThemeResId = R.style.PickerTheme;
             mContext = context;
             mContext.setTheme(mThemeResId);
             mPickListener = listener;
@@ -180,18 +199,27 @@ public final class Picker {
             return ContextCompat.getColor(mContext, colorRes);
         }
 
-
         private void initUsingColorAccent(final TypedValue typedValue) {
             mContext.getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
             mImageBackgroundColorWhenChecked = mFabBackgroundColor = typedValue.data;
         }
 
-
         /**
-         * @param limit limit for the count of image user can pick , By default it's infinite
+         * @param limit limit for the count of image user can pick, By default it's infinite
          */
         public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
+            return this;
+        }
+
+        public Picker.Builder withAspectRatio(float x, float y) {
+            aspectRatioX = x;
+            aspectRatioY = y;
+            return this;
+        }
+
+        public Picker.Builder setShowItemAfterPick(final boolean isShow) {
+            shouldShowItemAfterPick = isShow;
             return this;
         }
 
@@ -299,7 +327,5 @@ public final class Picker {
         public Picker build() {
             return new Picker(this);
         }
-
-
     }
 }

@@ -1,44 +1,71 @@
 package net.yazeed44.imagepicker.util;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
-import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.data.model.AlbumEntry;
+import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.ui.PickerActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 
 /**
- * Created by yazeed44 on 11/22/14.
+ * Created by yazeed44
+ * on 11/22/14.
  */
 public final class Util {
+    public static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
 
-
+    };
+    public static final int REQUEST_EXTERNAL_STORAGE = 1;
     public static final TypedValue TYPED_VALUE = new TypedValue();
     public static final String CAMERA_FOLDER = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/" + "Camera/";
-
 
     private Util() {
         throw new AssertionError();
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static boolean isStoragePermissionGranted(@Nullable Activity activity) {
+        if (activity == null) return false;
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permission1 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED || permission1 != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE
+            );
+            return false;
+        } else return true;
+    }
+
+
     public static ArrayList<AlbumEntry> getAlbums(final Context context, final Picker pickOptions) {
         final ArrayList<AlbumEntry> albumsSorted = new ArrayList<>();
 
-        final HashMap<Integer, AlbumEntry> albums = new HashMap<Integer, AlbumEntry>();
-        AlbumEntry allPhotosAlbum = null;
+        final SparseArray<AlbumEntry> albums = new SparseArray<>();
+        AlbumEntry allPhotosAlbum;
 
 
         Cursor imagesCursor = null;
@@ -47,7 +74,7 @@ public final class Util {
 
             imagesCursor = queryImages(context);
 
-            allPhotosAlbum = iterateCursor(context, imagesCursor, allPhotosAlbum, albumsSorted, albums, false);
+            allPhotosAlbum = iterateCursor(context, imagesCursor, null, albumsSorted, albums, false);
             if (pickOptions.videosEnabled) {
 
                 videosCursor = queryVideos(context);
@@ -55,7 +82,7 @@ public final class Util {
             }
 
         } catch (Exception ex) {
-            Log.e("getAlbums", ex.getMessage());
+//            Log.e("getAlbums", ex.getMessage());
         } finally {
 
             closeCursors(imagesCursor, videosCursor);
@@ -68,6 +95,11 @@ public final class Util {
             album.sortImagesByTimeDesc();
         }
 
+        Collections.sort(albumsSorted, (o1, o2) -> {
+            int o1Id = o1.name.contains("IMG") ? Integer.MAX_VALUE : o1.id;
+            int o2Id = o2.name.contains("IMG") ? Integer.MAX_VALUE : o2.id;
+            return Integer.compare(o1Id, o2Id);
+        });
 
         return albumsSorted;
 
@@ -138,7 +170,7 @@ public final class Util {
         return null;
     }
 
-    private static AlbumEntry iterateCursor(final Context context, final Cursor cursor, AlbumEntry allPhotosAlbum, final ArrayList<AlbumEntry> albumsSorted, final HashMap<Integer, AlbumEntry> albums, final boolean isVideoCursor) {
+    private static AlbumEntry iterateCursor(final Context context, final Cursor cursor, @Nullable AlbumEntry allPhotosAlbum, final ArrayList<AlbumEntry> albumsSorted, final SparseArray<AlbumEntry> albums, final boolean isVideoCursor) {
 
         if (cursor == null) return null;
 
@@ -189,7 +221,7 @@ public final class Util {
     }
 
     @NonNull
-    private static AlbumEntry createNewAlbumAndAddItToArray(final HashMap<Integer, AlbumEntry> albums, final int bucketId, final String bucketName) {
+    private static AlbumEntry createNewAlbumAndAddItToArray(final SparseArray<AlbumEntry> albums, final int bucketId, final String bucketName) {
 
         final AlbumEntry albumEntry = new AlbumEntry(bucketId, bucketName);
         albums.put(bucketId, albumEntry);
@@ -197,7 +229,7 @@ public final class Util {
     }
 
     @NonNull
-    private static ImageEntry getImageFromCursor(final Cursor cursor, final boolean isVideoCursor) {
+    public static ImageEntry getImageFromCursor(final Cursor cursor, final boolean isVideoCursor) {
         final ImageEntry imageEntry = ImageEntry.from(cursor);
         imageEntry.isVideo = isVideoCursor;
         return imageEntry;
@@ -206,7 +238,7 @@ public final class Util {
     @NonNull
     private static AlbumEntry createAllPhotosAlbumIfDoesntExist(Context context, AlbumEntry allPhotosAlbum, ArrayList<AlbumEntry> albumsSorted) {
         if (allPhotosAlbum == null) {
-            allPhotosAlbum = new AlbumEntry(0, context.getResources().getString(R.string.all_photos));
+            allPhotosAlbum = new AlbumEntry(Integer.MIN_VALUE, context.getResources().getString(R.string.all_photos));
             addCameraAlbumToArray(albumsSorted, allPhotosAlbum);
         }
         return allPhotosAlbum;

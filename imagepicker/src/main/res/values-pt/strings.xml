@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ImagePicker</string>
     <string name="album_thumbnail">álbum Miniatura</string>
     <string name="image_thumbnail">Imagem Miniatura</string>
     <string name="action_take_photo">Tire uma foto</string>

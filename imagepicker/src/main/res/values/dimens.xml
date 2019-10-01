@@ -1,18 +1,32 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-
-
-    <dimen name="album_height">180dp</dimen>
 
 
     <dimen name="image_spacing">2dp</dimen>
     <dimen name="image_checked_padding">4dp</dimen>
-    <dimen name="album_spacing">2dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="grid_spacing">2dp</dimen>
     <dimen name="grid_titleframe_height">42dp</dimen>
 
+    <dimen name="cwac_cam2_fragment_drawer_width">128dp</dimen>
+    <dimen name="cwac_cam2_fragment_drawer_shadow_size">4dp</dimen>
+    <dimen name="cwac_cam2_fragment_drawer_offset_distance">16dp</dimen>
+    <dimen name="cwac_cam2_fragment_panel_padding">16dp</dimen>
+    <dimen name="cwac_cam2_fragment_panel_item_width">96dp</dimen>
+    <dimen name="cwac_cam2_fragment_panel_item_height">48dp</dimen>
+    <dimen name="cwac_cam2_fragment_chrono_margin">16dp</dimen>
+    <dimen name="cwac_cam2_gridline_width">1dp</dimen>
 
+    <dimen name="btn_radius">2dp</dimen>
+    <dimen name="bar_height">48dp</dimen>
+    <dimen name="btn_height">32dp</dimen>
+    <dimen name="margin_text">8dp</dimen>
+    <dimen name="margin_layout">16dp</dimen>
+    <dimen name="status_bar_height">25dp</dimen>
+    <dimen name="big_image_size">74dp</dimen>
+    <dimen name="min_button_width">52dp</dimen>
+
+    <dimen name="middle_text_size">17sp</dimen>
+    <dimen name="small_text_size">15sp</dimen>
+    <dimen name="mini_text_size">13sp</dimen>
 </resources>

@@ -2,10 +2,11 @@ package net.yazeed44.multiimagepicker;
 
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -20,7 +21,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
-import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.sample.R;
 import net.yazeed44.imagepicker.util.Picker;
 
@@ -130,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
 
 
-
     @Override
     public void onPickedSuccessfully(ArrayList<ImageEntry> images) {
         mSelectedImages = images;
@@ -176,8 +176,8 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
             imageView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 440));
 
             Glide.with(MainActivity.this)
-                    .load(path)
                     .asBitmap()
+                    .load(path)
                     .into(imageView);
 
 
