@@ -49,7 +49,11 @@ public class ImagePreviewActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
-
+    @Override
+    protected void onDestroy() {
+        if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
     @Subscribe(sticky = true)
     public void onEvent(Events.OnImagePreviewEvent event) {
         imageEntries = event.imageEntries;
@@ -58,6 +62,8 @@ public class ImagePreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!EventBus.getDefault().isRegistered(this)) EventBus.getDefault().register(this);
+
 //        getActivityComponent().inject(this);
         setContentView(R.layout.activity_album_pick);
 //        setStatusBarColor(R.color.white);

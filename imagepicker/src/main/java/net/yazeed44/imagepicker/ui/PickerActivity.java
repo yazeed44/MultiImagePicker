@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Locale;
 
 
-
 public class PickerActivity extends AppCompatActivity {
     public static final int NO_LIMIT = -1;
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
@@ -97,8 +96,15 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!EventBus.getDefault().isRegistered(this)) EventBus.getDefault().register(this);
         if (mPickOptions == null) {
             finish();
             return;
