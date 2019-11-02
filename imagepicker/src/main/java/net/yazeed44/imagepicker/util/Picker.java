@@ -81,7 +81,7 @@ public final class Picker {
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
-        shouldShowItemAfterPick = builder.shouldShowItemAfterPick;
+        shouldShowItemAfterPick = builder.shouldInputDescription;
         aspectRatioX = builder.aspectRatioX;
         aspectRatioY = builder.aspectRatioY;
     }
@@ -112,7 +112,7 @@ public final class Picker {
         private final Context mContext;
         private final PickListener mPickListener;
         private final int mThemeResId;
-        private boolean shouldShowItemAfterPick;
+        private boolean shouldInputDescription;
         private int mLimit = PickerActivity.NO_LIMIT;
         private int mFabBackgroundColor;
         @ColorInt
@@ -218,8 +218,8 @@ public final class Picker {
             return this;
         }
 
-        public Picker.Builder setShowItemAfterPick(final boolean isShow) {
-            shouldShowItemAfterPick = isShow;
+        public Picker.Builder shouldInputDescription(final boolean isShow) {
+            shouldInputDescription = isShow;
             return this;
         }
 
