@@ -19,7 +19,6 @@ public class MotionEventFixedViewPager extends androidx.viewpager.widget.ViewPag
         try {
             return super.onTouchEvent(ev);
         } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
         }
         return false;
     }
@@ -29,7 +28,6 @@ public class MotionEventFixedViewPager extends androidx.viewpager.widget.ViewPag
         try {
             return super.onInterceptTouchEvent(ev);
         } catch (IllegalArgumentException ex) {
-            ex.printStackTrace();
         }
         return false;
     }

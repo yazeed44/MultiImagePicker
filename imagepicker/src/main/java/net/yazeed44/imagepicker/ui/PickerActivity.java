@@ -46,7 +46,10 @@ import net.yazeed44.imagepicker.ui.photo.ImagesThumbnailFragment;
 import net.yazeed44.imagepicker.ui.photoPager.ImagesPagerFragment;
 import net.yazeed44.imagepicker.util.CameraSupport;
 import net.yazeed44.imagepicker.util.LocaleHelper;
+import net.yazeed44.imagepicker.util.MultiplePicker;
 import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.SinglePicker;
+import net.yazeed44.imagepicker.util.UIUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -109,6 +112,7 @@ public class PickerActivity extends AppCompatActivity {
             finish();
             return;
         }
+        UIUtil.hideKeyboard(this);
         setContentView(R.layout.activity_pick);
         initTheme();
         toolbar = findViewById(R.id.album_toolbar);
@@ -233,26 +237,42 @@ public class PickerActivity extends AppCompatActivity {
             super.finish();
             onCancel();
         } else {
-            if (mPickOptions.shouldShowItemAfterPick) {
-                if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
-                    Uri destinationUri = Uri.fromFile(new File(this.getCacheDir(), "IMG_" + System.currentTimeMillis()));
+            if (mPickOptions instanceof SinglePicker) {
+                SinglePicker singlePicker = (SinglePicker) mPickOptions;
 
+                if (singlePicker.cropAfterPick) {
+                    Uri destinationUri = Uri.fromFile(new File(this.getCacheDir(), "IMG_" + System.currentTimeMillis()));
                     UCrop builder = UCrop.of(mCurrentlyDisplayedImage.getUri(), destinationUri);
-                    if (mPickOptions != null && mPickOptions.aspectRatioY != -1 && mPickOptions.aspectRatioY != -1)
-                        builder.withAspectRatio(mPickOptions.aspectRatioX, mPickOptions.aspectRatioY);
+                    if (singlePicker.aspectRatioY != -1 && singlePicker.aspectRatioY != -1)
+                        builder.withAspectRatio(singlePicker.aspectRatioX, singlePicker.aspectRatioY);
                     builder.start(this);
-//                    super.finish();
                 } else {
-                    EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(mPickOptions));
-                    EventBus.getDefault().postSticky(new Events.OnImagePreviewEvent(sCheckedImages));
-                    Intent intent = new Intent(this, ImagePreviewActivity.class);
-                    startActivityForResult(intent, ImagePreviewActivity.REQUEST_PREVIEW);
+                    super.finish();
+                    mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                    sCheckedImages.clear();
+                    EventBus.getDefault().removeAllStickyEvents();
                 }
             } else {
-                super.finish();
-                mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
-                sCheckedImages.clear();
-                EventBus.getDefault().removeAllStickyEvents();
+                if (mPickOptions instanceof MultiplePicker) {
+                    MultiplePicker multiplePicker = (MultiplePicker) mPickOptions;
+                    if (multiplePicker.inputDescription) {
+                        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(multiplePicker));
+                        EventBus.getDefault().postSticky(new Events.OnImagePreviewEvent(sCheckedImages));
+                        Intent intent = new Intent(this, ImagePreviewActivity.class);
+                        intent.putExtra("descriptionHint", multiplePicker.descriptionHint);
+                        startActivityForResult(intent, ImagePreviewActivity.REQUEST_PREVIEW);
+                    } else {
+                        super.finish();
+                        mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                        sCheckedImages.clear();
+                        EventBus.getDefault().removeAllStickyEvents();
+                    }
+                } else {
+                    super.finish();
+                    mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                    sCheckedImages.clear();
+                    EventBus.getDefault().removeAllStickyEvents();
+                }
             }
         }
     }

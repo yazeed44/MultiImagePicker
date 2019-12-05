@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.util.Picker;
+import net.yazeed44.imagepicker.util.UIUtil;
 
 import java.util.ArrayList;
 
@@ -39,15 +43,16 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
 
     protected final Drawable mCheckIcon;
     protected final Drawable mVideoIcon;
+    private String descriptionHint;
 
-
-    public ImagePreviewAdapter(final ArrayList<ImageEntry> imageEntries, final RecyclerView recyclerView, Picker pickOptions) {
+    public ImagePreviewAdapter(final ArrayList<ImageEntry> imageEntries, final RecyclerView recyclerView, Picker pickOptions, String descriptionHint) {
         this.imageEntries = imageEntries;
         this.mRecyclerView = recyclerView;
         mPickOptions = pickOptions;
 
         mCheckIcon = createCheckIcon();
         mVideoIcon = createVideoIcon();
+        this.descriptionHint = descriptionHint;
     }
 
     private Drawable createCheckIcon() {
@@ -85,7 +90,7 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
     public void onBindViewHolder(@NonNull ImageViewHolder imageViewHolder, int position) {
         imageViewHolder.description.setTag(position);
         final ImageEntry imageEntry = imageEntries.get(position);
-        setHeight(imageViewHolder.itemView);
+//        setHeight(imageViewHolder.itemView);
         displayThumbnail(imageViewHolder, imageEntry);
         drawGrid(imageViewHolder, imageEntry);
         imageViewHolder.description.setText(imageEntry.getDescription());
@@ -101,6 +106,7 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
     public void displayThumbnail(final ImageViewHolder holder, final ImageEntry photo) {
         Glide.with(holder.itemView.getContext())
                 .asBitmap()
+                .transform(new CenterCrop(), new RoundedCorners((int) UIUtil.dpToPx(holder.itemView.getContext(), 8)))
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .load(photo.path)
                 .into(holder.thumbnail);
@@ -136,6 +142,7 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
         public ImageViewHolder(final View itemView) {
             super(itemView);
             description = itemView.findViewById(R.id.edt_des);
+            if (!TextUtils.isEmpty(descriptionHint)) description.setHint(descriptionHint);
 
             thumbnail = itemView.findViewById(R.id.image_thumbnail);
             videoIcon = itemView.findViewById(R.id.image_video_icon);

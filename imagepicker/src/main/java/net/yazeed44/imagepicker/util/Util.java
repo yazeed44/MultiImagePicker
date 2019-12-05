@@ -96,6 +96,7 @@ public final class Util {
         }
 
         Collections.sort(albumsSorted, (o1, o2) -> {
+            if (o1.name == null || o2.name == null) return 0;
             int o1Id = o1.name.contains("IMG") ? Integer.MAX_VALUE : o1.id;
             int o2Id = o2.name.contains("IMG") ? Integer.MAX_VALUE : o2.id;
             return Integer.compare(o1Id, o2Id);

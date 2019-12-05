@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
         new Picker.Builder(this, this, R.style.MIP_theme)
                 .setPickMode(Picker.PickMode.SINGLE_IMAGE)
+                .setCropAfterPick(true)
                 .build()
                 .startActivity();
     }

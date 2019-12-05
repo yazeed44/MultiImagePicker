@@ -38,6 +38,7 @@ public class ImagePreviewActivity extends AppCompatActivity {
     FloatingActionButton mDoneFab;
     private ArrayList<ImageEntry> imageEntries = new ArrayList<>();
     ImagePreviewAdapter imagePreviewAdapter;
+    private String descriptionHint;
 
     @Subscribe(sticky = true)
     public void onEvent(Events.OnPublishPickOptionsEvent event) {
@@ -49,11 +50,13 @@ public class ImagePreviewActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
     @Override
     protected void onDestroy() {
         if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
+
     @Subscribe(sticky = true)
     public void onEvent(Events.OnImagePreviewEvent event) {
         imageEntries = event.imageEntries;
@@ -93,11 +96,13 @@ public class ImagePreviewActivity extends AppCompatActivity {
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
 
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
+        if (getIntent().getExtras() != null) {
+            descriptionHint = getIntent().getExtras().getString("descriptionHint");
+        }
         rvImages.setLayoutManager(gridLayoutManager);
-        if (rvImages.getItemDecorationCount() <= 0)
-            rvImages.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_spacing)));
-        imagePreviewAdapter = new ImagePreviewAdapter(imageEntries, rvImages, mPickOptions);
+//        if (rvImages.getItemDecorationCount() <= 0)
+//            rvImages.addItemDecoration(new SpacesItemDecoration(getResources().getDimensionPixelSize(R.dimen.image_spacing)));
+        imagePreviewAdapter = new ImagePreviewAdapter(imageEntries, rvImages, mPickOptions, descriptionHint);
         rvImages.setAdapter(imagePreviewAdapter);
 
 

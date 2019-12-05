@@ -1,8 +1,11 @@
 package net.yazeed44.imagepicker.util;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
@@ -11,6 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
+import androidx.fragment.app.FragmentActivity;
+
+import com.github.florent37.runtimepermission.PermissionResult;
+import com.github.florent37.runtimepermission.RuntimePermission;
+import com.pr.swalert.toast.ToastUtils;
 
 import net.yazeed44.imagepicker.data.Events;
 import net.yazeed44.imagepicker.data.model.ImageEntry;
@@ -21,12 +29,13 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yazeed44
  * on 6/14/15.
  */
-public final class Picker {
+public class Picker {
 
     public final int limit;
     public final WeakReference<Context> context;
@@ -52,11 +61,8 @@ public final class Picker {
     public final int videoThumbnailOverlayColor;
     public final int videoIconTintColor;
     public final boolean backBtnInMainActivity;
-    public final boolean shouldShowItemAfterPick;
-    public float aspectRatioX = -1;
-    public float aspectRatioY = -1;
 
-    private Picker(final Builder builder) {
+    protected Picker(final Builder builder) {
         context = new WeakReference<>(builder.mContext);
         limit = builder.mLimit;
         fabBackgroundColor = builder.mFabBackgroundColor;
@@ -81,20 +87,55 @@ public final class Picker {
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
-        shouldShowItemAfterPick = builder.shouldInputDescription;
-        aspectRatioX = builder.aspectRatioX;
-        aspectRatioY = builder.aspectRatioY;
+
     }
 
     public void startActivity() {
-        if (context.get() != null) {
-            EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
-            final Intent intent = new Intent(context.get(), PickerActivity.class);
-            PickerActivity.mPickOptions = this;
-            context.get().startActivity(intent);
+        if (context.get() instanceof FragmentActivity) {
+            Log.d(getClass().getSimpleName(), "startActivity() called");
+            FragmentActivity fragmentActivity = (FragmentActivity) context.get();
+            String[] permissions = new String[2];
+            permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
+            permissions[1] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            RuntimePermission.askPermission(fragmentActivity, permissions)
+                    .onDenied(result -> {
+                        StringBuilder denied = getPermissionsString(fragmentActivity, result, result.getDenied());
+                        ToastUtils.alertYesNo(fragmentActivity, String.format(fragmentActivity.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                            if (yesButtonConfirmed) {
+                                result.askAgain();
+                            }
+                        });
+                    })
+                    .onForeverDenied(result -> {
+                        StringBuilder denied = getPermissionsString(fragmentActivity, result, result.getForeverDenied());
+                        ToastUtils.alertYesNo(fragmentActivity, String.format(fragmentActivity.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                            if (yesButtonConfirmed) {
+                                result.goToSettings();
+                            }
+                        });
+                    })
+                    .onAccepted(result -> {
+                        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(Picker.this));
+                        final Intent intent = new Intent(fragmentActivity, PickerActivity.class);
+                        PickerActivity.mPickOptions = Picker.this;
+                        fragmentActivity.startActivity(intent);
+                    })
+                    .ask();
         }
     }
 
+    private StringBuilder getPermissionsString(Context context, PermissionResult result, List<String> foreverDenied) {
+        StringBuilder denied = new StringBuilder();
+        for (String permission : foreverDenied) {
+            try {
+                denied.append("- ").append(context.getPackageManager().getPermissionInfo(permission, 0).loadLabel(context.getPackageManager()));
+                if (result.getDenied().indexOf(permission) != result.getDenied().size() - 1)
+                    denied.append("\n");
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+        }
+        return denied;
+    }
 
     public enum PickMode {
         SINGLE_IMAGE, MULTIPLE_IMAGES, SINGLE_VIDEO, MULTIPLE_VIDEOS, MIX
@@ -107,12 +148,11 @@ public final class Picker {
 
     }
 
-    public static final class Builder {
+    public static class Builder {
 
         private final Context mContext;
         private final PickListener mPickListener;
         private final int mThemeResId;
-        private boolean shouldInputDescription;
         private int mLimit = PickerActivity.NO_LIMIT;
         private int mFabBackgroundColor;
         @ColorInt
@@ -146,9 +186,11 @@ public final class Picker {
         private int mVideoThumbnailOverlayColor;
         @ColorInt
         private int mVideoIconTintColor;
-        private boolean mBackBtnInMainActivity=true;
-        private float aspectRatioX = -1;
-        private float aspectRatioY = -1;
+        private boolean mBackBtnInMainActivity = true;
+
+
+        private SinglePicker.SingleBuilder singleBuilder;
+        private MultiplePicker.MultipleBuilder multipleBuilder;
 
         public Builder(final Context context, final PickListener listener) {
             mThemeResId = R.style.PickerTheme;
@@ -160,6 +202,35 @@ public final class Picker {
 
         }
 
+        public Builder(Builder other) {
+            this.mContext = other.mContext;
+            this.mPickListener = other.mPickListener;
+            this.mThemeResId = other.mThemeResId;
+            this.mLimit = other.mLimit;
+            this.mFabBackgroundColor = other.mFabBackgroundColor;
+            this.mFabBackgroundColorWhenPressed = other.mFabBackgroundColorWhenPressed;
+            this.mImageBackgroundColorWhenChecked = other.mImageBackgroundColorWhenChecked;
+            this.mImageBackgroundColor = other.mImageBackgroundColor;
+            this.mImageCheckColor = other.mImageCheckColor;
+            this.mCheckedImageOverlayColor = other.mCheckedImageOverlayColor;
+            this.mAlbumImagesCountTextColor = other.mAlbumImagesCountTextColor;
+            this.mAlbumBackgroundColor = other.mAlbumBackgroundColor;
+            this.mAlbumNameTextColor = other.mAlbumNameTextColor;
+            this.mPickMode = other.mPickMode;
+            this.mPopupThemeResId = other.mPopupThemeResId;
+            this.mDoneFabIconTintColor = other.mDoneFabIconTintColor;
+            this.mCaptureItemIconTintColor = other.mCaptureItemIconTintColor;
+            this.mShouldShowCaptureMenuItem = other.mShouldShowCaptureMenuItem;
+            this.mCheckIconTintColor = other.mCheckIconTintColor;
+            this.mVideosEnabled = other.mVideosEnabled;
+            this.mVideoLengthLimit = other.mVideoLengthLimit;
+            this.mVideoThumbnailOverlayColor = other.mVideoThumbnailOverlayColor;
+            this.mVideoIconTintColor = other.mVideoIconTintColor;
+            this.mBackBtnInMainActivity = other.mBackBtnInMainActivity;
+            this.singleBuilder = other.singleBuilder;
+            this.multipleBuilder = other.multipleBuilder;
+        }
+
         public Builder(@NonNull final Context context, @NonNull final PickListener listener, @StyleRes final int themeResId) {
             mContext = context;
             mContext.setTheme(themeResId);
@@ -168,6 +239,7 @@ public final class Picker {
             init();
 
         }
+
 
         private void init() {
             final TypedValue typedValue = new TypedValue();
@@ -209,17 +281,6 @@ public final class Picker {
          */
         public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
-            return this;
-        }
-
-        public Picker.Builder withAspectRatio(float x, float y) {
-            aspectRatioX = x;
-            aspectRatioY = y;
-            return this;
-        }
-
-        public Picker.Builder shouldInputDescription(final boolean isShow) {
-            shouldInputDescription = isShow;
             return this;
         }
 
@@ -269,7 +330,19 @@ public final class Picker {
             return this;
         }
 
-        public Picker.Builder setPickMode(final PickMode pickMode) {
+        public SinglePicker.SingleBuilder singleImage() {
+            setPickMode(PickMode.SINGLE_IMAGE);
+            if (singleBuilder == null) singleBuilder = new SinglePicker.SingleBuilder(this);
+            return singleBuilder;
+        }
+
+        public MultiplePicker.MultipleBuilder multipleImage() {
+            setPickMode(PickMode.MULTIPLE_IMAGES);
+            if (multipleBuilder == null) multipleBuilder = new MultiplePicker.MultipleBuilder(this);
+            return multipleBuilder;
+        }
+
+        private Picker.Builder setPickMode(final PickMode pickMode) {
             mPickMode = pickMode;
             return this;
         }
@@ -323,6 +396,7 @@ public final class Picker {
             mVideoIconTintColor = color;
             return this;
         }
+
 
         public Picker build() {
             return new Picker(this);

@@ -38,4 +38,6 @@
     <string name="all_videos">Tất cả video</string>
     <string name="take_video">Quay video</string>
     <string name="add_description">Thêm mô tả</string>
+    <string name="ask_perrmission">Application needs following permissions to work normally: %s. Allow application to use those permissions?</string>
+
 </resources>

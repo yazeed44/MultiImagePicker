@@ -84,7 +84,7 @@ public class ImagesPagerFragment extends Fragment implements OnViewTapListener, 
         super.onPause();
         EventBus.getDefault().unregister(this);
 
-        mDoneFab.hide();
+        if (mDoneFab != null) mDoneFab.hide();
     }
 
     @Override
