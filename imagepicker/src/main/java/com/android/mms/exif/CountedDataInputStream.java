@@ -23,13 +23,14 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 class CountedDataInputStream extends FilterInputStream {
 
     private int mCount = 0;
 
     // allocate a byte buffer for a long value;
-    private final byte mByteArray[] = new byte[8];
+    private final byte[] mByteArray = new byte[8];
     private final ByteBuffer mByteBuffer = ByteBuffer.wrap(mByteArray);
 
     protected CountedDataInputStream(InputStream in) {
@@ -123,13 +124,13 @@ class CountedDataInputStream extends FilterInputStream {
     }
 
     public String readString(int n) throws IOException {
-        byte buf[] = new byte[n];
+        byte[] buf = new byte[n];
         readOrThrow(buf);
-        return new String(buf, "UTF8");
+        return new String(buf, Charset.forName("utf-8"));
     }
 
     public String readString(int n, Charset charset) throws IOException {
-        byte buf[] = new byte[n];
+        byte[] buf = new byte[n];
         readOrThrow(buf);
         return new String(buf, charset);
     }

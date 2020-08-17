@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.View;
@@ -25,8 +26,11 @@ import net.yazeed44.imagepicker.data.model.AlbumEntry;
 import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.ui.PickerActivity;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.regex.Pattern;
 
 /**
  * Created by yazeed44
@@ -56,6 +60,7 @@ public final class Util {
                     activity,
                     PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE
             );
+
             return false;
         } else return true;
     }
@@ -94,16 +99,34 @@ public final class Util {
         for (final AlbumEntry album : albumsSorted) {
             album.sortImagesByTimeDesc();
         }
+//
 
-        Collections.sort(albumsSorted, (o1, o2) -> {
-            if (o1.name == null || o2.name == null) return 0;
-            int o1Id = o1.name.contains("IMG") ? Integer.MAX_VALUE : o1.id;
-            int o2Id = o2.name.contains("IMG") ? Integer.MAX_VALUE : o2.id;
-            return Integer.compare(o1Id, o2Id);
+        Collections.sort(albumsSorted, new Comparator<AlbumEntry>() {
+            @Override
+            public int compare(AlbumEntry o1, AlbumEntry o2) {
+                if (o1 == null || o2 == null) return 1;
+                String a1Name = o1.name == null ? "" : unAccent(o1.name);
+                String a2Name = o2.name == null ? "" : unAccent(o2.name);
+                if (TextUtils.isEmpty(a1Name) || TextUtils.isEmpty(a2Name)) return 1;
+                int o1Id = a1Name.contains("IMG") ? Integer.MAX_VALUE : o1.id;
+                int o2Id = a2Name.contains("IMG") ? Integer.MAX_VALUE : o2.id;
+                return Integer.compare(o1Id, o2Id);
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return false;
+            }
         });
 
         return albumsSorted;
 
+    }
+
+    public static String unAccent(String s) {
+        String temp = Normalizer.normalize(s, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(temp).replaceAll("").replaceAll("Đ", "D").replaceAll("đ", "d").toLowerCase();
     }
 
     private static void closeCursors(final Cursor imagesCursor, final Cursor videosCursor) {

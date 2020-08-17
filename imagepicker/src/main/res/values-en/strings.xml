@@ -3,15 +3,15 @@
 
     <string name="album_thumbnail">Album Thumbnail</string>
     <string name="image_thumbnail">Image thumbnail</string>
-    <string name="action_take_photo">Chụp ảnh</string>
-    <string name="all_photos">Tất cả ảnh</string>
-    <string name="image_check">Chọn ảnh</string>
+    <string name="action_take_photo">Take image</string>
+    <string name="all_photos">All image</string>
+    <string name="image_check">Pick image</string>
     <string name="albums_title">Album</string>
-    <string name="you_cant_check_more_images">Không thể chọn thêm ảnh</string>
-    <string name="image_position_in_view_pager">% trên $</string>
-    <string name="action_select_all">Chọn tất cả</string>
-    <string name="action_deselect_all">Bỏ chọn tất cả</string>
-    <string name="video_too_long">Video quá dài. Video có chỉ được dài tối đa $ giây</string>
+    <string name="you_cant_check_more_images">Can\'t pick more image</string>
+    <string name="image_position_in_view_pager">% of $</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_deselect_all">Deselect all</string>
+    <string name="video_too_long">Video too long. Maximum $ seconds</string>
     <string name="image_video_icon_desc">Indicates this thumbnail as video</string>
     <string name="dialog_choose_camera_title">Select camera</string>
     <string name="dialog_choose_camera_item_0">Take image</string>

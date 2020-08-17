@@ -60,13 +60,13 @@ import java.util.concurrent.TimeUnit;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CameraTwoEngine extends CameraEngine {
   private final Context ctxt;
-  private CameraManager mgr;
+  private final CameraManager mgr;
   final private HandlerThread handlerThread=new HandlerThread(getClass().getSimpleName(),
       android.os.Process.THREAD_PRIORITY_BACKGROUND);
   final private Handler handler;
   final private Semaphore lock=new Semaphore(1);
 //  private CountDownLatch closeLatch=null;
-  private MediaActionSound shutter=new MediaActionSound();
+  private final MediaActionSound shutter=new MediaActionSound();
   private List<Descriptor> descriptors=null;
 
   /**

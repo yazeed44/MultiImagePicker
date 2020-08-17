@@ -59,6 +59,7 @@ public class ImagesPagerFragment extends Fragment implements OnViewTapListener, 
     }
 
     private void addBehaviorAttr(final ViewGroup container) {
+        if (container == null) return;
         final CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) container.getLayoutParams();
         layoutParams.setBehavior(new AppBarLayout.ScrollingViewBehavior());
         container.setLayoutParams(layoutParams);

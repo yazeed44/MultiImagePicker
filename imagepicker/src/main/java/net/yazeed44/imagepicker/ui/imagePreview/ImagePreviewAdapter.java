@@ -43,7 +43,7 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
 
     protected final Drawable mCheckIcon;
     protected final Drawable mVideoIcon;
-    private String descriptionHint;
+    private final String descriptionHint;
 
     public ImagePreviewAdapter(final ArrayList<ImageEntry> imageEntries, final RecyclerView recyclerView, Picker pickOptions, String descriptionHint) {
         this.imageEntries = imageEntries;

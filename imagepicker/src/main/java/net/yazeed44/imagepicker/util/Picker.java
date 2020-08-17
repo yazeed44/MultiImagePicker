@@ -91,6 +91,10 @@ public class Picker {
     }
 
     public void startActivity() {
+        if (limit <= 0 && pickMode == PickMode.MULTIPLE_IMAGES) {
+            ToastUtils.showToastWarning(context.get(), R.string.you_picked_max_photo);
+            return;
+        }
         if (context.get() instanceof FragmentActivity) {
             Log.d(getClass().getSimpleName(), "startActivity() called");
             FragmentActivity fragmentActivity = (FragmentActivity) context.get();
@@ -138,7 +142,11 @@ public class Picker {
     }
 
     public enum PickMode {
-        SINGLE_IMAGE, MULTIPLE_IMAGES, SINGLE_VIDEO, MULTIPLE_VIDEOS, MIX
+        SINGLE_IMAGE,
+        MULTIPLE_IMAGES,
+        SINGLE_VIDEO,
+        MULTIPLE_VIDEOS,
+        MIX
     }
 
     public interface PickListener {

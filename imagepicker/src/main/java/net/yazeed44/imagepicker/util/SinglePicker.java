@@ -48,6 +48,7 @@ public class SinglePicker extends Picker {
 
         @Override
         public Picker build() {
+            singleImage();
             return new SinglePicker(this);
         }
     }

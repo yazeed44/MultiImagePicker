@@ -18,7 +18,7 @@
             app:layout_scrollFlags="scroll|enterAlways"
             android:layout_height="48dp"
             android:background="?attr/colorPrimary">
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/done_text"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/btn_height"

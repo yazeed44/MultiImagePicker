@@ -43,6 +43,7 @@ public class MultiplePicker extends Picker {
 
         @Override
         public Picker build() {
+            multipleImage();
             return new MultiplePicker(this);
         }
     }

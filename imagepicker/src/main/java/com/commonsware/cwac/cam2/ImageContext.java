@@ -37,7 +37,7 @@ import java.io.IOException;
  */
 public class ImageContext {
   private static final double LOG_2=Math.log(2.0d);
-  private Context ctxt;
+  private final Context ctxt;
   private byte[] jpegOriginal;
   private Bitmap bmp;
   private Bitmap thumbnail;

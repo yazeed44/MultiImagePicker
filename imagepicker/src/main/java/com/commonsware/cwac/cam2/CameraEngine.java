@@ -39,7 +39,7 @@ abstract public class CameraEngine {
   private static volatile CameraEngine singletonTwo=null;
   private EventBus bus=AbstractCameraActivity.BUS;
   private boolean isDebug=false;
-  private LinkedBlockingQueue<Runnable> queue=new LinkedBlockingQueue<Runnable>();
+  private final LinkedBlockingQueue<Runnable> queue=new LinkedBlockingQueue<Runnable>();
   private ThreadPoolExecutor pool;
   private File savePreviewFile=null;
   protected List<FlashMode> preferredFlashModes;

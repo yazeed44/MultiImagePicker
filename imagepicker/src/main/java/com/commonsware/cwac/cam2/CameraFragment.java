@@ -256,22 +256,22 @@ public class CameraFragment extends Fragment
                 inflater.inflate(R.layout.cwac_cam2_fragment, container, false);
 
         previewStack =
-                (ViewGroup) v.findViewById(R.id.cwac_cam2_preview_stack);
+                v.findViewById(R.id.cwac_cam2_preview_stack);
 
         progress = v.findViewById(R.id.cwac_cam2_progress);
         fabPicture =
-                (FloatingActionButton) v.findViewById(R.id.cwac_cam2_picture);
+                v.findViewById(R.id.cwac_cam2_picture);
         reverseChronometer =
-                (ReverseChronometer) v.findViewById(R.id.rchrono);
+                v.findViewById(R.id.rchrono);
 
         if (isVideo()) {
             fabPicture.setImageResource(R.drawable.cwac_cam2_ic_videocam);
-            chronometer = (Chronometer) v.findViewById(R.id.chrono);
+            chronometer = v.findViewById(R.id.chrono);
         }
 
         fabPicture.setOnClickListener(view -> performCameraAction());
 
-        fabSwitch = (FloatingActionButton) v.findViewById(
+        fabSwitch = v.findViewById(
                 R.id.cwac_cam2_switch_camera);
         fabSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -290,7 +290,7 @@ public class CameraFragment extends Fragment
         });
 
         changeMenuIconAnimation(
-                (FloatingActionMenu) v.findViewById(R.id.cwac_cam2_settings));
+                v.findViewById(R.id.cwac_cam2_settings));
 
         onHiddenChanged(false); // hack, since this does not get
         // called on initial display
@@ -386,7 +386,7 @@ public class CameraFragment extends Fragment
             progress.setVisibility(View.GONE);
             fabSwitch.setEnabled(canSwitchSources());
             fabPicture.setEnabled(true);
-            zoomSlider = (SeekBar) getView().findViewById(R.id.cwac_cam2_zoom);
+            zoomSlider = getView().findViewById(R.id.cwac_cam2_zoom);
 
             int timerDuration = getArguments().getInt(ARG_TIMER_DURATION);
 
@@ -674,7 +674,7 @@ public class CameraFragment extends Fragment
         return (result);
     }
 
-    private ScaleGestureDetector.OnScaleGestureListener scaleListener =
+    private final ScaleGestureDetector.OnScaleGestureListener scaleListener =
             new ScaleGestureDetector.SimpleOnScaleGestureListener() {
                 @Override
                 public void onScaleEnd(ScaleGestureDetector detector) {
@@ -697,7 +697,7 @@ public class CameraFragment extends Fragment
                 }
             };
 
-    private SeekBar.OnSeekBarChangeListener seekListener =
+    private final SeekBar.OnSeekBarChangeListener seekListener =
             new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar,

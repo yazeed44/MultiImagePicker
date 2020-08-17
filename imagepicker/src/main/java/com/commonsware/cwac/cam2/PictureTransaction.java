@@ -26,8 +26,8 @@ import java.util.ArrayList;
  * an instance. Beyond that, this is an opaque blob to you.
  */
 public class PictureTransaction {
-  private ArrayList<ImageProcessor> processors=new ArrayList<ImageProcessor>();
-  private Bundle props=new Bundle();
+  private final ArrayList<ImageProcessor> processors=new ArrayList<ImageProcessor>();
+  private final Bundle props=new Bundle();
 
   private PictureTransaction() {
     // use the builder, please
@@ -67,7 +67,7 @@ public class PictureTransaction {
    * Builder class to create an instance of a PictureTransaction.
    */
   public static class Builder {
-    private PictureTransaction result=new PictureTransaction();
+    private final PictureTransaction result=new PictureTransaction();
 
     /**
      * @return the PictureTransaction built up by the Builder API

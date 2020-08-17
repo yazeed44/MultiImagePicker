@@ -27,7 +27,7 @@ public class ReverseChronometer extends TextView implements Runnable {
 
   private long startTime=0L;
   private long overallDuration=0L;
-  private StringBuilder sb=new StringBuilder(8);
+  private final StringBuilder sb=new StringBuilder(8);
   private Listener listener;
 
   public ReverseChronometer(Context context, AttributeSet attrs) {

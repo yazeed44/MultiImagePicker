@@ -17,6 +17,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 
@@ -47,6 +48,7 @@ public class ImageEntry implements Parcelable {
     private String description = "";
     private boolean uploaded;
     private int progress;
+
 
     private void logException(Throwable e) {
 //        e.printStackTrace();
@@ -106,6 +108,62 @@ public class ImageEntry implements Parcelable {
             return Base64.encodeToString(b, Base64.DEFAULT);
         }
         return rt;
+    }
+
+    /**
+     * Rotate a bitmap based on orientation metadata.
+     * src - image path
+     */
+    public static Bitmap rotateBitmap(String src) {
+        Bitmap bitmap = BitmapFactory.decodeFile(src);
+        try {
+            ExifInterface exif = new ExifInterface(src);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                    matrix.setScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.setRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                    matrix.setRotate(180);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSPOSE:
+                    matrix.setRotate(90);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.setRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_TRANSVERSE:
+                    matrix.setRotate(-90);
+                    matrix.postScale(-1, 1);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.setRotate(-90);
+                    break;
+                case ExifInterface.ORIENTATION_NORMAL:
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                default:
+                    return bitmap;
+            }
+
+            try {
+                Bitmap oriented = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                bitmap.recycle();
+                return oriented;
+            } catch (OutOfMemoryError e) {
+                e.printStackTrace();
+                return bitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
     public Bitmap getBitmapRotated() {
@@ -185,6 +243,7 @@ public class ImageEntry implements Parcelable {
                 return img;
         }
     }
+
     public Bitmap getBitmapResignedAndRotated(Uri photoUri, Context context) throws IOException {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -335,6 +394,7 @@ public class ImageEntry implements Parcelable {
         return BitmapFactory.decodeFile(f.getAbsolutePath(), options);
     }
 
+    @Nullable
     public Bitmap getBitmap() {
         if (TextUtils.isEmpty(path)) {
             return bitmap;
@@ -395,6 +455,7 @@ public class ImageEntry implements Parcelable {
         return null;
     }
 
+    @Nullable
     public Bitmap getScaledBitmap() {
         Bitmap origin_bm = getBitmap();
         if (origin_bm == null) return null;
@@ -435,11 +496,11 @@ public class ImageEntry implements Parcelable {
     }
 
     private static Bitmap rotateImage(Bitmap img, int degree) {
+        if (img == null) return null;
         Matrix matrix = new Matrix();
         matrix.postRotate(degree);
-        Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
-//        img.recycle();
-        return rotatedImg;
+        //        img.recycle();
+        return Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
     }
 
     public ImageEntry(final Builder builder) {

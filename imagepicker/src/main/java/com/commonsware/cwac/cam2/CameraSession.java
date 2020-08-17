@@ -33,7 +33,7 @@ import java.util.ArrayList;
  */
 public class CameraSession {
   private final CameraDescriptor descriptor;
-  private Context ctxt;
+  private final Context ctxt;
   private final ArrayList<CameraPlugin> plugins=new ArrayList<CameraPlugin>();
   private Size previewSize;
   private FlashMode currentFlashMode;

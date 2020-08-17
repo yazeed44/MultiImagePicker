@@ -522,7 +522,7 @@ public class ClassicCameraEngine extends CameraEngine
   }
 
   static class Descriptor implements CameraDescriptor {
-    private int cameraId;
+    private final int cameraId;
     private Camera camera;
     private List<Size> pictureSizes;
     private List<Size> previewSizes;
