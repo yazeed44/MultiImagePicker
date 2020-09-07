@@ -26,11 +26,11 @@ ext {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 28
+        targetSdkVersion 29
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -61,7 +61,7 @@ dependencies {
     implementation('com.octo.android.robospice:robospice:1.4.14') {
         exclude group: 'org.apache.commons', module: 'commons-io'
     }
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 
     implementation 'org.greenrobot:eventbus:3.2.0'
     implementation 'com.github.chrisbanes:PhotoView:2.1.3'

@@ -159,7 +159,7 @@ public class AlbumsFragment extends Fragment implements RequestListener<ArrayLis
 
     private void pickLatestCapturedImage() {
         for (final AlbumEntry albumEntry : mAlbumList) {
-            if (albumEntry.name.equals(PickerActivity.CAPTURED_IMAGES_ALBUM_NAME)) {
+            if (PickerActivity.CAPTURED_IMAGES_ALBUM_NAME.equals(albumEntry.name)) {
                 AlbumEntry image = Util.getAllPhotosAlbum(mAlbumList);
                 if (image != null) {
                     ImageEntry imageEntry = image.imageList.get(0);
