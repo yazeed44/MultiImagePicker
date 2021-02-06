@@ -188,7 +188,7 @@ public class ImagesThumbnailAdapter extends RecyclerView.Adapter<ImagesThumbnail
             videoIcon = itemView.findViewById(R.id.image_video_icon);
 
             itemView.setOnClickListener(v -> {
-                if (getAdapterPosition() < 0) return;
+                if (getAbsoluteAdapterPosition() < 0) return;
                 listener.onClickImage(itemView, thumbnail, check);
             });
 
