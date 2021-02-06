@@ -2,6 +2,7 @@ package net.yazeed44.multiimagepicker;
 
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -57,12 +58,12 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
 
     public void onClickPickImageSingle(View view) {
-
-        new Picker.Builder(this, this, R.style.MIP_theme)
-                .setPickMode(Picker.PickMode.SINGLE_IMAGE)
-                .setCropAfterPick(true)
-                .build()
-                .startActivity();
+        Picker picker = new Picker.Builder(this, this)
+                .setLimitVideo(5)
+                .setLimitPhoto(5)
+                .setVideosEnabled(true)
+                .build();
+        picker.startActivity();
     }
 
     public void onClickPickImageMultipleWithLimit(View view) {
@@ -127,9 +128,6 @@ public class MainActivity extends AppCompatActivity implements Picker.PickListen
 
 
     }
-
-
-
 
 
     @Override

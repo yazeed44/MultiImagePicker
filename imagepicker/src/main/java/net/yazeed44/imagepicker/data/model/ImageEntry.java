@@ -49,6 +49,9 @@ public class ImageEntry implements Parcelable {
     private boolean uploaded;
     private int progress;
 
+    public String S3Url;
+    public String genId;
+    public int offset;
 
     private void logException(Throwable e) {
 //        e.printStackTrace();
@@ -627,6 +630,9 @@ public class ImageEntry implements Parcelable {
         dest.writeString(this.description);
         dest.writeByte(this.uploaded ? (byte) 1 : (byte) 0);
         dest.writeInt(this.progress);
+        dest.writeString(this.genId);
+        dest.writeString(this.S3Url);
+        dest.writeInt(this.offset);
     }
 
     protected ImageEntry(Parcel in) {
@@ -641,6 +647,15 @@ public class ImageEntry implements Parcelable {
         this.description = in.readString();
         this.uploaded = in.readByte() != 0;
         this.progress = in.readInt();
+        this.genId = in.readString();
+        this.S3Url = in.readString();
+        this.offset = in.readInt();
+    }
+
+    @NonNull
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     public static final Creator<ImageEntry> CREATOR = new Creator<ImageEntry>() {

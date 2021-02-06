@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.yazeed44.imagepicker.library">
 
@@ -20,9 +21,11 @@
         android:name="android.hardware.microphone"
         android:required="false" />
 
-    <application
-        android:allowBackup="true"
-        android:requestLegacyExternalStorage="true">
+    <application android:allowBackup="true">
+        <activity
+            android:name="net.yazeed44.imagepicker.ui.camera.CameraActivity"
+            android:screenOrientation="portrait" />
+
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
@@ -31,8 +34,6 @@
             android:name="net.yazeed44.imagepicker.ui.PickerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name="com.commonsware.cwac.cam2.CameraActivity" />
-        <activity android:name="com.commonsware.cwac.cam2.VideoRecorderActivity" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
@@ -43,4 +44,5 @@
             android:name="net.yazeed44.imagepicker.util.OfflineSpiceService"
             android:exported="false" />
     </application>
+
 </manifest>

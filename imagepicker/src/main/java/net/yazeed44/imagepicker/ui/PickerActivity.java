@@ -31,8 +31,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
+import com.github.florent37.runtimepermission.PermissionResult;
+import com.github.florent37.runtimepermission.RuntimePermission;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.pr.swalert.toast.ToastUtils;
 import com.yalantis.ucrop.UCrop;
 
 import net.yazeed44.imagepicker.data.Events;
@@ -41,6 +44,7 @@ import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.library.BuildConfig;
 import net.yazeed44.imagepicker.library.R;
 import net.yazeed44.imagepicker.ui.album.AlbumsFragment;
+import net.yazeed44.imagepicker.ui.camera.CameraActivity;
 import net.yazeed44.imagepicker.ui.imagePreview.ImagePreviewActivity;
 import net.yazeed44.imagepicker.ui.photo.ImagesThumbnailFragment;
 import net.yazeed44.imagepicker.ui.photoPager.ImagesPagerFragment;
@@ -61,6 +65,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
+
 
 public class PickerActivity extends AppCompatActivity {
     public static final int NO_LIMIT = -1;
@@ -70,6 +77,8 @@ public class PickerActivity extends AppCompatActivity {
     public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
     private static final int REQUEST_PORTRAIT_RFC = 1337;
     public static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
+    private static final int REQUEST_VIDEO = 678;
+    private static final int REQUEST_IMAGE = 679;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
     private boolean mShouldShowUp = false;
     private FloatingActionButton mDoneFab;
@@ -112,6 +121,14 @@ public class PickerActivity extends AppCompatActivity {
             finish();
             return;
         }
+        if (mPickOptions.limitVideo >= 0 && mPickOptions.limitPhoto >= 0) {
+            mPickOptions.limit = mPickOptions.limitVideo + mPickOptions.limitPhoto;
+        } else if (mPickOptions.limitVideo > 0 && mPickOptions.limitPhoto < 0) {
+            mPickOptions.limit = mPickOptions.limitVideo;
+        } else if (mPickOptions.limitVideo < 0 && mPickOptions.limitPhoto > 0) {
+            mPickOptions.limit = mPickOptions.limitPhoto;
+        }
+
         UIUtil.hideKeyboard(this);
         setContentView(R.layout.activity_pick);
         initTheme();
@@ -325,26 +342,59 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void startCamera() {
-        if (!CameraSupport.isEnabled()) {
-            return;
-        }
+        String[] permissions = new String[2];
+        permissions[0] = Manifest.permission.CAMERA;
+        permissions[1] = Manifest.permission.RECORD_AUDIO;
 
-        if (!mPickOptions.videosEnabled) {
-            capturePhoto();
-            return;
-        }
-
-        new AlertDialog.Builder(this).setTitle(R.string.dialog_choose_camera_title)
-                .setItems(new String[]{getResources().getString(R.string.dialog_choose_camera_item_0), getResources().getString(R.string.dialog_choose_camera_item_1)}, (dialog, which) -> {
-                            if (which == 0) {
-                                capturePhoto();
-                            } else {
-                                captureVideo();
-                            }
+        RuntimePermission.askPermission(this, permissions)
+                .onDenied(result -> {
+                    StringBuilder denied = getPermissionsString(this, result, result.getDenied());
+                    ToastUtils.alertYesNo(this, String.format(this.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                        if (yesButtonConfirmed) {
+                            result.askAgain();
                         }
-                )
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                    });
+                })
+                .onForeverDenied(result -> {
+                    StringBuilder denied = getPermissionsString(this, result, result.getDenied());
+                    ToastUtils.alertYesNo(this, String.format(this.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                        if (yesButtonConfirmed) {
+                            result.goToSettings();
+                        }
+                    });
+                })
+                .onAccepted(result -> {
+                    if (!mPickOptions.videosEnabled) {
+                        capturePhoto();
+                        return;
+                    }
+
+                    new AlertDialog.Builder(this).setTitle(R.string.dialog_choose_camera_title)
+                            .setItems(new String[]{getResources().getString(R.string.dialog_choose_camera_item_0), getResources().getString(R.string.dialog_choose_camera_item_1)}, (dialog, which) -> {
+                                        if (which == 0) {
+                                            capturePhoto();
+                                        } else {
+                                            captureVideo();
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                })
+                .ask();
+    }
+
+    private StringBuilder getPermissionsString(Context context, PermissionResult result, List<String> foreverDenied) {
+        StringBuilder denied = new StringBuilder();
+        for (String permission : foreverDenied) {
+            try {
+                denied.append("- ").append(context.getPackageManager().getPermissionInfo(permission, 0).loadLabel(context.getPackageManager()));
+                if (result.getDenied().indexOf(permission) != result.getDenied().size() - 1)
+                    denied.append("\n");
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+        }
+        return denied;
     }
 
     public static final int MY_CAMERA_PERMISSION_CODE = 100;
@@ -370,19 +420,13 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void capturePhoto() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
-                    MY_CAMERA_PERMISSION_CODE);
-        } else {
-            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-            StrictMode.setVmPolicy(builder.build());
-            captureImageFile = createTemporaryFileForCapturing(".png");
-            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(captureImageFile));
-            startActivityForResult(i, REQUEST_PORTRAIT_FFC);
-        }
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, REQUEST_IMAGE);
+//        Intent photoIntent = new Intent(this, CameraActivity.class);
+//        startActivity(photoIntent);
     }
+
+
 
     public static File createTemporaryFileForCapturing(final String extension) {
         final File captureTempFile = new File(CAPTURED_IMAGES_DIR
@@ -403,9 +447,8 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     public void captureVideo() {
-        final File captureVideoFile = createTemporaryFileForCapturing(".mp4");
-        CameraSupport.startVideoCaptureActivity(this,
-                captureVideoFile, mPickOptions.videoLengthLimit, REQUEST_PORTRAIT_FFC);
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        startActivityForResult(intent, REQUEST_VIDEO);
     }
 
 
@@ -463,13 +506,11 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void initCaptureMenuItem(final Menu menu) {
-        if (CameraSupport.isEnabled()) {
-            getMenuInflater().inflate(R.menu.menu_take_photo, menu);
-            Drawable captureIconDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_action_camera_white);
-            captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
-            DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
-            menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
-        }
+        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+        Drawable captureIconDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_action_camera_white);
+        captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
+        DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
+        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
     }
 
     private void hideDeselectAll() {
@@ -522,7 +563,7 @@ public class PickerActivity extends AppCompatActivity {
             for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
                 if (mPickOptions.limit != NO_LIMIT && sCheckedImages.size() + 1 > mPickOptions.limit) {
                     //Hit the limit
-                    Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.you_cant_check_more_media, Toast.LENGTH_SHORT).show();
                     break;
                 }
 
@@ -616,12 +657,26 @@ public class PickerActivity extends AppCompatActivity {
         }
 
         if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
-            imageEntry.isPicked = true;
-            sCheckedImages.add(imageEntry);
+            if (imageEntry.isVideo) {
+                long totalVideos = StreamSupport.stream(sCheckedImages).filter(entry -> entry.isVideo).count();
+                if (totalVideos < mPickOptions.limitVideo || mPickOptions.limitVideo == NO_LIMIT) {
+                    imageEntry.isPicked = true;
+                    sCheckedImages.add(imageEntry);
+                } else {
+                    Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.can_choose_d_video), mPickOptions.limitVideo), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                long totalPhotos = StreamSupport.stream(sCheckedImages).filter(entry -> !entry.isVideo).count();
+                if (totalPhotos < mPickOptions.limitPhoto || mPickOptions.limitPhoto == NO_LIMIT) {
+                    imageEntry.isPicked = true;
+                    sCheckedImages.add(imageEntry);
+                } else {
+                    Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.can_choose_d_image), mPickOptions.limitPhoto), Toast.LENGTH_SHORT).show();
+                }
+            }
         } else {
-
-            Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.can_choose_d_image), mPickOptions.limit), Toast.LENGTH_SHORT).show();
-            Log.i("onPickImage", "You can't check more images");
+            Toast.makeText(this, getString(R.string.you_cant_check_more_media), Toast.LENGTH_SHORT).show();
+            Log.i("onPickImage", "You can't check more media");
         }
     }
 

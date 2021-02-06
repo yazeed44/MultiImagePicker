@@ -37,7 +37,9 @@ import java.util.List;
  */
 public class Picker {
 
-    public final int limit;
+    public int limit;
+    public final int limitPhoto;
+    public final int limitVideo;
     public final WeakReference<Context> context;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
@@ -87,11 +89,12 @@ public class Picker {
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
-
+        limitPhoto = builder.mLimitPhoto;
+        limitVideo = builder.mLimitVideo;
     }
 
     public void startActivity() {
-        if (limit <= 0 && pickMode == PickMode.MULTIPLE_IMAGES) {
+        if (limit <= 0 && pickMode == PickMode.MULTIPLE_IMAGES && limitPhoto <= 0 && limitVideo <= 0) {
             ToastUtils.showToastWarning(context.get(), R.string.you_picked_max_photo);
             return;
         }
@@ -162,6 +165,8 @@ public class Picker {
         private final PickListener mPickListener;
         private final int mThemeResId;
         private int mLimit = PickerActivity.NO_LIMIT;
+        public int mLimitPhoto = PickerActivity.NO_LIMIT;
+        public int mLimitVideo = PickerActivity.NO_LIMIT;
         private int mFabBackgroundColor;
         @ColorInt
         private int mFabBackgroundColorWhenPressed;
@@ -206,8 +211,6 @@ public class Picker {
             mContext.setTheme(mThemeResId);
             mPickListener = listener;
             init();
-
-
         }
 
         public Builder(Builder other) {
@@ -237,6 +240,8 @@ public class Picker {
             this.mBackBtnInMainActivity = other.mBackBtnInMainActivity;
             this.singleBuilder = other.singleBuilder;
             this.multipleBuilder = other.multipleBuilder;
+            this.mLimitPhoto = other.mLimitPhoto;
+            this.mLimitVideo = other.mLimitVideo;
         }
 
         public Builder(@NonNull final Context context, @NonNull final PickListener listener, @StyleRes final int themeResId) {
@@ -350,7 +355,7 @@ public class Picker {
             return multipleBuilder;
         }
 
-        private Picker.Builder setPickMode(final PickMode pickMode) {
+        public Picker.Builder setPickMode(final PickMode pickMode) {
             mPickMode = pickMode;
             return this;
         }
@@ -405,6 +410,15 @@ public class Picker {
             return this;
         }
 
+        public Builder setLimitPhoto(int mLimitPhoto) {
+            this.mLimitPhoto = mLimitPhoto;
+            return this;
+        }
+
+        public Builder setLimitVideo(int mLimitVideo) {
+            this.mLimitVideo = mLimitVideo;
+            return this;
+        }
 
         public Picker build() {
             return new Picker(this);

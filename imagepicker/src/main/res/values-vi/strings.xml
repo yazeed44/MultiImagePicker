@@ -50,5 +50,6 @@
     <string name="ucrop_scale">Thu phóng</string>
     <string name="ucrop_crop">Cắt</string>
     <string name="ask_perrmission">Ứng dụng cần các quyền sau để hoạt động bình thường:\n%s.\nĐồng ý cấp quyền cho Ứng dụng?</string>
+    <string name="can_choose_d_video">Chỉ được chọn %d video</string>
 
 </resources>

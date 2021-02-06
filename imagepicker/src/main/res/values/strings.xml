@@ -40,5 +40,7 @@
     <string name="add_description">Thêm mô tả</string>
     <string name="ask_perrmission">Application needs following permissions to work normally: %s. Allow application to use those permissions?</string>
     <string name="you_picked_max_photo">Bạn đã chọn tối đa số ảnh cho phép</string>
+    <string name="can_choose_d_video">Chỉ được chọn %d video</string>
+    <string name="you_cant_check_more_media">Bạn không thể chọn thêm media</string>
 
 </resources>
