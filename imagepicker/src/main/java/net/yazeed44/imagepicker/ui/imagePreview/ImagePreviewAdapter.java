@@ -148,7 +148,7 @@ public class ImagePreviewAdapter extends RecyclerView.Adapter<ImagePreviewAdapte
             videoIcon = itemView.findViewById(R.id.image_video_icon);
 
             itemView.setOnClickListener(v -> {
-                if (getAdapterPosition() < 0) return;
+                if (getAbsoluteAdapterPosition() < 0) return;
             });
             description.addTextChangedListener(new TextWatcher() {
                 @Override

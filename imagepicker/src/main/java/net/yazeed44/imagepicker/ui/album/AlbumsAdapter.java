@@ -124,7 +124,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.AlbumViewH
             detailsLayout = itemView.findViewById(R.id.album_detail_layout);
 
             itemView.setOnClickListener(v -> {
-                if (getAdapterPosition() < 0) return;
+                if (getAbsoluteAdapterPosition() < 0) return;
                 listener.onClickAlbum(itemView);
             });
 
