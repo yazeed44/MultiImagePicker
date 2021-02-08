@@ -427,7 +427,6 @@ public class PickerActivity extends AppCompatActivity {
     }
 
 
-
     public static File createTemporaryFileForCapturing(final String extension) {
         final File captureTempFile = new File(CAPTURED_IMAGES_DIR
                 + "/IMG_"
@@ -538,7 +537,6 @@ public class PickerActivity extends AppCompatActivity {
             startCamera();
         } else if (itemId == R.id.action_select_all) {
             selectAllImages();
-
         } else if (itemId == R.id.action_deselect_all) {
             deselectAllImages();
         }
@@ -653,6 +651,10 @@ public class PickerActivity extends AppCompatActivity {
 
     private void handleMultipleModeAddition(final ImageEntry imageEntry) {
         if (mPickOptions.pickMode != Picker.PickMode.MULTIPLE_IMAGES) {
+            return;
+        }
+        File file = new File(imageEntry.path);
+        if (file.length() <= 0 || !file.canRead()) {
             return;
         }
 

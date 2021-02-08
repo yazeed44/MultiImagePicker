@@ -5,7 +5,7 @@
     <string name="album_thumbnail">Album Thumbnail</string>
     <string name="image_thumbnail">Image thumbnail</string>
     <string name="action_take_photo">Chụp ảnh</string>
-    <string name="all_photos">Tất cả ảnh</string>
+    <string name="all_photos">Tất cả</string>
     <string name="image_check">Chọn ảnh</string>
     <string name="albums_title">Album</string>
     <string name="you_cant_check_more_images">Không thể chọn thêm ảnh</string>
@@ -23,7 +23,7 @@
 
 
     <string name="picture">Ảnh</string>
-    <string name="all_image">Tất cả ảnh</string>
+    <string name="all_image">Tất cả</string>
     <string name="take_picture">Chụp ảnh</string>
     <string name="preview">Xem trước</string>
     <string name="preview_num">Xem trước (%1$d)</string>
