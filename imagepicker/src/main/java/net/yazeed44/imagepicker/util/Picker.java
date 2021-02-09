@@ -63,6 +63,7 @@ public class Picker {
     public final int videoThumbnailOverlayColor;
     public final int videoIconTintColor;
     public final boolean backBtnInMainActivity;
+    public long maxSizeFile;
 
     protected Picker(final Builder builder) {
         context = new WeakReference<>(builder.mContext);
@@ -91,6 +92,7 @@ public class Picker {
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
         limitPhoto = builder.mLimitPhoto;
         limitVideo = builder.mLimitVideo;
+        maxSizeFile = builder.maxSizeFile;
     }
 
     public void startActivity() {
@@ -200,6 +202,7 @@ public class Picker {
         @ColorInt
         private int mVideoIconTintColor;
         private boolean mBackBtnInMainActivity = true;
+        private long maxSizeFile = -1;
 
 
         private SinglePicker.SingleBuilder singleBuilder;
@@ -242,6 +245,7 @@ public class Picker {
             this.multipleBuilder = other.multipleBuilder;
             this.mLimitPhoto = other.mLimitPhoto;
             this.mLimitVideo = other.mLimitVideo;
+            this.maxSizeFile = other.maxSizeFile;
         }
 
         public Builder(@NonNull final Context context, @NonNull final PickListener listener, @StyleRes final int themeResId) {
@@ -347,6 +351,11 @@ public class Picker {
             setPickMode(PickMode.SINGLE_IMAGE);
             if (singleBuilder == null) singleBuilder = new SinglePicker.SingleBuilder(this);
             return singleBuilder;
+        }
+
+        public Builder setMaxSizeFile(long maxSizeFile) {
+            this.maxSizeFile = maxSizeFile;
+            return this;
         }
 
         public MultiplePicker.MultipleBuilder multipleImage() {

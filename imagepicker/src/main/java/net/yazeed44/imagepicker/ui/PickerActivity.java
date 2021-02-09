@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -559,17 +560,29 @@ public class PickerActivity extends AppCompatActivity {
         }
         if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
             for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
+
                 if (mPickOptions.limit != NO_LIMIT && sCheckedImages.size() + 1 > mPickOptions.limit) {
                     //Hit the limit
                     Toast.makeText(this, R.string.you_cant_check_more_media, Toast.LENGTH_SHORT).show();
                     break;
+                } else {
+                    File file = new File(imageEntry.path);
+                    if (file.length() <= 0 || !file.canRead()) {
+                        continue;
+                    }
+
+                    if (file.length() > mPickOptions.maxSizeFile && mPickOptions.maxSizeFile > 0) {
+                        continue;
+                    }
+
+                    if (!imageEntry.isPicked) {
+                        //To avoid repeated images
+                        sCheckedImages.add(imageEntry);
+                        imageEntry.isPicked = true;
+                    }
                 }
 
-                if (!imageEntry.isPicked) {
-                    //To avoid repeated images
-                    sCheckedImages.add(imageEntry);
-                    imageEntry.isPicked = true;
-                }
+
             }
         }
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
@@ -655,6 +668,12 @@ public class PickerActivity extends AppCompatActivity {
         }
         File file = new File(imageEntry.path);
         if (file.length() <= 0 || !file.canRead()) {
+            return;
+        }
+
+
+        if (file.length() > mPickOptions.maxSizeFile && mPickOptions.maxSizeFile > 0) {
+            Toast.makeText(this, String.format(Locale.getDefault(), "File của bạn vượt quá %s", Formatter.formatFileSize(this, mPickOptions.maxSizeFile)), Toast.LENGTH_SHORT).show();
             return;
         }
 
