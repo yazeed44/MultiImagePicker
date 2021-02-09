@@ -474,9 +474,9 @@ public class PickerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if (mPickOptions.shouldShowCaptureMenuItem) {
-            initCaptureMenuItem(menu);
-        }
+//        if (mPickOptions.shouldShowCaptureMenuItem) {
+//            initCaptureMenuItem(menu);
+//        }
 
         getMenuInflater().inflate(R.menu.menu_select_all, menu);
         getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
@@ -673,7 +673,7 @@ public class PickerActivity extends AppCompatActivity {
 
 
         if (file.length() > mPickOptions.maxSizeFile && mPickOptions.maxSizeFile > 0) {
-            Toast.makeText(this, String.format(Locale.getDefault(), "File của bạn vượt quá %s", Formatter.formatFileSize(this, mPickOptions.maxSizeFile)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.limt_size_file), Formatter.formatShortFileSize(this, mPickOptions.maxSizeFile)), Toast.LENGTH_SHORT).show();
             return;
         }
 

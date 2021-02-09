@@ -39,5 +39,6 @@
     <string name="add_description">Add description</string>
     <string name="can_choose_d_video">You can only select %d video</string>
     <string name="you_cant_check_more_media">You can not add media</string>
+    <string name="limt_size_file">Your file is exceeded %s</string>
 
 </resources>

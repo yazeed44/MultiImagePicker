@@ -42,5 +42,6 @@
     <string name="you_picked_max_photo">Bạn đã chọn tối đa số ảnh cho phép</string>
     <string name="can_choose_d_video">Chỉ được chọn %d video</string>
     <string name="you_cant_check_more_media">Bạn không thể chọn thêm media</string>
+    <string name="limt_size_file">File của bạn vượt quá %s</string>
 
 </resources>
