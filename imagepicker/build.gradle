@@ -93,7 +93,5 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.3'
     implementation 'androidx.navigation:navigation-runtime:2.3.3'
 }
-
-
 //apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 //apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
