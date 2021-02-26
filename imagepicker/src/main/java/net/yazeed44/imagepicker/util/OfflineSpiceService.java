@@ -6,15 +6,15 @@ import android.content.Context;
 import com.octo.android.robospice.SpiceService;
 import com.octo.android.robospice.networkstate.NetworkStateChecker;
 import com.octo.android.robospice.persistence.CacheManager;
-import com.octo.android.robospice.persistence.exception.CacheCreationException;
 
 /**
- * Created by yazeed44 on 6/13/15.
+ * Created by yazeed44
+ * on 6/13/15.
  */
 public class OfflineSpiceService extends SpiceService {
 
     @Override
-    public CacheManager createCacheManager(Application application) throws CacheCreationException {
+    public CacheManager createCacheManager(Application application) {
         return new CacheManager();
     }
 

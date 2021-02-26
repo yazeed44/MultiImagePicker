@@ -1,31 +1,46 @@
 package net.yazeed44.imagepicker.util;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StyleRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
+import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+import androidx.fragment.app.FragmentActivity;
+
+import com.github.florent37.runtimepermission.PermissionResult;
+import com.github.florent37.runtimepermission.RuntimePermission;
+import com.pr.swalert.toast.ToastUtils;
+
+import net.yazeed44.imagepicker.data.Events;
+import net.yazeed44.imagepicker.data.model.ImageEntry;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.ImageEntry;
 import net.yazeed44.imagepicker.ui.PickerActivity;
 
-import java.util.ArrayList;
+import org.greenrobot.eventbus.EventBus;
 
-import de.greenrobot.event.EventBus;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by yazeed44 on 6/14/15.
+ * Created by yazeed44
+ * on 6/14/15.
  */
-public final class Picker {
+public class Picker {
 
-    public final int limit;
-    public final Context context;
+    public int limit;
+    public final int limitPhoto;
+    public final int limitVideo;
+    public final WeakReference<Context> context;
     public final int fabBackgroundColor;
     public final int fabBackgroundColorWhenPressed;
     public final int imageBackgroundColorWhenChecked;
@@ -48,9 +63,10 @@ public final class Picker {
     public final int videoThumbnailOverlayColor;
     public final int videoIconTintColor;
     public final boolean backBtnInMainActivity;
+    public long maxSizeFile;
 
-    private Picker(final Builder builder) {
-        context = builder.mContext;
+    protected Picker(final Builder builder) {
+        context = new WeakReference<>(builder.mContext);
         limit = builder.mLimit;
         fabBackgroundColor = builder.mFabBackgroundColor;
         fabBackgroundColorWhenPressed = builder.mFabBackgroundColorWhenPressed;
@@ -74,23 +90,68 @@ public final class Picker {
         videoThumbnailOverlayColor = builder.mVideoThumbnailOverlayColor;
         videoIconTintColor = builder.mVideoIconTintColor;
         backBtnInMainActivity = builder.mBackBtnInMainActivity;
-
+        limitPhoto = builder.mLimitPhoto;
+        limitVideo = builder.mLimitVideo;
+        maxSizeFile = builder.maxSizeFile;
     }
 
     public void startActivity() {
-
-        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(this));
-
-        final Intent intent = new Intent(context, PickerActivity.class);
-
-        context.startActivity(intent);
-
+        if (limit <= 0 && pickMode == PickMode.MULTIPLE_IMAGES && limitPhoto <= 0 && limitVideo <= 0) {
+            ToastUtils.showToastWarning(context.get(), R.string.you_picked_max_photo);
+            return;
+        }
+        if (context.get() instanceof FragmentActivity) {
+            Log.d(getClass().getSimpleName(), "startActivity() called");
+            FragmentActivity fragmentActivity = (FragmentActivity) context.get();
+            String[] permissions = new String[2];
+            permissions[0] = Manifest.permission.READ_EXTERNAL_STORAGE;
+            permissions[1] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            RuntimePermission.askPermission(fragmentActivity, permissions)
+                    .onDenied(result -> {
+                        StringBuilder denied = getPermissionsString(fragmentActivity, result, result.getDenied());
+                        ToastUtils.alertYesNo(fragmentActivity, String.format(fragmentActivity.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                            if (yesButtonConfirmed) {
+                                result.askAgain();
+                            }
+                        });
+                    })
+                    .onForeverDenied(result -> {
+                        StringBuilder denied = getPermissionsString(fragmentActivity, result, result.getForeverDenied());
+                        ToastUtils.alertYesNo(fragmentActivity, String.format(fragmentActivity.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                            if (yesButtonConfirmed) {
+                                result.goToSettings();
+                            }
+                        });
+                    })
+                    .onAccepted(result -> {
+                        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(Picker.this));
+                        final Intent intent = new Intent(fragmentActivity, PickerActivity.class);
+                        PickerActivity.mPickOptions = Picker.this;
+                        fragmentActivity.startActivity(intent);
+                    })
+                    .ask();
+        }
     }
 
+    private StringBuilder getPermissionsString(Context context, PermissionResult result, List<String> foreverDenied) {
+        StringBuilder denied = new StringBuilder();
+        for (String permission : foreverDenied) {
+            try {
+                denied.append("- ").append(context.getPackageManager().getPermissionInfo(permission, 0).loadLabel(context.getPackageManager()));
+                if (result.getDenied().indexOf(permission) != result.getDenied().size() - 1)
+                    denied.append("\n");
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+        }
+        return denied;
+    }
 
     public enum PickMode {
-
-        SINGLE_IMAGE, MULTIPLE_IMAGES
+        SINGLE_IMAGE,
+        MULTIPLE_IMAGES,
+        SINGLE_VIDEO,
+        MULTIPLE_VIDEOS,
+        MIX
     }
 
     public interface PickListener {
@@ -106,39 +167,85 @@ public final class Picker {
         private final PickListener mPickListener;
         private final int mThemeResId;
         private int mLimit = PickerActivity.NO_LIMIT;
+        public int mLimitPhoto = PickerActivity.NO_LIMIT;
+        public int mLimitVideo = PickerActivity.NO_LIMIT;
         private int mFabBackgroundColor;
+        @ColorInt
         private int mFabBackgroundColorWhenPressed;
+        @ColorInt
         private int mImageBackgroundColorWhenChecked;
+        @ColorInt
         private int mImageBackgroundColor;
+        @ColorInt
         private int mImageCheckColor;
+        @ColorInt
         private int mCheckedImageOverlayColor;
+        @ColorInt
         private int mAlbumImagesCountTextColor;
+        @ColorInt
         private int mAlbumBackgroundColor;
+        @ColorInt
         private int mAlbumNameTextColor;
         private PickMode mPickMode;
         private int mPopupThemeResId;
+        @ColorInt
         private int mDoneFabIconTintColor;
+        @ColorInt
         private int mCaptureItemIconTintColor;
         private boolean mShouldShowCaptureMenuItem;
+        @ColorInt
         private int mCheckIconTintColor;
         private boolean mVideosEnabled;
         private int mVideoLengthLimit;
+        @ColorInt
         private int mVideoThumbnailOverlayColor;
+        @ColorInt
         private int mVideoIconTintColor;
-        private boolean mBackBtnInMainActivity;
+        private boolean mBackBtnInMainActivity = true;
+        private long maxSizeFile = -1;
 
-        //Use (Context,PickListener,themeResId) instead
-        @Deprecated
+
+        private SinglePicker.SingleBuilder singleBuilder;
+        private MultiplePicker.MultipleBuilder multipleBuilder;
+
         public Builder(final Context context, final PickListener listener) {
-
-
-            mThemeResId = R.style.Theme_AppCompat_Light_NoActionBar;
+            mThemeResId = R.style.PickerTheme;
             mContext = context;
             mContext.setTheme(mThemeResId);
             mPickListener = listener;
             init();
+        }
 
-
+        public Builder(Builder other) {
+            this.mContext = other.mContext;
+            this.mPickListener = other.mPickListener;
+            this.mThemeResId = other.mThemeResId;
+            this.mLimit = other.mLimit;
+            this.mFabBackgroundColor = other.mFabBackgroundColor;
+            this.mFabBackgroundColorWhenPressed = other.mFabBackgroundColorWhenPressed;
+            this.mImageBackgroundColorWhenChecked = other.mImageBackgroundColorWhenChecked;
+            this.mImageBackgroundColor = other.mImageBackgroundColor;
+            this.mImageCheckColor = other.mImageCheckColor;
+            this.mCheckedImageOverlayColor = other.mCheckedImageOverlayColor;
+            this.mAlbumImagesCountTextColor = other.mAlbumImagesCountTextColor;
+            this.mAlbumBackgroundColor = other.mAlbumBackgroundColor;
+            this.mAlbumNameTextColor = other.mAlbumNameTextColor;
+            this.mPickMode = other.mPickMode;
+            this.mPopupThemeResId = other.mPopupThemeResId;
+            this.mDoneFabIconTintColor = other.mDoneFabIconTintColor;
+            this.mCaptureItemIconTintColor = other.mCaptureItemIconTintColor;
+            this.mShouldShowCaptureMenuItem = other.mShouldShowCaptureMenuItem;
+            this.mCheckIconTintColor = other.mCheckIconTintColor;
+            this.mVideosEnabled = other.mVideosEnabled;
+            this.mVideoLengthLimit = other.mVideoLengthLimit;
+            this.mVideoThumbnailOverlayColor = other.mVideoThumbnailOverlayColor;
+            this.mVideoIconTintColor = other.mVideoIconTintColor;
+            this.mBackBtnInMainActivity = other.mBackBtnInMainActivity;
+            this.singleBuilder = other.singleBuilder;
+            this.multipleBuilder = other.multipleBuilder;
+            this.mLimitPhoto = other.mLimitPhoto;
+            this.mLimitVideo = other.mLimitVideo;
+            this.maxSizeFile = other.maxSizeFile;
         }
 
         public Builder(@NonNull final Context context, @NonNull final PickListener listener, @StyleRes final int themeResId) {
@@ -149,6 +256,7 @@ public final class Picker {
             init();
 
         }
+
 
         private void init() {
             final TypedValue typedValue = new TypedValue();
@@ -180,15 +288,13 @@ public final class Picker {
             return ContextCompat.getColor(mContext, colorRes);
         }
 
-
         private void initUsingColorAccent(final TypedValue typedValue) {
             mContext.getTheme().resolveAttribute(R.attr.colorAccent, typedValue, true);
             mImageBackgroundColorWhenChecked = mFabBackgroundColor = typedValue.data;
         }
 
-
         /**
-         * @param limit limit for the count of image user can pick , By default it's infinite
+         * @param limit limit for the count of image user can pick, By default it's infinite
          */
         public Picker.Builder setLimit(final int limit) {
             mLimit = limit;
@@ -239,6 +345,23 @@ public final class Picker {
         public Picker.Builder setAlbumImagesCountTextColor(@ColorInt final int color) {
             mAlbumImagesCountTextColor = color;
             return this;
+        }
+
+        public SinglePicker.SingleBuilder singleImage() {
+            setPickMode(PickMode.SINGLE_IMAGE);
+            if (singleBuilder == null) singleBuilder = new SinglePicker.SingleBuilder(this);
+            return singleBuilder;
+        }
+
+        public Builder setMaxSizeFile(long maxSizeFile) {
+            this.maxSizeFile = maxSizeFile;
+            return this;
+        }
+
+        public MultiplePicker.MultipleBuilder multipleImage() {
+            setPickMode(PickMode.MULTIPLE_IMAGES);
+            if (multipleBuilder == null) multipleBuilder = new MultiplePicker.MultipleBuilder(this);
+            return multipleBuilder;
         }
 
         public Picker.Builder setPickMode(final PickMode pickMode) {
@@ -296,10 +419,18 @@ public final class Picker {
             return this;
         }
 
+        public Builder setLimitPhoto(int mLimitPhoto) {
+            this.mLimitPhoto = mLimitPhoto;
+            return this;
+        }
+
+        public Builder setLimitVideo(int mLimitVideo) {
+            this.mLimitVideo = mLimitVideo;
+            return this;
+        }
+
         public Picker build() {
             return new Picker(this);
         }
-
-
     }
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">이미지 선택</string>
     <string name="album_thumbnail">앨범 썸네일</string>
     <string name="image_thumbnail">이미지 썸네일</string>
     <string name="action_take_photo">사진 촬영</string>

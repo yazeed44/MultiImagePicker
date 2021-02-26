@@ -29,23 +29,10 @@ public final class CameraSupport {
     }
 
     public static void startPhotoCaptureActivity(Activity parent, File file, int requestCode) {
-        final Intent captureIntent = new com.commonsware.cwac.cam2.CameraActivity.IntentBuilder(parent)
-                .skipConfirm()
-                .debug()
-                .to(file)
-                .build();
 
-        parent.startActivityForResult(captureIntent, requestCode);
     }
 
     public static void startVideoCaptureActivity(Activity parent, File file, int videoLengthLimit, int requestCode) {
-        final Intent captureIntent = new com.commonsware.cwac.cam2.VideoRecorderActivity.IntentBuilder(parent)
-                .durationLimit(videoLengthLimit)
-                .debug()
-                .to(file)
-                .build();
 
-        parent.startActivityForResult(captureIntent, requestCode);
     }
-
 }

@@ -1,82 +1,139 @@
 package net.yazeed44.imagepicker.ui;
 
-import android.content.DialogInterface;
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.text.format.Formatter;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+
+import com.github.florent37.runtimepermission.PermissionResult;
+import com.github.florent37.runtimepermission.RuntimePermission;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.pr.swalert.toast.ToastUtils;
+import com.yalantis.ucrop.UCrop;
+
+import net.yazeed44.imagepicker.data.Events;
+import net.yazeed44.imagepicker.data.model.AlbumEntry;
+import net.yazeed44.imagepicker.data.model.ImageEntry;
+import net.yazeed44.imagepicker.library.BuildConfig;
 import net.yazeed44.imagepicker.library.R;
-import net.yazeed44.imagepicker.model.AlbumEntry;
-import net.yazeed44.imagepicker.model.ImageEntry;
+import net.yazeed44.imagepicker.ui.album.AlbumsFragment;
+import net.yazeed44.imagepicker.ui.camera.CameraActivity;
+import net.yazeed44.imagepicker.ui.imagePreview.ImagePreviewActivity;
+import net.yazeed44.imagepicker.ui.photo.ImagesThumbnailFragment;
+import net.yazeed44.imagepicker.ui.photoPager.ImagesPagerFragment;
 import net.yazeed44.imagepicker.util.CameraSupport;
-import net.yazeed44.imagepicker.util.Events;
+import net.yazeed44.imagepicker.util.LocaleHelper;
+import net.yazeed44.imagepicker.util.MultiplePicker;
 import net.yazeed44.imagepicker.util.Picker;
-import net.yazeed44.imagepicker.util.Util;
+import net.yazeed44.imagepicker.util.SinglePicker;
+import net.yazeed44.imagepicker.util.UIUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-import de.greenrobot.event.EventBus;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 
 
 public class PickerActivity extends AppCompatActivity {
-
-
     public static final int NO_LIMIT = -1;
-
     public static final String KEY_ACTION_BAR_TITLE = "actionBarKey";
     public static final String KEY_SHOULD_SHOW_ACTIONBAR_UP = "shouldShowUpKey";
-    public static final String CAPTURED_IMAGES_ALBUM_NAME = "captured_images";
-    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(CAPTURED_IMAGES_ALBUM_NAME).getAbsolutePath();
+    public static final String CAPTURED_IMAGES_ALBUM_NAME = "Captured";
+    public static final String CAPTURED_IMAGES_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
     private static final int REQUEST_PORTRAIT_RFC = 1337;
-    private static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
+    public static final int REQUEST_PORTRAIT_FFC = REQUEST_PORTRAIT_RFC + 1;
+    private static final int REQUEST_VIDEO = 678;
+    private static final int REQUEST_IMAGE = 679;
     public static ArrayList<ImageEntry> sCheckedImages = new ArrayList<>();
-
     private boolean mShouldShowUp = false;
-
-    private com.melnykov.fab.FloatingActionButton mDoneFab;
-    private Picker mPickOptions;
+    private FloatingActionButton mDoneFab;
+    public static Picker mPickOptions;
     //For ViewPager
     private ImageEntry mCurrentlyDisplayedImage;
     private AlbumEntry mSelectedAlbum;
     private MenuItem mSelectAllMenuItem;
     private MenuItem mDeselectAllMenuItem;
+    Toolbar toolbar;
 
-    private Toolbar mToolbar;
 
-    //TODO Add animation
-    //TODO Fix bugs with changing orientation
     //TODO Add support for gif
     //TODO Use robust method for capturing photos
     //TODO Add support for picking videos
     //TODO When photo is captured a new album created for it
 
+    @Subscribe(sticky = true)
+    public void onEvent(Events.OnPublishPickOptionsEvent event) {
+        if (mPickOptions == null)
+            mPickOptions = event.options;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (EventBus.getDefault().isRegistered(this)) EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mPickOptions = (EventBus.getDefault().getStickyEvent(Events.OnPublishPickOptionsEvent.class)).options;
-        initTheme();
         super.onCreate(savedInstanceState);
+        if (!EventBus.getDefault().isRegistered(this)) EventBus.getDefault().register(this);
+        if (mPickOptions == null) {
+            finish();
+            return;
+        }
+        if (mPickOptions.limitVideo >= 0 && mPickOptions.limitPhoto >= 0) {
+            mPickOptions.limit = mPickOptions.limitVideo + mPickOptions.limitPhoto;
+        } else if (mPickOptions.limitVideo > 0 && mPickOptions.limitPhoto < 0) {
+            mPickOptions.limit = mPickOptions.limitVideo;
+        } else if (mPickOptions.limitVideo < 0 && mPickOptions.limitPhoto > 0) {
+            mPickOptions.limit = mPickOptions.limitPhoto;
+        }
+
+        UIUtil.hideKeyboard(this);
         setContentView(R.layout.activity_pick);
+        initTheme();
+        toolbar = findViewById(R.id.album_toolbar);
         addToolbarToLayout();
         initActionbar(savedInstanceState);
         setupAlbums(savedInstanceState);
@@ -85,71 +142,65 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(KEY_ACTION_BAR_TITLE, getSupportActionBar().getTitle().toString());
+        if (getSupportActionBar() != null && getSupportActionBar().getTitle() != null)
+            outState.putString(KEY_ACTION_BAR_TITLE, getSupportActionBar().getTitle().toString());
         outState.putBoolean(KEY_SHOULD_SHOW_ACTIONBAR_UP, mShouldShowUp);
     }
 
     private void initTheme() {
         setTheme(mPickOptions.themeResId);
-        mToolbar = new Toolbar(new ContextThemeWrapper(mPickOptions.context, Util.getToolbarThemeResId(this)));
-        mToolbar.setPopupTheme(mPickOptions.popupThemeResId);
     }
 
     private void addToolbarToLayout() {
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-
-        final AppBarLayout.LayoutParams toolbarParams = new AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Util.getActionBarHeight(this));
-        toolbarParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-
-        appBarLayout.addView(mToolbar, toolbarParams);
-
-        setSupportActionBar(mToolbar);
+        toolbar.setTitle("Chọn ảnh");
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.mipmap.ic_back);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
 
     @Override
-    protected void onStart() {
-        EventBus.getDefault().register(this);
-        super.onStart();
-
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(AlbumsFragment.TAG);
+        if (fragment instanceof AlbumsFragment) {
+            ((AlbumsFragment) fragment).setupRecycler();
+        } else {
+            fragment = getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG);
+            if (fragment instanceof ImagesThumbnailFragment) {
+                ((ImagesThumbnailFragment) fragment).setupRecycler();
+            }
+        }
+        super.onConfigurationChanged(newConfig);
     }
-
-    @Override
-    protected void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
-    }
-
 
     private void initActionbar(final Bundle savedInstanceState) {
-
-
         if (savedInstanceState == null) {
             mShouldShowUp = mPickOptions.backBtnInMainActivity;
-            getSupportActionBar().setDisplayHomeAsUpEnabled(mPickOptions.backBtnInMainActivity);
-            getSupportActionBar().setTitle(R.string.albums_title);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(mPickOptions.backBtnInMainActivity);
+                getSupportActionBar().setTitle(R.string.albums_title);
+            }
         } else {
             mShouldShowUp = savedInstanceState.getBoolean(KEY_SHOULD_SHOW_ACTIONBAR_UP);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp && mPickOptions.backBtnInMainActivity);
-            getSupportActionBar().setTitle(savedInstanceState.getString(KEY_ACTION_BAR_TITLE));
-
-
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp && mPickOptions.backBtnInMainActivity);
+                getSupportActionBar().setTitle(savedInstanceState.getString(KEY_ACTION_BAR_TITLE));
+            }
         }
-
-
     }
 
     public void initFab() {
-        Drawable doneIcon = ContextCompat.getDrawable(this, R.drawable.ic_action_done_white);
-        doneIcon = DrawableCompat.wrap(doneIcon);
-        DrawableCompat.setTint(doneIcon, mPickOptions.doneFabIconTintColor);
-
-        mDoneFab = (com.melnykov.fab.FloatingActionButton) findViewById(R.id.fab_done);
+        Drawable doneIcon = AppCompatResources.getDrawable(this, R.drawable.ic_action_done_white);
+        if (doneIcon != null) {
+            doneIcon = DrawableCompat.wrap(doneIcon);
+            DrawableCompat.setTint(doneIcon, mPickOptions.doneFabIconTintColor);
+        }
+        mDoneFab = findViewById(R.id.fab_done);
         mDoneFab.setImageDrawable(doneIcon);
-        mDoneFab.setColorNormal(mPickOptions.fabBackgroundColor);
-        mDoneFab.setColorPressed(mPickOptions.fabBackgroundColorWhenPressed);
+        mDoneFab.setBackgroundTintList(ColorStateList.valueOf(mPickOptions.fabBackgroundColor));
+        mDoneFab.setRippleColor(mPickOptions.fabBackgroundColorWhenPressed);
 
         EventBus.getDefault().postSticky(new Events.OnAttachFabEvent(mDoneFab));
 
@@ -158,64 +209,130 @@ public class PickerActivity extends AppCompatActivity {
 
     public void setupAlbums(Bundle savedInstanceState) {
         if (findViewById(R.id.fragment_container) != null) {
-
             if (savedInstanceState == null) {
-
+                AlbumsFragment albumsFragment = new AlbumsFragment();
+                albumsFragment.setmPickOptions(mPickOptions);
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new AlbumsFragment(), AlbumsFragment.TAG)
+                        .setCustomAnimations(R.anim.slide_up_enter,
+                                R.anim.slide_left_exit,
+                                R.anim.slide_down_enter,
+                                R.anim.slide_right_exit)
+                        .add(R.id.fragment_container, albumsFragment, AlbumsFragment.TAG)
                         .commit();
-
-
             }
         }
     }
 
 
     public void updateFab() {
-
         if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
-            mDoneFab.setVisibility(View.GONE);
             mDoneFab.hide();
             return;
         }
-
-
         if (sCheckedImages.size() == 0) {
-            mDoneFab.setVisibility(View.GONE);
-
+            mDoneFab.hide();
         } else if (sCheckedImages.size() == mPickOptions.limit) {
-
             //Might change FAB appearance on other version
-            mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
             mDoneFab.bringToFront();
-
         } else {
-            mDoneFab.setVisibility(View.VISIBLE);
             mDoneFab.show();
             mDoneFab.bringToFront();
-
-
         }
-
     }
 
     public void onClickDone(View view) {
-
         if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
 
             sCheckedImages.add(mCurrentlyDisplayedImage);
             mCurrentlyDisplayedImage.isPicked = true;
-        } else {
-            //No need to modify sCheckedImages for Multiple images mode
         }
+        //Don't need to modify sCheckedImages for Multiple images mode
 
-        super.finish();
 
         //New object because sCheckedImages will get cleared
-        mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
-        sCheckedImages.clear();
-        EventBus.getDefault().removeAllStickyEvents();
+        if (sCheckedImages == null || sCheckedImages.isEmpty()) {
+            super.finish();
+            onCancel();
+        } else {
+            if (mPickOptions instanceof SinglePicker) {
+                SinglePicker singlePicker = (SinglePicker) mPickOptions;
+
+                if (singlePicker.cropAfterPick) {
+                    Uri destinationUri = Uri.fromFile(new File(this.getCacheDir(), "IMG_" + System.currentTimeMillis()));
+                    UCrop builder = UCrop.of(mCurrentlyDisplayedImage.getUri(), destinationUri);
+                    if (singlePicker.aspectRatioY != -1 && singlePicker.aspectRatioY != -1)
+                        builder.withAspectRatio(singlePicker.aspectRatioX, singlePicker.aspectRatioY);
+                    builder.start(this);
+                } else {
+                    super.finish();
+                    mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                    sCheckedImages.clear();
+                    EventBus.getDefault().removeAllStickyEvents();
+                }
+            } else {
+                if (mPickOptions instanceof MultiplePicker) {
+                    MultiplePicker multiplePicker = (MultiplePicker) mPickOptions;
+                    if (multiplePicker.inputDescription) {
+                        EventBus.getDefault().postSticky(new Events.OnPublishPickOptionsEvent(multiplePicker));
+                        EventBus.getDefault().postSticky(new Events.OnImagePreviewEvent(sCheckedImages));
+                        Intent intent = new Intent(this, ImagePreviewActivity.class);
+                        intent.putExtra("descriptionHint", multiplePicker.descriptionHint);
+                        startActivityForResult(intent, ImagePreviewActivity.REQUEST_PREVIEW);
+                    } else {
+                        super.finish();
+                        mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                        sCheckedImages.clear();
+                        EventBus.getDefault().removeAllStickyEvents();
+                    }
+                } else {
+                    super.finish();
+                    mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                    sCheckedImages.clear();
+                    EventBus.getDefault().removeAllStickyEvents();
+                }
+            }
+        }
+    }
+
+    @Subscribe
+    public void onEvent(Events.OnPublishPreview e) {
+        // Log.d(getClass().getSimpleName(), "onEvent() called with: e = [" + e.imageEntries.get(0).getDescription() + "]");
+        sCheckedImages = e.imageEntries;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_PORTRAIT_FFC) {
+            if (resultCode == RESULT_OK) {
+                //For capturing image from camera
+                if (captureImageFile != null)
+                    refreshMediaScanner(captureImageFile.getPath());
+            }
+        } else if (requestCode == UCrop.REQUEST_CROP) {
+            if (resultCode == RESULT_OK) {
+                final Uri resultUri = UCrop.getOutput(data);
+                ImageEntry imageEntry = ImageEntry.from(resultUri);
+                List<ImageEntry> imageEntries = new ArrayList<>();
+                imageEntries.add(imageEntry);
+                super.finish();
+                mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(imageEntries));
+                sCheckedImages.clear();
+                EventBus.getDefault().removeAllStickyEvents();
+            } else if (resultCode == UCrop.RESULT_ERROR) {
+                final Throwable cropError = UCrop.getError(data);
+            }
+        } else if (requestCode == ImagePreviewActivity.REQUEST_PREVIEW) {
+            if (resultCode == RESULT_OK) {
+                super.finish();
+                mPickOptions.pickListener.onPickedSuccessfully(new ArrayList<>(sCheckedImages));
+                sCheckedImages.clear();
+                EventBus.getDefault().removeAllStickyEvents();
+            } else {
+
+            }
+        }
 
     }
 
@@ -223,89 +340,124 @@ public class PickerActivity extends AppCompatActivity {
         mPickOptions.pickListener.onCancel();
         sCheckedImages.clear();
         EventBus.getDefault().removeAllStickyEvents();
-
-
     }
 
     public void startCamera() {
+        String[] permissions = new String[2];
+        permissions[0] = Manifest.permission.CAMERA;
+        permissions[1] = Manifest.permission.RECORD_AUDIO;
 
-        if (!CameraSupport.isEnabled()) {
-            return;
-        }
-
-        if(!mPickOptions.videosEnabled){
-            capturePhoto();
-            return;
-        }
-
-
-        new AlertDialog.Builder(this).setTitle(R.string.dialog_choose_camera_title)
-                .setItems(new String[]{getResources().getString(R.string.dialog_choose_camera_item_0), getResources().getString(R.string.dialog_choose_camera_item_1)}, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) {
-                            capturePhoto();
-                        } else {
-                            captureVideo();
+        RuntimePermission.askPermission(this, permissions)
+                .onDenied(result -> {
+                    StringBuilder denied = getPermissionsString(this, result, result.getDenied());
+                    ToastUtils.alertYesNo(this, String.format(this.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                        if (yesButtonConfirmed) {
+                            result.askAgain();
                         }
-                    }
+                    });
                 })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
+                .onForeverDenied(result -> {
+                    StringBuilder denied = getPermissionsString(this, result, result.getDenied());
+                    ToastUtils.alertYesNo(this, String.format(this.getString(R.string.ask_perrmission), denied.toString()), yesButtonConfirmed -> {
+                        if (yesButtonConfirmed) {
+                            result.goToSettings();
+                        }
+                    });
+                })
+                .onAccepted(result -> {
+                    if (!mPickOptions.videosEnabled) {
+                        capturePhoto();
+                        return;
+                    }
 
+                    new AlertDialog.Builder(this).setTitle(R.string.dialog_choose_camera_title)
+                            .setItems(new String[]{getResources().getString(R.string.dialog_choose_camera_item_0), getResources().getString(R.string.dialog_choose_camera_item_1)}, (dialog, which) -> {
+                                        if (which == 0) {
+                                            capturePhoto();
+                                        } else {
+                                            captureVideo();
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                })
+                .ask();
+    }
+
+    private StringBuilder getPermissionsString(Context context, PermissionResult result, List<String> foreverDenied) {
+        StringBuilder denied = new StringBuilder();
+        for (String permission : foreverDenied) {
+            try {
+                denied.append("- ").append(context.getPackageManager().getPermissionInfo(permission, 0).loadLabel(context.getPackageManager()));
+                if (result.getDenied().indexOf(permission) != result.getDenied().size() - 1)
+                    denied.append("\n");
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+        }
+        return denied;
+    }
+
+    public static final int MY_CAMERA_PERMISSION_CODE = 100;
+    File captureImageFile;
+    public static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    public static final int REQUEST_EXTERNAL_STORAGE = 1;
+
+    public static boolean verifyStoragePermissions(Activity activity) {
+        if (activity == null) return false;
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permission1 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED || permission1 != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+            return false;
+        } else return true;
     }
 
     public void capturePhoto() {
-        final File captureImageFile = createTemporaryFileForCapturing(".png");
-        CameraSupport.startPhotoCaptureActivity(this, captureImageFile, REQUEST_PORTRAIT_FFC);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, REQUEST_IMAGE);
+//        Intent photoIntent = new Intent(this, CameraActivity.class);
+//        startActivity(photoIntent);
     }
 
-    private File createTemporaryFileForCapturing(final String extension) {
-        final File captureTempFile = new File(CAPTURED_IMAGES_DIR + "/tmp" + System.currentTimeMillis() + extension);
+
+    public static File createTemporaryFileForCapturing(final String extension) {
+        final File captureTempFile = new File(CAPTURED_IMAGES_DIR
+                + "/IMG_"
+                + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(System.currentTimeMillis())
+                + extension);
         try {
             captureTempFile.createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("capture", e.getMessage());
         }
-
         return captureTempFile;
     }
 
+    private void logException(Throwable e) {
+        if (BuildConfig.DEBUG) e.printStackTrace();
+    }
+
     public void captureVideo() {
-        final File captureVideoFile = createTemporaryFileForCapturing(".mp4");
-        CameraSupport.startVideoCaptureActivity(this,
-                captureVideoFile, mPickOptions.videoLengthLimit, REQUEST_PORTRAIT_FFC);
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        startActivityForResult(intent, REQUEST_VIDEO);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (resultCode == RESULT_OK && requestCode == REQUEST_PORTRAIT_FFC) {
-            //For capturing image from camera
-            refreshMediaScanner(data.getData().getPath());
-
-        } else {
-            Log.i("onActivityResult", "User canceled the camera activity");
-        }
-    }
 
     private void refreshMediaScanner(final String imagePath) {
         MediaScannerConnection.scanFile(this,
                 new String[]{imagePath}, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-
-                        PickerActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                reloadAlbums();
-                            }
-                        });
-
-
-                        Log.d("onActivityResult", "New image should appear in camera folder");
-                    }
+                (path, uri) -> {
+                    PickerActivity.this.runOnUiThread(this::reloadAlbums);
+                    // Log.d("onActivityResult", "New image should appear in camera folder");
                 });
     }
 
@@ -316,25 +468,18 @@ public class PickerActivity extends AppCompatActivity {
             getSupportFragmentManager().popBackStackImmediate(ImagesThumbnailFragment.TAG, 0);
             getSupportFragmentManager().popBackStackImmediate();
         }
-
         EventBus.getDefault().post(new Events.OnReloadAlbumsEvent());
-
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-
-
-        if (mPickOptions.shouldShowCaptureMenuItem) {
-            initCaptureMenuItem(menu);
-        }
+//        if (mPickOptions.shouldShowCaptureMenuItem) {
+//            initCaptureMenuItem(menu);
+//        }
 
         getMenuInflater().inflate(R.menu.menu_select_all, menu);
         getMenuInflater().inflate(R.menu.menu_deselect_all, menu);
-
-
 
 
         mSelectAllMenuItem = menu.findItem(R.id.action_select_all);
@@ -352,7 +497,6 @@ public class PickerActivity extends AppCompatActivity {
             hideSelectAll();
         }
 
-
         return true;
     }
 
@@ -362,15 +506,11 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void initCaptureMenuItem(final Menu menu) {
-        if (CameraSupport.isEnabled()) {
-            getMenuInflater().inflate(R.menu.menu_take_photo, menu);
-            Drawable captureIconDrawable = ContextCompat.getDrawable(this, R.drawable.ic_action_camera_white);
-            captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
-
-            DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
-
-            menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
-        }
+        getMenuInflater().inflate(R.menu.menu_take_photo, menu);
+        Drawable captureIconDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_action_camera_white);
+        captureIconDrawable = DrawableCompat.wrap(captureIconDrawable);
+        DrawableCompat.setTint(captureIconDrawable, mPickOptions.captureItemIconTintColor);
+        menu.findItem(R.id.action_take_photo).setIcon(captureIconDrawable);
     }
 
     private void hideDeselectAll() {
@@ -392,61 +532,57 @@ public class PickerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-
+        // as you specify a parent activity_album in AndroidManifest.xml.
         final int itemId = item.getItemId();
-
-
         if (itemId == R.id.action_take_photo) {
             startCamera();
-
         } else if (itemId == R.id.action_select_all) {
             selectAllImages();
-
         } else if (itemId == R.id.action_deselect_all) {
             deselectAllImages();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     private void deselectAllImages() {
-
         for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
             imageEntry.isPicked = false;
             sCheckedImages.remove(imageEntry);
         }
-
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
-
         hideDeselectAll();
         updateFab();
-
     }
 
     private void selectAllImages() {
-
         if (mSelectedAlbum == null) {
             mSelectedAlbum = EventBus.getDefault().getStickyEvent(Events.OnClickAlbumEvent.class).albumEntry;
         }
-
         if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
-
             for (final ImageEntry imageEntry : mSelectedAlbum.imageList) {
 
                 if (mPickOptions.limit != NO_LIMIT && sCheckedImages.size() + 1 > mPickOptions.limit) {
                     //Hit the limit
-                    Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.you_cant_check_more_media, Toast.LENGTH_SHORT).show();
                     break;
+                } else {
+                    File file = new File(imageEntry.path);
+                    if (file.length() <= 0 || !file.canRead()) {
+                        continue;
+                    }
+
+                    if (file.length() > mPickOptions.maxSizeFile && mPickOptions.maxSizeFile > 0) {
+                        continue;
+                    }
+
+                    if (!imageEntry.isPicked) {
+                        //To avoid repeated images
+                        sCheckedImages.add(imageEntry);
+                        imageEntry.isPicked = true;
+                    }
                 }
 
 
-                if (!imageEntry.isPicked) {
-                    //To avoid repeated images
-                    sCheckedImages.add(imageEntry);
-                    imageEntry.isPicked = true;
-                }
             }
         }
         EventBus.getDefault().post(new Events.OnUpdateImagesThumbnailEvent());
@@ -455,14 +591,11 @@ public class PickerActivity extends AppCompatActivity {
         if (shouldShowDeselectAll()) {
             showDeselectAll();
         }
-
-
     }
 
 
     @Override
     public void onBackPressed() {
-
         if (isImagesThumbnailShown()) {
             //Return to albums fragment
             getSupportFragmentManager().popBackStack();
@@ -478,7 +611,7 @@ public class PickerActivity extends AppCompatActivity {
             if (mSelectedAlbum == null) {
                 mSelectedAlbum = EventBus.getDefault().getStickyEvent(Events.OnClickAlbumEvent.class).albumEntry;
             }
-            mDoneFab.setVisibility(View.GONE);
+            mDoneFab.hide();
             getSupportFragmentManager().popBackStack(ImagesThumbnailFragment.TAG, 0);
             getSupportActionBar().setTitle(mSelectedAlbum.name);
             getSupportActionBar().show();
@@ -530,23 +663,45 @@ public class PickerActivity extends AppCompatActivity {
     }
 
     private void handleMultipleModeAddition(final ImageEntry imageEntry) {
-
         if (mPickOptions.pickMode != Picker.PickMode.MULTIPLE_IMAGES) {
+            return;
+        }
+        File file = new File(imageEntry.path);
+        if (file.length() <= 0 || !file.canRead()) {
+            return;
+        }
+
+
+        if (file.length() > mPickOptions.maxSizeFile && mPickOptions.maxSizeFile > 0) {
+            Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.limt_size_file), Formatter.formatShortFileSize(this, mPickOptions.maxSizeFile)), Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (sCheckedImages.size() < mPickOptions.limit || mPickOptions.limit == NO_LIMIT) {
-            imageEntry.isPicked = true;
-            sCheckedImages.add(imageEntry);
+            if (imageEntry.isVideo) {
+                long totalVideos = StreamSupport.stream(sCheckedImages).filter(entry -> entry.isVideo).count();
+                if (totalVideos < mPickOptions.limitVideo || mPickOptions.limitVideo == NO_LIMIT) {
+                    imageEntry.isPicked = true;
+                    sCheckedImages.add(imageEntry);
+                } else {
+                    Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.can_choose_d_video), mPickOptions.limitVideo), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                long totalPhotos = StreamSupport.stream(sCheckedImages).filter(entry -> !entry.isVideo).count();
+                if (totalPhotos < mPickOptions.limitPhoto || mPickOptions.limitPhoto == NO_LIMIT) {
+                    imageEntry.isPicked = true;
+                    sCheckedImages.add(imageEntry);
+                } else {
+                    Toast.makeText(this, String.format(Locale.getDefault(), getString(R.string.can_choose_d_image), mPickOptions.limitPhoto), Toast.LENGTH_SHORT).show();
+                }
+            }
         } else {
-            Toast.makeText(this, R.string.you_cant_check_more_images, Toast.LENGTH_SHORT).show();
-            Log.i("onPickImage", "You can't check more images");
+            Toast.makeText(this, getString(R.string.you_cant_check_more_media), Toast.LENGTH_SHORT).show();
+            Log.i("onPickImage", "You can't check more media");
         }
-
     }
 
     private boolean shouldShowDeselectAll() {
-
         if (mSelectedAlbum == null) {
             return false;
         }
@@ -567,47 +722,49 @@ public class PickerActivity extends AppCompatActivity {
 
     private void handleToolbarVisibility(final boolean show) {
 
-        final AppBarLayout appBarLayout = (AppBarLayout) mToolbar.getParent();
+        final AppBarLayout appBarLayout = (AppBarLayout) toolbar.getParent();
         final CoordinatorLayout rootLayout = (CoordinatorLayout) appBarLayout.getParent();
 
         final CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
         final AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+        if (behavior != null)
+            if (show) {
+                //Show appBar
+                behavior.setTopAndBottomOffset(0);
+                behavior.onNestedPreScroll(rootLayout, appBarLayout, null, 0, 1, new int[2]);
 
-        if (show) {
-            //Show appBar
-            behavior.setTopAndBottomOffset(0);
-            behavior.onNestedPreScroll(rootLayout, appBarLayout, null, 0, 1, new int[2]);
-
-        } else {
-            //Hide appBar
-            behavior.onNestedFling(rootLayout, appBarLayout, null, 0, 10000, true);
-        }
+            } else {
+                //Hide appBar
+                behavior.onNestedFling(rootLayout, appBarLayout, null, 0, 10000, true);
+            }
 
     }
 
 
-
+    @Subscribe(sticky = true)
     public void onEvent(final Events.OnClickAlbumEvent albumEvent) {
         mSelectedAlbum = albumEvent.albumEntry;
 
 
-        final ImagesThumbnailFragment imagesThumbnailFragment;
-
-
-        if (getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG) != null) {
-            imagesThumbnailFragment = (ImagesThumbnailFragment) getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG);
-        } else {
+        ImagesThumbnailFragment imagesThumbnailFragment = (ImagesThumbnailFragment) getSupportFragmentManager().findFragmentByTag(ImagesThumbnailFragment.TAG);
+        if (imagesThumbnailFragment == null) {
             imagesThumbnailFragment = new ImagesThumbnailFragment();
         }
+        imagesThumbnailFragment.setmPickOptions(mPickOptions);
 
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.slide_up_enter,
+                        R.anim.slide_left_exit,
+                        R.anim.slide_down_enter,
+                        R.anim.slide_right_exit)
                 .replace(R.id.fragment_container, imagesThumbnailFragment, ImagesThumbnailFragment.TAG)
                 .addToBackStack(ImagesThumbnailFragment.TAG)
                 .commit();
-
-        getSupportActionBar().setTitle(albumEvent.albumEntry.name);
-        mShouldShowUp = true;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(albumEvent.albumEntry.name);
+            mShouldShowUp = true;
+            getSupportActionBar().setDisplayHomeAsUpEnabled(mShouldShowUp);
+        }
         showSelectAll();
 
         if (shouldShowDeselectAll()) {
@@ -620,6 +777,7 @@ public class PickerActivity extends AppCompatActivity {
     }
 
 
+    @Subscribe(sticky = true)
     public void onEvent(final Events.OnPickImageEvent pickImageEvent) {
         if (mPickOptions.videosEnabled && mPickOptions.videoLengthLimit > 0 && pickImageEvent.imageEntry.isVideo) {
             // Check to see if the selected video is too long in length
@@ -638,32 +796,23 @@ public class PickerActivity extends AppCompatActivity {
 
         } else if (mPickOptions.pickMode == Picker.PickMode.SINGLE_IMAGE) {
             //Single image pick mode
-
-
-            final ImagesPagerFragment pagerFragment;
-
-            if (getSupportFragmentManager().findFragmentByTag(ImagesPagerFragment.TAG) != null) {
-
-                pagerFragment = (ImagesPagerFragment) getSupportFragmentManager().findFragmentByTag(ImagesPagerFragment.TAG);
-            } else {
+            ImagesPagerFragment pagerFragment = (ImagesPagerFragment) getSupportFragmentManager().findFragmentByTag(ImagesPagerFragment.TAG);
+            if (pagerFragment == null)
                 pagerFragment = new ImagesPagerFragment();
-            }
-
-
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.slide_up_enter,
+                            R.anim.slide_left_exit,
+                            R.anim.slide_down_enter,
+                            R.anim.slide_right_exit)
                     .replace(R.id.fragment_container, pagerFragment, ImagesPagerFragment.TAG)
                     .addToBackStack(ImagesPagerFragment.TAG)
                     .commit();
-
-
         }
-
-
         updateFab();
-
     }
 
 
+    @Subscribe
     public void onEvent(final Events.OnUnpickImageEvent unpickImageEvent) {
         sCheckedImages.remove(unpickImageEvent.imageEntry);
         unpickImageEvent.imageEntry.isPicked = false;
@@ -672,21 +821,22 @@ public class PickerActivity extends AppCompatActivity {
         hideDeselectAll();
     }
 
+    @Subscribe
     public void onEvent(final Events.OnChangingDisplayedImageEvent newImageEvent) {
         mCurrentlyDisplayedImage = newImageEvent.currentImage;
 
     }
 
+    @Subscribe
     public void onEvent(final Events.OnShowingToolbarEvent showingToolbarEvent) {
         handleToolbarVisibility(true);
     }
 
 
+    @Subscribe
     public void onEvent(final Events.OnHidingToolbarEvent hidingToolbarEvent) {
         handleToolbarVisibility(false);
     }
-
-
 
 
 }
