@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class ImageEntry implements Parcelable {
     public final int imageId;
-    public final String path;
+    public String path;
     public final long dateAdded;
     public boolean isPicked = false;
     public boolean isVideo = false;
